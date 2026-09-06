@@ -4,7 +4,7 @@
 > [05-implementation-plan.md](05-implementation-plan.md) land, so it always reflects what's
 > actually in the repo, not what's planned.
 
-**Last updated:** 2026-09-06 (Phase 1 + Phase 3 landed via Unity MCP).
+**Last updated:** 2026-09-06 (Phases 1, 2, and 3 landed via Unity MCP).
 
 ## Completed
 
@@ -25,6 +25,18 @@
   `Assets/_Project/ScriptableObjects/` (one per category, colors matching the MVP spec table) so
   the data structure is inspectable in the Editor. No pickup/interaction system yet — that's
   Phase 4.
+- **Phase 2 — visual book proof**: added a `Book` MonoBehaviour
+  (`Assets/_Project/Scripts/Books/Book.cs`) that links a scene object to a `BookDefinition` and
+  tints its renderer via a `MaterialPropertyBlock` (sets both `_BaseColor` and `_Color`, so it
+  works with the shared URP material without instancing a per-object material or leaking memory
+  in edit mode). Created one shared base material
+  (`Assets/_Project/Art/Materials/Mat_BookSpine.mat`, URP/Lit) and 4 test book cubes —
+  `Book_Alchemy`, `Book_Astronomy`, `Book_Beasts`, `Book_History` — under a `ScatteredBooks`
+  parent, scaled to the spec's book proportions (X 0.20–0.40, Y 0.55–0.95, Z 0.12–0.20) and
+  scattered on the floor a few meters in front of the shelf (Z ≈ 2.0–2.8, within the shelf's X
+  footprint), each wired to its matching sample `BookDefinition`. Verified via scene captures:
+  colors render correctly and are visually distinct; not yet confirmed live in Play mode from
+  the player's actual first-person view (see Phase 7 playtest questions).
 - Created a fresh Unity 6.6.0f1 project using the URP Empty Template.
 - Renamed the default scene to `LibraryPrototype` (`Assets/Scenes/LibraryPrototype.unity`).
 - Created a simple greybox room:
@@ -62,8 +74,10 @@ the MVP.
 
 ## Not yet completed
 
-- No book materials, meshes, or prefabs (Phase 2 — visual book proof — not started; the 4 sample
-  `BookDefinition` assets are data only, with no visual representation in the scene yet).
+- Only 4 test book cubes exist (one per category), not the full 12 — Phase 2 says expand only
+  after playtesting scale/readability, which hasn't happened yet (see above).
+- No book meshes/models beyond primitive cubes, no book prefabs yet (still loose scene objects,
+  not prefabbed — reasonable for a 4-book visual proof, but worth prefabbing before scaling to 12).
 - No pickup interaction.
 - No held-object/carry state.
 - No shelf slots or correct-placement validation.
@@ -93,6 +107,11 @@ LibraryPrototype
     Capsule
   MainCamera                  # Active Starter Assets rendering camera
   PlayerFollowCamera          # Active Cinemachine camera, targets PlayerCameraRoot
+  ScatteredBooks               # Added in Phase 2
+    Book_Alchemy
+    Book_Astronomy
+    Book_Beasts
+    Book_History
 ```
 
 Current room is intentionally greyboxed. It should remain primitive until book scale, player
