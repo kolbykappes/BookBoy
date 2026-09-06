@@ -4,11 +4,27 @@
 > [05-implementation-plan.md](05-implementation-plan.md) land, so it always reflects what's
 > actually in the repo, not what's planned.
 
-**Last updated:** 2026-09-06 (digested from project brief; matches repo state as of commit
-`c66cf16`).
+**Last updated:** 2026-09-06 (Phase 1 + Phase 3 landed via Unity MCP).
 
 ## Completed
 
+- **Unity MCP connected.** `Edit → Project Settings → AI → Unity MCP Server` bridge is running;
+  Claude Code is registered as a client via a local relay
+  (`C:\Users\<user>\.unity\relay\relay_win.exe`, configured through `~/.claude.json`, not checked
+  into the repo). 7 of 54 available tools are currently enabled — asset generation, console logs,
+  scene/camera capture, and `RunCommand` (arbitrary C# execution in the Editor). GameObject/
+  Prefab/Material-specific tool categories are not yet enabled; `RunCommand` covers that ground
+  for now. See [06-agent-workflow.md](06-agent-workflow.md) for how it's used.
+- **Phase 1 — project structure** ([05-implementation-plan.md](05-implementation-plan.md)):
+  created the full `Assets/_Project/` folder tree (`Art/{Materials,Models,Textures}`, `Audio`,
+  `Prefabs/{Books,Interactables,Shelves}`, `Scenes`, `Scripts/{Books,Core,Interaction,UI}`,
+  `ScriptableObjects`, `UI`).
+- **Phase 3 — book data layer**: added `BookCategory` enum (`Alchemy`, `Astronomy`, `Beasts`,
+  `History`) and `BookDefinition` ScriptableObject (`bookId`, `displayName`, `category`,
+  `spineColor`) at `Assets/_Project/Scripts/Books/`. Created 4 sample `BookDefinition` assets in
+  `Assets/_Project/ScriptableObjects/` (one per category, colors matching the MVP spec table) so
+  the data structure is inspectable in the Editor. No pickup/interaction system yet — that's
+  Phase 4.
 - Created a fresh Unity 6.6.0f1 project using the URP Empty Template.
 - Renamed the default scene to `LibraryPrototype` (`Assets/Scenes/LibraryPrototype.unity`).
 - Created a simple greybox room:
@@ -46,15 +62,13 @@ the MVP.
 
 ## Not yet completed
 
-- No project-specific script folders or gameplay script architecture.
-- No book materials, meshes, prefabs, or ScriptableObject data.
-- No book category system.
+- No book materials, meshes, or prefabs (Phase 2 — visual book proof — not started; the 4 sample
+  `BookDefinition` assets are data only, with no visual representation in the scene yet).
 - No pickup interaction.
 - No held-object/carry state.
 - No shelf slots or correct-placement validation.
 - No UI count or completion screen.
 - No game audio or feedback effects.
-- No Unity MCP / coding-agent integration.
 
 ## Current scene inventory
 
