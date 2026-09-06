@@ -15,6 +15,7 @@ them as decisions change, don't re-import the original brief.
 | [04-build-status.md](04-build-status.md) | What's done, what's not, current scene inventory — **update this as work lands** |
 | [05-implementation-plan.md](05-implementation-plan.md) | Phase-by-phase build plan (project structure → books → interaction → shelves → feedback → playtest) |
 | [06-agent-workflow.md](06-agent-workflow.md) | Suggested agent prompts, Git commit rhythm, Unity MCP setup notes |
+| [competitive/](competitive/README.md) | Deep competitive analysis of the "tidy up" Steam sorting wave — one file per game (release date, patch history, reviews) plus a dated review tracker |
 
 ## Quick orientation
 

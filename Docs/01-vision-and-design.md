@@ -125,6 +125,12 @@ This project sits in a recent cozy organizing / high-volume sorting microgenre. 
 formula is a calming environment, thousands of objects, explicit destinations, visual cleanup,
 light progression, and a small premium Steam price point.
 
+> **For the current, detailed version of this analysis** — exact release dates, patch/update
+> history, and review counts/scores tracked over time — see
+> [competitive/README.md](competitive/README.md). The table below is the original snapshot from
+> the founding project brief (2026-09-06) and is left as-is for historical reference; treat the
+> `competitive/` folder as the living version.
+
 | Game | Status / release timing | Core idea | What to learn |
 |---|---:|---|---|
 | `Librarian: Tidy Up the Arcane Library!` | Released April 30, 2026 | Return scattered books to proper places in an arcane library, with ability unlocks as shelf rows are completed | The closest direct reference and apparent catalyst for the current book/library sorting wave |
