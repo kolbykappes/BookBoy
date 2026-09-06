@@ -47,7 +47,31 @@ in launch stability, unlike `Sort Them Ducks`.
 - Its pre-launch process (private playtest → public demo → launch) is a reasonable template if
   BookBoy ever moves toward a real release.
 
-## Personal impressions
+## Personal impressions (Kolby, 2026-09-06)
 
-*(fill in from hands-on play — what feels good, what doesn't, anything BookBoy should copy or
-avoid)*
+**A really different take — not 100% sold on it yet, but several hours in.** The potions are
+low-poly but easy to visually differentiate, which matters a lot given how deduction-heavy this
+game is (you need to be able to tell items apart to apply what you've solved).
+
+The core loop: solve environmental puzzles scattered around the map to figure out the correct
+shelf order, then the game shows you what you've already solved as it applies to *other* colors of
+the same puzzle type. Mixed feelings on execution:
+- Some puzzles are unintuitive/not fun.
+- Some require carrying an item to a separate "decoder" station just to read numbers off it —
+  feels like an odd extra step rather than a satisfying discovery.
+- But some are genuinely visually interesting and effective — one favorite: a potion with a series
+  of floating dots spinning around its perimeter, which made it noticeably easier to pick that
+  specific one out of a pile just from the motion, not just the color/shape.
+- Liked that shelf groups are smaller here (groups of 5 and 8) rather than the huge undifferentiated
+  piles elsewhere — makes the puzzle-solving feel worth the effort instead of just a chore layered
+  on top of a big sort.
+
+**Takeaway for BookBoy:** the "decoder station" friction point is a caution — a puzzle step that
+requires a special-purpose fixture just to read basic information can feel like an unnecessary
+detour rather than a discovery. The **spinning-dots** detail is the standout idea worth borrowing:
+subtle motion (not just static color/shape) as a differentiator makes an item easier to spot in a
+cluttered pile *and* more satisfying to notice — worth considering for BookBoy's higher-value or
+"forbidden" books later (a subtle glow pulse or particle effect, not just spine color) once the
+MVP's plain static readability is proven. Smaller shelf groupings (5–8 items) rather than one huge
+pile also supports BookBoy's MVP scale choice (4 books per category) — small, legible groups seem
+to be where the puzzle layer actually lands well.

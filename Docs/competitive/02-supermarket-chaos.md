@@ -45,3 +45,30 @@ trend flagged in [01-vision-and-design.md](../01-vision-and-design.md).
 - The physics bug (items sinking into the floor, fixed >2 months post-launch) is a good real-world
   argument for BookBoy's "tactile reliability over physical realism" principle — avoid
   Rigidbody-driven placement bugs by snapping cleanly instead.
+
+## Personal impressions (Kolby, 2026-09-06)
+
+**Felt really janky — the weakest hands-on experience so far, despite being the 2nd game out and
+having decent review scores.** Played this one the least of any owned/tried title.
+
+Specific problems:
+- Extremely hard to pick individual items out of a pile — many items are small with heavy
+  anti-aliasing artifacting, to the point where you effectively *can't* visually pick them out and
+  have to rely on the "spell" (locate ability) instead of just looking. The core "find it
+  yourself" interaction basically doesn't work without the assist tool bailing it out.
+- Placement felt bad — items visibly sank into the floor (confirmed by the 1.2.4 patch notes
+  fixing exactly this, more than 2 months after launch).
+- Harsh lighting, no atmosphere.
+- Most items are basically low-poly cubes (books, boxes of electronics, etc.) — visually
+  uninteresting, "shovelware" vibes rather than a crafted world.
+- Still got good reviews, and they've kept patching it — the review score doesn't fully reflect
+  how it feels to actually play.
+
+**Takeaway for BookBoy:** this is the clearest negative case in the whole set. A good review score
+can coexist with a genuinely bad picking/placement feel if the object count is big enough that
+players lean on assist abilities instead of noticing. Confirms two of BookBoy's stated principles
+directly: **visual readability first** (an item you can't tell apart in a pile is a failure, no
+matter how many categories exist) and **tactile reliability over physical realism** (don't let
+Rigidbody physics cause objects to clip/sink — snap cleanly). Low-poly is fine (BookBoy's own
+plan starts with cubes), but low-poly *and* visually indistinct together is the trap — Librarian
+proves you can be simple and still read clearly.

@@ -49,3 +49,23 @@ feature that's easy to destabilize.
 - Its rocky patch history around save/rollback is a caution for BookBoy's own eventual save/load
   system (explicitly a non-goal for the MVP per [02-mvp-spec.md](../02-mvp-spec.md), for good
   reason).
+
+## Personal impressions (Kolby, 2026-09-06)
+
+**Very polished. The game just feels excellent — the strongest overall vibe of anything played so
+far.** Nice lighting, a genuinely classy, chill, cozy atmosphere. Easy to pick items up. Clearly
+the reason so many later entrants chased the same visual/tonal angle.
+
+Visual differentiation is only *modestly* hard — but in a deliberately interesting way: color is
+the primary, easy-to-read category signal for the first sorting pass, but within a color group
+you then have to sort further by title, and then further still by volume number within a series.
+So the difficulty is layered on purpose (color → title → volume), not accidental — it never feels
+like the game is just being obtuse.
+
+**Takeaway for BookBoy:** the layered-identification idea (coarse visual sort first, finer
+distinction second) is worth stealing directly — it's a graceful way to add depth without making
+the *first* pass harder to read. BookBoy's MVP category/color-only sort is the "first layer" here;
+a natural next step post-MVP is a second layer (e.g., series/title) within an already-correct
+shelf section, matching this game's actual proven structure rather than inventing one from
+scratch. Also: atmosphere and lighting are pulling real weight in why this is the standout — not
+just mechanics.

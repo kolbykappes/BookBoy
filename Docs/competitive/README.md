@@ -18,12 +18,12 @@ here. Percent-positive tracks closely between the two either way.
 
 | # | Game | Released | Reviews (as of 2026-09-06) | Scope | Notes |
 |---|---|---|---|---|---|
-| 1 | [Librarian: Tidy Up the Arcane Library!](01-librarian-tidy-up-the-arcane-library.md) | Apr 30, 2026 | Very Positive — 25,108 (94.5%) | 3,072 books | The originator. Direct ancestor of BookBoy's premise. |
-| 2 | [Supermarket Chaos](02-supermarket-chaos.md) | Jun 29, 2026 | Very Positive — 3,271 (92.9%) | 4,668 products / 16 sections | First big retail reskin; multiple maps + 4-player co-op added post-launch. |
-| 3 | [Shelves and Sorcery: Tidy Up the Enchanted Shop](03-shelves-and-sorcery.md) | Aug 11, 2026 | Very Positive — 595 (93.6%) | 3 shops, ~4,100+ items | Owned. Magic theme closest to BookBoy; leaderboards, 4 modes. |
-| 4 | [Sort Them Ducks](04-sort-them-ducks.md) | Aug 13, 2026 | Very Positive — 1,422 (92.3%) | 4,000+ ducks | Owned. Pure collectible-object hook, rocky launch (save corruption). |
+| 1 | [Librarian: Tidy Up the Arcane Library!](01-librarian-tidy-up-the-arcane-library.md) | Apr 30, 2026 | Very Positive — 25,108 (94.5%) | 3,072 books | The originator. Played: genuinely excellent feel, classy cozy vibe, layered color→title→volume sorting. |
+| 2 | [Supermarket Chaos](02-supermarket-chaos.md) | Jun 29, 2026 | Very Positive — 3,271 (92.9%) | 4,668 products / 16 sections | Played: janky — items nearly impossible to pick out of piles without the locate spell, harsh lighting, items sink into floor. Reviews don't reflect the play feel. |
+| 3 | [Shelves and Sorcery: Tidy Up the Enchanted Shop](03-shelves-and-sorcery.md) | Aug 11, 2026 | Very Positive — 595 (93.6%) | 3 shops, ~4,100+ items | Owned & played. Same rushed-launch pile/pick problems as Supermarket Chaos, but since patched (Arcane Sight + physics fixes helped a lot). |
+| 4 | [Sort Them Ducks](04-sort-them-ducks.md) | Aug 13, 2026 | Very Positive — 1,422 (92.3%) | 4,000+ ducks | Owned & played. Easy to pick out of piles, fun visual hook; duck piles could block shelf access, jitter, weak lottery mechanic. |
 | 5 | [Mall: Tidy Up Together](05-mall-tidy-up-together.md) | Aug 21, 2026 | Mostly Positive — 228 (70.6%) | 3,682 products / 12 stores | Multi-store mall format; co-op + PvP modes. |
-| 6 | [Shelve the Potions!](06-shelve-the-potions.md) | Aug 24, 2026 | Very Positive — 362 (85.9%) | 2,000+ potions | Owned. Deduction/clue-based shelving, not pure visual sort — closest mechanical reference. |
+| 6 | [Shelve the Potions!](06-shelve-the-potions.md) | Aug 24, 2026 | Very Positive — 362 (85.9%) | 2,000+ potions | Owned & played. Deduction-based, not pure visual sort; smaller 5–8-item shelf groups; one potion type uses spinning dots to stand out — a real differentiator idea. |
 | 7 | [Plushy Store Tidy Up](07-plushy-store-tidy-up.md) | Sep 1, 2026 | Mixed — 48 (58.3%) | 1,600+ plushies / 90+ shelves | Relaxed vs. Challenge mode split; softest launch reception so far. |
 | 8 | [Megastore: Tidy Up Together](08-megastore-tidy-up-together.md) | Sep 2, 2026 | Very Positive — 150 (88%) | 3 stores (incl. 3,555-item toy store) | More stores + custom level creation promised post-launch. |
 | 9 | [Spellbound & Shelved](09-spellbound-and-shelved.md) | Sep 7, 2026 | Not yet released | N/A — idle/incremental | Different genre entirely: isometric idle game, gnomes do the sorting for you. |
@@ -58,3 +58,14 @@ approximate until each actually ships.*
   solo titles (`Shelve the Potions!`, `Librarian`). BookBoy's MVP is solo-only per
   [Docs/02-mvp-spec.md](../02-mvp-spec.md); that's consistent with the puzzle-leaning cluster, not
   the retail-reskin cluster.
+- **Review score does not reliably capture how a game actually feels to play — hands-on testing
+  confirms this directly.** `Supermarket Chaos` sits at Very Positive (92.9%) yet was the worst
+  hands-on experience tried so far: items too small/low-poly to pick out of a pile by eye, forcing
+  reliance on a locate ability instead of the core interaction working on its own. `Shelves and
+  Sorcery` shipped with the same problem and only became good after several patches specifically
+  targeting item-location and physics feel. `Librarian` and `Sort Them Ducks`, by contrast, made
+  items readable in a pile from day one and it shows in how much more they were actually played.
+  **This is the single most important lesson for BookBoy's MVP**: Phase 7's "are books visually
+  large enough to read" playtest question
+  ([05-implementation-plan.md](../05-implementation-plan.md)) is not a nice-to-have — it is the
+  difference between a game people actually play and one they merely rate well out of goodwill.

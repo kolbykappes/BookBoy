@@ -45,7 +45,29 @@ also that they got lucky.
   launch — worth remembering that BookBoy's visual identity (book covers, spine colors, magical
   symbols) is doing real work, not just decoration.
 
-## Personal impressions
+## Personal impressions (Kolby, 2026-09-06)
 
-*(fill in from hands-on play — what feels good, what doesn't, anything BookBoy should copy or
-avoid)*
+**Clever idea, fun visually, and much easier to sort out of a pile than Supermarket Chaos or
+early Shelves and Sorcery** — the duck designs are distinct enough to actually pick out by eye.
+The overall vibe is vibrant and ducks are just inherently fun to interact with.
+
+Problems:
+- A grindy early phase.
+- Noticeable camera jitter (matches the patch notes — camera jitter/motion sickness fixes were a
+  recurring theme in the first week, see update history above).
+- **Piles of ducks could physically block access to the shelves** — a concrete case of clutter
+  becoming a movement/interaction obstruction, not just a visual-noise problem.
+- A lottery/risk-your-currency system that seemed like a promising idea on paper but felt poorly
+  implemented in practice.
+
+Liked:
+- Named supporter ducks with custom designs in a special area — a nice, cheap touch of
+  personality/community recognition.
+
+**Takeaway for BookBoy:** the "piles blocking shelf access" problem is a concrete physical-layout
+failure mode to design around from the start — scattered books or bins near shelves need to leave
+a clear approach path to the shelf itself, not just be readable. The strong visual-hook + shaky
+systems combo (fun ducks, weak lottery mechanic) also reinforces: get the core identify-carry-place
+loop excellent first, and be cautious about bolting on secondary economy systems (risk/reward,
+currency sinks) before they're really needed — echoes the MVP non-goals list in
+[02-mvp-spec.md](../02-mvp-spec.md) (no economy/currency systems yet).
