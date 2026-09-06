@@ -16,6 +16,7 @@ them as decisions change, don't re-import the original brief.
 | [05-implementation-plan.md](05-implementation-plan.md) | Phase-by-phase build plan (project structure → books → interaction → shelves → feedback → playtest) |
 | [06-agent-workflow.md](06-agent-workflow.md) | Suggested agent prompts, Git commit rhythm, Unity MCP setup notes |
 | [competitive/](competitive/README.md) | Deep competitive analysis of the "tidy up" Steam sorting wave — one file per game (release date, patch history, reviews) plus a dated review tracker |
+| [07-unity-mcp-tools.md](07-unity-mcp-tools.md) | Unity MCP setup, which of the 54 available tools are enabled and why, what's deliberately left off, and what's NOT saved in this repo (most of it — needs redoing per machine) |
 
 ## Quick orientation
 

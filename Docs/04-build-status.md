@@ -8,13 +8,8 @@
 
 ## Completed
 
-- **Unity MCP connected.** `Edit → Project Settings → AI → Unity MCP Server` bridge is running;
-  Claude Code is registered as a client via a local relay
-  (`C:\Users\<user>\.unity\relay\relay_win.exe`, configured through `~/.claude.json`, not checked
-  into the repo). 7 of 54 available tools are currently enabled — asset generation, console logs,
-  scene/camera capture, and `RunCommand` (arbitrary C# execution in the Editor). GameObject/
-  Prefab/Material-specific tool categories are not yet enabled; `RunCommand` covers that ground
-  for now. See [06-agent-workflow.md](06-agent-workflow.md) for how it's used.
+- **Unity MCP connected and in use** — see [07-unity-mcp-tools.md](07-unity-mcp-tools.md) for the
+  full setup, the 13 currently-enabled tools and why, and what's not saved in the repo.
 - **Phase 1 — project structure** ([05-implementation-plan.md](05-implementation-plan.md)):
   created the full `Assets/_Project/` folder tree (`Art/{Materials,Models,Textures}`, `Audio`,
   `Prefabs/{Books,Interactables,Shelves}`, `Scenes`, `Scripts/{Books,Core,Interaction,UI}`,

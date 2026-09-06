@@ -40,19 +40,12 @@ Recommended AI roles:
 
 ## Unity AI/MCP status
 
-Unity MCP is **not yet configured** in this project.
-
-The expected eventual configuration:
-
-1. Install Unity AI Assistant package if needed (already present in `Packages/manifest.json` as
-   `com.unity.ai.assistant`).
-2. Confirm Unity 6 project is connected to Unity Cloud as required by the current Unity AI/MCP
-   setup.
-3. Open `Edit → Project Settings → AI → Unity MCP`.
-4. Confirm Unity Bridge runs.
-5. Connect an MCP-capable client, ideally Claude Code or Cursor.
-6. Start with a read-only project-inspection prompt.
-7. Grant write actions only in small reviewed increments.
+**Connected and in active use** as of 2026-09-06 — Claude Code talks directly to a running Unity
+Editor instance via the Unity MCP Server (`Edit → Project Settings → AI → Unity MCP Server`).
+See [07-unity-mcp-tools.md](07-unity-mcp-tools.md) for the full setup, which tools are enabled
+and why, and — importantly — what part of this setup is **not** saved in the repo and has to be
+redone on a fresh machine or clone (most of it: the Editor↔Claude Code connection and the
+per-tool enable/disable state both live outside version control).
 
 ## AI guardrails
 
