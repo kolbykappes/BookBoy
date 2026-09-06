@@ -9,6 +9,10 @@ public class Book : MonoBehaviour
 
     public BookDefinition definition;
 
+    /// <summary>True once this book has been correctly shelved. Per the MVP spec, a placed
+    /// book can no longer be picked up.</summary>
+    public bool isPlaced;
+
     private MaterialPropertyBlock _propertyBlock;
 
     private void OnEnable()
