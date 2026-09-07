@@ -4,10 +4,31 @@
 > [05-implementation-plan.md](05-implementation-plan.md) land, so it always reflects what's
 > actually in the repo, not what's planned.
 
-**Last updated:** 2026-09-06 (Phases 1-5 landed via Unity MCP, scoped to one book end-to-end).
+**Last updated:** 2026-09-06 (Phases 1-5 landed via Unity MCP; expanded to 8 of 12 books/slots).
 
 ## Completed
 
+- **Expanded to 8 books, 2 per category, each with its own shelf target** (12 is the full MVP
+  count — 8 is a deliberate midpoint, not the final scope). Each of the 4 shelf boards now holds
+  2 slots side by side, sized to that category's book height, with a visible marker matching the
+  book's spine color. Same-category books/slots intentionally share the exact same color (no
+  title/volume distinction yet — that's a post-MVP idea from the Librarian competitive-analysis
+  notes), which incidentally exercises the exact-`bookId` matching logic: two visually identical
+  slots, only one of which accepts a given book.
+- **Added `CleanupTracker`**: watches every `ShelfSlot` in the scene and shows a "cleanup
+  complete" message once all are occupied. Deliberately not the full Phase 6
+  `Books Restored: X/12` HUD yet — just enough to confirm the system knows when the player is
+  actually done.
+- **Tuned `CameraLookBridge`** per feedback: sensitivity `1x → 3x` (reported sluggish), and
+  inverted-Y is now the default (Kolby's preference; the previously-tested build was
+  non-inverted).
+- **Bug found and fixed: a `MaterialPropertyBlock` set once via script does not survive an
+  Editor domain reload.** Caught via direct data verification, not just eyeballing a screenshot —
+  `ShelfSlot_Alchemy`'s marker had gone fully transparent after an unrelated script recompiled.
+  `ShelfSlot` now stores `markerColor` as a plain serialized field and re-applies it from
+  `OnEnable`/`OnValidate`, the same self-healing pattern `Book.cs` already used. Worth remembering
+  for any future per-instance-tinted object: property-block-only color state is fragile in the
+  Editor (works fine at actual runtime; the risk is specifically Editor recompiles).
 - **Fixed: mouse-look was completely non-functional in Play mode.** Confirmed via live
   diagnostics: `StarterAssetsInputs.look` correctly received mouse input, and
   `FirstPersonController` correctly rotated `PlayerCameraRoot` from it — but the actual rendered
@@ -94,17 +115,16 @@ the MVP.
 
 ## Not yet completed
 
-- Only 4 test book cubes exist (one per category), not the full 12 — Phase 2 says expand only
-  after playtesting scale/readability, which hasn't happened yet.
+- 8 of 12 books/shelf slots exist. The last 4 (one more per category) are deliberately deferred
+  until the 8-book test is confirmed to feel right.
 - No book meshes/models beyond primitive cubes, no book prefabs yet (still loose scene objects,
-  not prefabbed — reasonable for a 4-book visual proof, but worth prefabbing before scaling to 12).
-- Only 1 of 12 shelf slots exists (Alchemy). Astronomy/Beasts/History books can be picked up but
-  have nowhere to go yet.
-- No placement feedback (chime, glow/pulse) — Phase 6.
-- No UI count or completion screen — Phase 6.
-- No game audio.
-- Mouse-look sensitivity/tilt-inversion in `CameraLookBridge` are unverified guesses (`1x`,
-  inverted tilt) — worth confirming they feel right, not just functional.
+  not prefabbed — reasonable for this stage, but worth prefabbing before finishing the set of 12).
+- No placement feedback (chime, glow/pulse on correct placement) — Phase 6.
+- No `Books Restored: X/12` running counter or a proper completion screen/restart — `CleanupTracker`
+  is a minimal stand-in, not Phase 6 itself.
+- No game audio at all.
+- `CameraLookBridge`'s sensitivity (`3x`) and invert-Y default were set from direct feedback after
+  one round of testing — reasonable to expect another tuning pass once more of the loop exists.
 
 ## Current scene inventory
 
@@ -130,15 +150,20 @@ LibraryPrototype
   MainCamera                  # Active Starter Assets rendering camera
     BookCarryPoint            # Added in Phase 4 — held-book parent
   PlayerFollowCamera          # + CameraLookBridge (mouse-look fix)
-  ScatteredBooks              # Added in Phase 2
-    Book_Alchemy
-    Book_Astronomy
-    Book_Beasts
-    Book_History
+  ScatteredBooks              # Added in Phase 2, expanded to 8 books
+    Book_Alchemy / Book_Alchemy_02
+    Book_Astronomy / Book_Astronomy_02
+    Book_Beasts / Book_Beasts_02
+    Book_History / Book_History_02
   HUD_Canvas                  # Added in Phase 4 — E Pick Up / E Place prompt
     InteractionPrompt
-  ShelfSlot_Alchemy           # Added in Phase 5 — on ShelfBoard_1
-    Marker                    # visible amber placeholder, hides once occupied
+    CompletionMessage         # "All 8 books restored!" once every slot is occupied
+  ShelfSlot_Alchemy, ShelfSlot_Alchemy_02        # on ShelfBoard_1
+  ShelfSlot_Astronomy_01, ShelfSlot_Astronomy_02 # on ShelfBoard_2
+  ShelfSlot_Beasts_01, ShelfSlot_Beasts_02       # on ShelfBoard_3
+  ShelfSlot_History_01, ShelfSlot_History_02     # on ShelfBoard_4
+    # each has a Marker child — a visible placeholder matching its book's spine color, hides once occupied
+  CleanupTracker               # watches all 8 ShelfSlots, drives CompletionMessage
 ```
 
 Current room is intentionally greyboxed. It should remain primitive until book scale, player
