@@ -86,8 +86,18 @@ public class PlayerInteractor : MonoBehaviour
 
     private void HandleInput()
     {
-        bool pressedInteract = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
-        if (!pressedInteract)
+        if (Keyboard.current == null)
+        {
+            return;
+        }
+
+        if (_heldBook != null && Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            Drop(_heldBook);
+            return;
+        }
+
+        if (!Keyboard.current.eKey.wasPressedThisFrame)
         {
             return;
         }
@@ -135,6 +145,32 @@ public class PlayerInteractor : MonoBehaviour
 
         book.isPlaced = true;
         slot.MarkOccupied();
+        _heldBook = null;
+    }
+
+    /// <summary>Q: let go of the held book wherever the player is looking, no penalty. Drops
+    /// straight down onto the floor beneath the carry point (or right where it was, in the
+    /// unlikely case there's nothing below to land on).</summary>
+    private void Drop(Book book)
+    {
+        Transform bookTransform = book.transform;
+        Vector3 dropOrigin = bookTransform.position;
+        bookTransform.SetParent(null);
+
+        float halfHeight = bookTransform.localScale.y * 0.5f;
+        if (Physics.Raycast(dropOrigin, Vector3.down, out RaycastHit hit, 10f))
+        {
+            bookTransform.position = hit.point + Vector3.up * halfHeight;
+        }
+
+        bookTransform.rotation = Quaternion.identity;
+
+        Collider bookCollider = book.GetComponent<Collider>();
+        if (bookCollider != null)
+        {
+            bookCollider.enabled = true;
+        }
+
         _heldBook = null;
     }
 

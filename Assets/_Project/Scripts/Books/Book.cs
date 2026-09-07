@@ -18,6 +18,16 @@ public class Book : MonoBehaviour
     private void OnEnable()
     {
         ApplyColor();
+
+        // Books are always triggers — never physically block the player's walk. Solid Rigidbody
+        // physics for scattered items isn't the goal here (see "tactile reliability over
+        // physical realism" in the design principles); this only affects collision response,
+        // raycasts still hit triggers by default so pickup/placement detection is unaffected.
+        Collider bookCollider = GetComponent<Collider>();
+        if (bookCollider != null)
+        {
+            bookCollider.isTrigger = true;
+        }
     }
 
     private void OnValidate()

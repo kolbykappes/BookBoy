@@ -21,10 +21,11 @@ public class CameraLookBridge : MonoBehaviour
     [Tooltip("Higher = faster look. 1 felt sluggish in testing; 3 is the new default.")]
     public float lookSensitivity = 3f;
 
-    [Tooltip("Kolby's preferred default: inverted Y (mouse up looks down). The playtested build " +
-        "used invertTilt=true and that read as normal (non-inverted), so this flips it. Confirm " +
-        "next test that up now looks down — there was no way to verify the sign without a live test.")]
-    public bool invertTilt;
+    [Tooltip("Kolby's preferred default: inverted Y (mouse up looks down). First guess " +
+        "(invertTilt=false) tested as still non-inverted, so this flips back to true — the value " +
+        "from the original successful pickup test, which was never explicitly confirmed either " +
+        "direction at the time. No way to verify the sign without a live human test.")]
+    public bool invertTilt = true;
 
     private CinemachinePanTilt _panTilt;
 
