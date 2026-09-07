@@ -14,10 +14,28 @@ for the entire sorting-genre wave that followed it.
 ## Mechanics
 
 - Pure visual/color + category sorting, no puzzle-deduction layer.
-- Completing shelf rows unlocks abilities: `Assemble` (summons other volumes of the same series
-  to you), `Insight` (highlights series volumes), `Auto-Shelving` (instantly places books).
-- The ability progression is the main systemic differentiator from a flat sort — it rewards
-  completing sections with tools that speed up later sections.
+- Completing shelf rows unlocks abilities that progressively speed up the loop — the main
+  systemic differentiator from a flat sort.
+
+## Abilities & unlocks
+
+Unlocked purely by volume of rows completed — no currency, no purchase choices, a straight
+progression gate. Each has a 5-20s cooldown (reduced by nothing; no upgrade tiers on cooldown
+itself, unlike Shelve the Potions).
+
+| Ability | Unlocks at | Effect |
+|---|---|---|
+| Sort | First few shelves | Sorts the books currently in your hands by series |
+| Shelf Guide | Solid progress on floor 1 | Highlights the shelf matching the book in your hand |
+| Insight | 50 rows completed | Highlights scattered books belonging to the same series |
+| Assemble | 100 rows completed | Pulls other volumes of the same series into your hands (does not pull from shelves) |
+| Auto-Shelving | 200 rows completed | Automatically shelves the books currently in your hands |
+
+This is a straight-line escalation, not a choice tree — every player gets the same 5 abilities in
+the same order at the same thresholds. That's directly what the negative-review complaint about
+progression trivializing (see below) is describing: by ability #5 at row 200 of ~3,072, the
+system is functionally playing most of the rest of the game for you, and there's no way to opt
+out short of self-restraint.
 
 ## Update history (selected, chronological)
 

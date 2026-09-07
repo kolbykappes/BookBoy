@@ -20,6 +20,25 @@ spend on ability upgrades. Steam controller input supported.
 - Currency-for-abilities loop (sort → earn → upgrade) is the systemic layer, same shape as most
   of this genre.
 
+## Abilities & unlocks
+
+Bought at an in-world ATM near the shelves with money earned per correctly-sorted duck — no
+story-progress gating, purely a currency sink, each with multiple purchasable levels.
+
+| Ability | Effect |
+|---|---|
+| Bigger Inventory | Raises carry limit (up to 15 at max level) — the community-recommended first purchase |
+| Longer Reach | Pick up ducks from farther away |
+| Crouch | Makes it easier to inspect ducks/labels on lower shelves |
+| Highlight Matching Ducks | Highlights other ducks matching the one in hand |
+| Highlight Correct Shelf | Shows which shelf accepts the held duck |
+| Stronger Throw | Increases throw distance |
+| Auto-Collect | Automatically gathers ducks matching the one currently held |
+
+Maxing every ability to its top level unlocks a dedicated "Maxed Out" achievement — a concrete
+example of the game explicitly rewarding full completionism of the ability tree, not just the
+sort itself.
+
 ## Update history (selected, chronological)
 
 | Date | Update | What changed |

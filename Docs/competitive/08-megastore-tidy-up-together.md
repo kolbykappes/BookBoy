@@ -18,6 +18,25 @@ supermarket, and a two-story Megastore. Teams can split by floor, department, or
   creation** feature in a future major update — the only title in this set announcing
   user-generated-content plans.
 
+## Abilities & unlocks
+
+Skill tree with leveled upgrades (not just on/off unlocks) — e.g. Grip & Carry has multiple
+levels, "Level 2 = Arm Carry: 4 items."
+
+| Ability | Effect |
+|---|---|
+| Grip & Carry | Levels increase simultaneous carry count (Lv2 ≈ 4 items) — the recommended first upgrade |
+| Interaction Reach | Grab from farther away |
+| Movement Speed | Self-explanatory |
+| Shelf Highlight | Points to the correct shelf |
+| Product Highlight | Highlights matching products |
+| Magnet | Pulls matching items toward you |
+| Pairing Up | Unclear exact effect from public sources — likely co-op-specific (matching with a partner's held item?) |
+
+Same shape as Supermarket Chaos (same developer) — carry capacity as the recommended first
+purchase in both, reinforcing the "recycled from our own prior game" complaint pattern noted
+above extends to the ability design, not just the visual assets.
+
 ## Update history (selected, chronological)
 
 | Date | Update | What changed |

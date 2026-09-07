@@ -19,6 +19,24 @@ store. Store atmosphere shifts from day to evening with weather variety.
 - This Relaxed/Challenge split (also seen conceptually elsewhere in the genre) directly answers
   the "cozy vs. correctness" tension — letting players opt out of the puzzle layer entirely.
 
+## Abilities & unlocks
+
+Challenge Mode only — Relaxed Mode has no ability system at all, matching its "no placement
+rules" design. Currency is "bulbs," earned per completed shelf.
+
+| Ability | Effect |
+|---|---|
+| Magnet | Levitates nearby plushies and pulls them toward you |
+| Flashlight | Lights dark corners of the store |
+| Long Reach | Grab from farther away |
+| Stack Capacity | Carry more at once |
+
+Notably thin compared to its peers (4 abilities vs. 5-7 elsewhere), and given this game's #1
+complaint is zero placement feedback (see below), none of these abilities address the actual
+problem players report — they speed up finding/carrying, not the missing confirmation of
+correctness. A "reveal correct shelf" or "confirm placement" ability would have addressed the
+dominant complaint directly; none exists.
+
 ## Update history (selected, chronological)
 
 | Date | Update | What changed |

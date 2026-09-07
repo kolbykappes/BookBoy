@@ -19,6 +19,24 @@ sunglasses). Story hook: a rival mall sabotaged this one before its grand openin
   competitive (not just cooperative) multiplayer.
 - Sandbox Mode (all skills unlocked) and No-Skill Mode (challenge) bookend the normal progression.
 
+## Abilities & unlocks
+
+Notably different resource model from its peers: skills recharge via a **progress bar filled by
+correct placements** (10 correct placements ≈ one charge), not currency spent from a wallet, and
+have a fixed active duration rather than instant-use-then-cooldown.
+
+| Ability | Effect |
+|---|---|
+| Sorting | Reorders items in your hand so the correct product is on top before using another ability |
+| Highlighting Shelf | Points you to the correct rack (~35s active duration at launch) |
+| Highlighting Products | Reveals copies of the held product family in the central pile (~25s active duration) |
+| Auto-Placement | Automatically places items into their correct rack once you've reached the destination |
+| Auto-Collect | Gathers multiple copies of the selected product into your hand |
+
+One negative review claims the skill *mechanics* were "ripped from Librarian, then the effects
+they were tied to were removed" — unverified independently, but consistent with the broader
+"straight rip of Librarian" complaint pattern already noted above.
+
 ## Update history
 
 Only one public news post found as of 2026-09-06: the "OUT NOW" launch announcement

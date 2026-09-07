@@ -21,9 +21,24 @@ order — **not** simply matching a picture to a labeled slot.
   This is the single closest mechanical reference for BookBoy's stated long-term direction
   ("shelf ordering rules," "symbols and magical catalog language" in
   [01-vision-and-design.md](../01-vision-and-design.md)).
-- Ability system: "highlight" and "assemble" abilities with cooldowns, upgradeable.
 - No AI-generated content, called out explicitly by the devs in their devlog — a positioning
   choice several titles in this set are making publicly (see also DinoBones).
+
+## Abilities & unlocks
+
+Deliberately just two abilities, not a tree — depth comes from the puzzle layer, not from ability
+count. Both upgrade in place (cooldown reduction) rather than unlocking new abilities outright.
+
+| Ability | Effect | Progression |
+|---|---|---|
+| Highlight | Marks items matching the currently-selected puzzle clue | Upgrades reduce cooldown; reached 40s cooldown by patch v1.0.11 |
+| Assemble | Pulls matching potions into your hands (up to 9 at max level) | Final cooldown 10s at max upgrade |
+
+An options toggle lets you disable both abilities entirely (added specifically for an achievement
+that requires completing without magic) — the only title in this set with an explicit, first-class
+"turn off all abilities" switch rather than a separate No-Magic *mode* bolted on alongside the
+main one. Worth noting as a cheap way to serve both ability-loving and ability-skeptical players
+without maintaining two parallel experiences.
 
 ## Update history (selected, chronological)
 
