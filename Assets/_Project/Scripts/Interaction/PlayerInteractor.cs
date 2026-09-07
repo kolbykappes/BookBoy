@@ -134,7 +134,7 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         book.isPlaced = true;
-        slot.occupied = true;
+        slot.MarkOccupied();
         _heldBook = null;
     }
 
