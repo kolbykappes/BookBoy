@@ -6,19 +6,27 @@ using UnityEngine;
 /// Feeds Starter Assets' existing mouse-look input into the Cinemachine PanTilt component
 /// driving the actual render camera.
 ///
-/// Without this, FirstPersonController correctly rotates PlayerCameraRoot from mouse input
-/// (confirmed: StarterAssetsInputs.look updates fine, and PlayerCameraRoot's rotation changes),
-/// but the Cinemachine camera that's actually rendered (PlayerFollowCamera -> MainCamera via
-/// CinemachineBrain) never rotates, because CinemachinePanTilt has no input source of its own
-/// wired up (PanAxis/TiltAxis stay at 0 forever). This bridges the two so there's a single
-/// source of truth for look input rather than a second, separate Cinemachine input reader.
+/// Pan (yaw) is LOCKED to the Player transform's own rotation rather than accumulated
+/// independently. FirstPersonController is already the single source of truth for yaw — it's
+/// what WASD movement is relative to — so accumulating a second, separate pan value here (as
+/// the first version of this script did) let the visual camera direction and the movement
+/// direction drift apart over time: two independent accumulators fed by the same raw mouse
+/// delta, with different scaling, compounding a tiny mismatch every frame. Locking pan directly
+/// to the player's yaw eliminates that drift entirely.
+///
+/// Tilt (pitch) doesn't affect movement direction, so it's safe to keep as its own accumulator.
 /// </summary>
 [RequireComponent(typeof(CinemachinePanTilt))]
 public class CameraLookBridge : MonoBehaviour
 {
     public StarterAssetsInputs input;
 
-    [Tooltip("Higher = faster look. 1 felt sluggish in testing; 3 is the new default.")]
+    [Tooltip("The transform FirstPersonController rotates for yaw/movement-facing — normally " +
+        "the Player root. Pan is locked to this every frame instead of being accumulated " +
+        "separately, so camera-facing can never drift from movement-facing.")]
+    public Transform playerYawSource;
+
+    [Tooltip("Higher = faster vertical look. 1 felt sluggish in testing; 3 is the new default.")]
     public float lookSensitivity = 3f;
 
     [Tooltip("Kolby's preferred default: inverted Y (mouse up looks down). First guess " +
@@ -34,15 +42,23 @@ public class CameraLookBridge : MonoBehaviour
         _panTilt = GetComponent<CinemachinePanTilt>();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (_panTilt == null || input == null)
+        if (_panTilt == null)
         {
             return;
         }
 
-        float tiltSign = invertTilt ? -1f : 1f;
-        _panTilt.PanAxis.Value += input.look.x * lookSensitivity;
-        _panTilt.TiltAxis.Value += input.look.y * lookSensitivity * tiltSign;
+        // LateUpdate so FirstPersonController's Update has already applied this frame's yaw.
+        if (playerYawSource != null)
+        {
+            _panTilt.PanAxis.Value = playerYawSource.eulerAngles.y;
+        }
+
+        if (input != null)
+        {
+            float tiltSign = invertTilt ? -1f : 1f;
+            _panTilt.TiltAxis.Value += input.look.y * lookSensitivity * tiltSign;
+        }
     }
 }

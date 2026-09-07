@@ -261,7 +261,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.38268346, z: -0, w: 0.9238795}
   m_LocalPosition: {x: 0.6, y: 0.425, z: 2.2}
-  m_LocalScale: {x: 0.24, y: 0.85, z: 0.18}
+  m_LocalScale: {x: 0.18, y: 0.85, z: 0.24}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -280,6 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: 65db3e19017e3d7429e5fa99ab2f4abd, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &136140437
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -358,6 +359,85 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136140434}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &163615215
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 163615216}
+  - component: {fileID: 163615218}
+  - component: {fileID: 163615217}
+  m_Layer: 0
+  m_Name: InteractionHint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &163615216
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163615215}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861426232}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 115}
+  m_SizeDelta: {x: 800, y: 40}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &163615217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163615215}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 22
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!222 &163615218
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163615215}
+  m_CullTransparentMesh: 1
 --- !u!1 &223083881
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,7 +468,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.21643962, z: -0, w: 0.976296}
   m_LocalPosition: {x: -1, y: 0.375, z: 1.8}
-  m_LocalScale: {x: 0.32, y: 0.75, z: 0.14}
+  m_LocalScale: {x: 0.14, y: 0.75, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -407,6 +487,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: d938c466894ba87448529f0412eb6ef6, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &223083884
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1013,8 +1094,8 @@ Transform:
   m_GameObject: {fileID: 430918604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.27499998, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.31399998, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 638812801}
@@ -1053,7 +1134,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 120}
+  m_AnchoredPosition: {x: 0, y: 150}
   m_SizeDelta: {x: 800, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &433624604
@@ -1585,8 +1666,8 @@ Transform:
   m_GameObject: {fileID: 787623470}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.325, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.364, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1186023186}
@@ -1836,8 +1917,8 @@ Transform:
   m_GameObject: {fileID: 876283889}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.28, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.31399998, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1802257270}
@@ -1945,7 +2026,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.21643962, z: -0, w: 0.976296}
   m_LocalPosition: {x: 0.1, y: 0.425, z: 1.6}
-  m_LocalScale: {x: 0.24, y: 0.85, z: 0.18}
+  m_LocalScale: {x: 0.18, y: 0.85, z: 0.24}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -1964,6 +2045,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: 576de3bac9e0c484391a4e7b1008d2ce, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &930187662
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2126,8 +2208,8 @@ Transform:
   m_GameObject: {fileID: 939537773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.37499994, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.41399994, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1176993164}
@@ -2216,8 +2298,8 @@ Transform:
   m_GameObject: {fileID: 968499773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.37499994, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.41399994, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 890862299}
@@ -2252,7 +2334,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.1736482, z: -0, w: 0.9848078}
   m_LocalPosition: {x: -1.5, y: 0.325, z: 2}
-  m_LocalScale: {x: 0.28, y: 0.65, z: 0.16}
+  m_LocalScale: {x: 0.16, y: 0.65, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -2271,6 +2353,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: c381b00c87614cd4d8cdb5823f20b8d1, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &1007769105
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2433,8 +2516,8 @@ Transform:
   m_GameObject: {fileID: 1055283495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.25000018, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.28900018, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1466386686}
@@ -2812,7 +2895,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.25881907, z: -0, w: 0.9659259}
   m_LocalPosition: {x: 1.6, y: 0.3, z: 2.8}
-  m_LocalScale: {x: 0.36, y: 0.6, z: 0.2}
+  m_LocalScale: {x: 0.2, y: 0.6, z: 0.36}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -2831,6 +2914,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: f6c9d0789555d664a8eae47a2462da94, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &1186056828
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3197,7 +3281,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.1305262, z: -0, w: 0.9914449}
   m_LocalPosition: {x: -0.5, y: 0.375, z: 2.6}
-  m_LocalScale: {x: 0.32, y: 0.75, z: 0.14}
+  m_LocalScale: {x: 0.14, y: 0.75, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -3216,6 +3300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: d4acb915eb297e5409d891280dbf5fa5, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &1472426162
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3378,8 +3463,8 @@ Transform:
   m_GameObject: {fileID: 1490338217}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.25000018, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.28900018, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1089991356}
@@ -3468,8 +3553,8 @@ Transform:
   m_GameObject: {fileID: 1784035588}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.325, z: 0.13}
-  m_LocalScale: {x: 0.25, y: 0.2, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0.364, z: 0}
+  m_LocalScale: {x: 1.6, y: 0.02, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1405404495}
@@ -3577,7 +3662,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.21643962, z: -0, w: 0.976296}
   m_LocalPosition: {x: 1.1, y: 0.3, z: 1.2}
-  m_LocalScale: {x: 0.36, y: 0.6, z: 0.2}
+  m_LocalScale: {x: 0.2, y: 0.6, z: 0.36}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -3596,6 +3681,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: 8e20140a6463b2a489cc5d443bbabb79, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &1815352083
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3704,7 +3790,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.21643962, z: -0, w: 0.976296}
   m_LocalPosition: {x: -2, y: 0.325, z: 1.4}
-  m_LocalScale: {x: 0.28, y: 0.65, z: 0.16}
+  m_LocalScale: {x: 0.16, y: 0.65, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1888712013}
@@ -3723,6 +3809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   definition: {fileID: 11400000, guid: b8c6fa5a6502f5646979decc41c57ed3, type: 2}
   isPlaced: 0
+  hasPhysicsDrop: 0
 --- !u!23 &1851336234
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3898,6 +3985,7 @@ RectTransform:
   m_Children:
   - {fileID: 433624603}
   - {fileID: 1136357393}
+  - {fileID: 163615216}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4061,6 +4149,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
   m_PrefabInstance: {fileID: 728820912}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2051946701 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8997996947095583982, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+  m_PrefabInstance: {fileID: 728820912}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2051946703 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5420857361349278248, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
@@ -4086,8 +4179,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
   interactionCamera: {fileID: 476856001}
   carryPoint: {fileID: 682970076}
-  promptText: {fileID: 433624604}
+  promptTitleText: {fileID: 433624604}
+  promptHintText: {fileID: 163615217}
   interactionRange: 3
+  carryScale: 0.6
 --- !u!1001 &2070153060
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4240,6 +4335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraLookBridge
   input: {fileID: 2051946703}
+  playerYawSource: {fileID: 2051946701}
   lookSensitivity: 3
   invertTilt: 1
 --- !u!1 &2070759334

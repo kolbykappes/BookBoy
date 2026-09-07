@@ -4,17 +4,23 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Minimal first-person interaction: raycast from the camera, carry exactly one book at a
-/// time, and place it in a matching, empty ShelfSlot. No inventory, no throwing, no generic
-/// item framework — just enough to prove pick up -> carry -> place feels good.
+/// time, and place it in a matching, empty ShelfSlot. No inventory, no generic item framework —
+/// just enough to prove pick up -> carry -> place -> (Q to) drop feels good.
 /// </summary>
 public class PlayerInteractor : MonoBehaviour
 {
     public Camera interactionCamera;
     public Transform carryPoint;
-    public Text promptText;
+    public Text promptTitleText;
+    public Text promptHintText;
     public float interactionRange = 3f;
 
+    [Tooltip("Held books are shown at this fraction of their real size so they don't occlude " +
+        "as much of the view. Restored to full size on place/drop.")]
+    public float carryScale = 0.6f;
+
     private Book _heldBook;
+    private Vector3 _heldOriginalScale;
     private Book _focusedBook;
     private ShelfSlot _focusedSlot;
 
@@ -61,27 +67,38 @@ public class PlayerInteractor : MonoBehaviour
 
     private void UpdatePrompt()
     {
-        if (promptText == null)
+        if (promptTitleText == null || promptHintText == null)
         {
             return;
         }
 
         if (_heldBook == null && _focusedBook != null)
         {
-            promptText.text = "E Pick Up " + DisplayName(_focusedBook);
-            promptText.enabled = true;
+            SetPrompt(DisplayName(_focusedBook), "Press (E) to pick up");
         }
         else if (_heldBook != null && _focusedSlot != null && !_focusedSlot.occupied)
         {
-            promptText.text = _focusedSlot.Accepts(_heldBook)
-                ? "E Place " + DisplayName(_heldBook)
-                : "This belongs elsewhere";
-            promptText.enabled = true;
+            SetPrompt(DisplayName(_heldBook), _focusedSlot.Accepts(_heldBook)
+                ? "Press (E) to place"
+                : "This belongs elsewhere");
         }
         else
         {
-            promptText.enabled = false;
+            SetPromptVisible(false);
         }
+    }
+
+    private void SetPrompt(string title, string hint)
+    {
+        promptTitleText.text = title;
+        promptHintText.text = hint;
+        SetPromptVisible(true);
+    }
+
+    private void SetPromptVisible(bool visible)
+    {
+        promptTitleText.enabled = visible;
+        promptHintText.enabled = visible;
     }
 
     private void HandleInput()
@@ -116,6 +133,7 @@ public class PlayerInteractor : MonoBehaviour
     private void PickUp(Book book)
     {
         _heldBook = book;
+        _heldOriginalScale = book.transform.localScale;
 
         Collider bookCollider = book.GetComponent<Collider>();
         if (bookCollider != null)
@@ -123,10 +141,17 @@ public class PlayerInteractor : MonoBehaviour
             bookCollider.enabled = false;
         }
 
+        Rigidbody rb = book.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+        }
+
         Transform bookTransform = book.transform;
         bookTransform.SetParent(carryPoint, worldPositionStays: false);
         bookTransform.localPosition = Vector3.zero;
         bookTransform.localRotation = Quaternion.identity;
+        bookTransform.localScale = _heldOriginalScale * carryScale;
     }
 
     private void Place(Book book, ShelfSlot slot)
@@ -136,6 +161,7 @@ public class PlayerInteractor : MonoBehaviour
         Transform bookTransform = book.transform;
         bookTransform.SetParent(null);
         bookTransform.SetPositionAndRotation(target.position, target.rotation);
+        bookTransform.localScale = _heldOriginalScale;
 
         Collider bookCollider = book.GetComponent<Collider>();
         if (bookCollider != null)
@@ -144,32 +170,44 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         book.isPlaced = true;
+        book.PlayPlacedPulse();
         slot.MarkOccupied();
         _heldBook = null;
     }
 
-    /// <summary>Q: let go of the held book wherever the player is looking, no penalty. Drops
-    /// straight down onto the floor beneath the carry point (or right where it was, in the
-    /// unlikely case there's nothing below to land on).</summary>
+    /// <summary>Q: let go of the held book wherever the player is looking, no penalty. Gives it
+    /// real physics so it tumbles and collides with static level geometry (walls, floor, shelf)
+    /// instead of just resting exactly where it's released.</summary>
     private void Drop(Book book)
     {
         Transform bookTransform = book.transform;
-        Vector3 dropOrigin = bookTransform.position;
         bookTransform.SetParent(null);
-
-        float halfHeight = bookTransform.localScale.y * 0.5f;
-        if (Physics.Raycast(dropOrigin, Vector3.down, out RaycastHit hit, 10f))
-        {
-            bookTransform.position = hit.point + Vector3.up * halfHeight;
-        }
-
-        bookTransform.rotation = Quaternion.identity;
+        bookTransform.localScale = _heldOriginalScale;
 
         Collider bookCollider = book.GetComponent<Collider>();
         if (bookCollider != null)
         {
             bookCollider.enabled = true;
+            bookCollider.isTrigger = false;
         }
+
+        book.hasPhysicsDrop = true;
+
+        Rigidbody rb = book.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = book.gameObject.AddComponent<Rigidbody>();
+        }
+        rb.isKinematic = false;
+        // Continuous detection: a book falling/tumbling at typical drop speed is small and fast
+        // enough relative to thin colliders (walls, shelf boards) to tunnel through with the
+        // default discrete detection.
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rb.linearVelocity = interactionCamera.transform.forward * 0.5f;
+        rb.angularVelocity = new Vector3(
+            Random.Range(-6f, 6f),
+            Random.Range(-6f, 6f),
+            Random.Range(-6f, 6f));
 
         _heldBook = null;
     }

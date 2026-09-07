@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [ExecuteAlways]
@@ -13,20 +14,31 @@ public class Book : MonoBehaviour
     /// book can no longer be picked up.</summary>
     public bool isPlaced;
 
+    /// <summary>True once the player has dropped this book with real physics (Rigidbody,
+    /// tumbling). Keeps OnEnable from forcing the collider back to a trigger after a dropped
+    /// book has deliberately been made solid — otherwise a future Editor domain reload would
+    /// silently revert it, the same class of bug already hit once with shelf marker colors.</summary>
+    [HideInInspector]
+    public bool hasPhysicsDrop;
+
     private MaterialPropertyBlock _propertyBlock;
 
     private void OnEnable()
     {
         ApplyColor();
 
-        // Books are always triggers — never physically block the player's walk. Solid Rigidbody
-        // physics for scattered items isn't the goal here (see "tactile reliability over
-        // physical realism" in the design principles); this only affects collision response,
-        // raycasts still hit triggers by default so pickup/placement detection is unaffected.
-        Collider bookCollider = GetComponent<Collider>();
-        if (bookCollider != null)
+        // Books are triggers by default — never physically block the player's walk. Solid
+        // Rigidbody physics for scattered/carried items isn't the goal here (see "tactile
+        // reliability over physical realism"); this only affects collision response, raycasts
+        // still hit triggers by default so pickup/placement detection is unaffected. A dropped
+        // book (see PlayerInteractor.Drop) is the one deliberate exception.
+        if (!hasPhysicsDrop)
         {
-            bookCollider.isTrigger = true;
+            Collider bookCollider = GetComponent<Collider>();
+            if (bookCollider != null)
+            {
+                bookCollider.isTrigger = true;
+            }
         }
     }
 
@@ -48,6 +60,46 @@ public class Book : MonoBehaviour
             return;
         }
 
+        SetColor(definition.spineColor);
+    }
+
+    /// <summary>Briefly flashes white, then eases back to the book's real spine color — the
+    /// feedback for a correct placement.</summary>
+    public void PlayPlacedPulse(float totalDuration = 0.4f)
+    {
+        if (definition == null)
+        {
+            return;
+        }
+
+        StartCoroutine(PulseRoutine(totalDuration));
+    }
+
+    private IEnumerator PulseRoutine(float totalDuration)
+    {
+        float half = totalDuration * 0.5f;
+
+        float t = 0f;
+        while (t < half)
+        {
+            t += Time.deltaTime;
+            SetColor(Color.Lerp(definition.spineColor, Color.white, t / half));
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < half)
+        {
+            t += Time.deltaTime;
+            SetColor(Color.Lerp(Color.white, definition.spineColor, t / half));
+            yield return null;
+        }
+
+        SetColor(definition.spineColor);
+    }
+
+    private void SetColor(Color color)
+    {
         Renderer bookRenderer = GetComponent<Renderer>();
         if (bookRenderer == null)
         {
@@ -58,8 +110,8 @@ public class Book : MonoBehaviour
         bookRenderer.GetPropertyBlock(_propertyBlock);
         // Set both property names so this works whether the shared material uses URP
         // ("_BaseColor") or a legacy/Standard shader ("_Color").
-        _propertyBlock.SetColor(BaseColorId, definition.spineColor);
-        _propertyBlock.SetColor(ColorId, definition.spineColor);
+        _propertyBlock.SetColor(BaseColorId, color);
+        _propertyBlock.SetColor(ColorId, color);
         bookRenderer.SetPropertyBlock(_propertyBlock);
     }
 }
