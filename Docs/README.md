@@ -17,6 +17,7 @@ them as decisions change, don't re-import the original brief.
 | [06-agent-workflow.md](06-agent-workflow.md) | Suggested agent prompts, Git commit rhythm, Unity MCP setup notes |
 | [competitive/](competitive/README.md) | Deep competitive analysis of the "tidy up" Steam sorting wave — one file per game (release date, patch history, reviews) plus a dated review tracker |
 | [07-unity-mcp-tools.md](07-unity-mcp-tools.md) | Unity MCP setup, which of the 54 available tools are enabled and why, what's deliberately left off, and what's NOT saved in this repo (most of it — needs redoing per machine) |
+| [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation
 
