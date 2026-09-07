@@ -17,8 +17,14 @@ using UnityEngine;
 public class CameraLookBridge : MonoBehaviour
 {
     public StarterAssetsInputs input;
-    public float lookSensitivity = 1f;
-    public bool invertTilt = true;
+
+    [Tooltip("Higher = faster look. 1 felt sluggish in testing; 3 is the new default.")]
+    public float lookSensitivity = 3f;
+
+    [Tooltip("Kolby's preferred default: inverted Y (mouse up looks down). The playtested build " +
+        "used invertTilt=true and that read as normal (non-inverted), so this flips it. Confirm " +
+        "next test that up now looks down — there was no way to verify the sign without a live test.")]
+    public bool invertTilt;
 
     private CinemachinePanTilt _panTilt;
 
