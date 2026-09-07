@@ -35,10 +35,10 @@ onboarding" are three separate patches inside one week. That's a strong signal t
 shipped with a readability problem, which lines up with its current **Mixed** score — the softest
 launch reception of any released title in this set so far.
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07) — this is the whole story here
+## Common complaints (ALL 13 English-language negative reviews, read in full, 2026-09-07) — this is the whole story here
 
-- **Total absence of placement feedback is, by a wide margin, the #1 complaint** — nearly every
-  sampled negative review leads with a version of this: "I placed dozens of plushies and never
+- **Total absence of placement feedback is, by a wide margin, the #1 complaint** — most of the
+  full 13-review set leads with a version of this: "I placed dozens of plushies and never
   once knew if I got it right. No checkmark, no sparkle, nothing." / "Putting plushies on shelves
   offers absolutely zero feedback about proper positioning." / "no clue if you are placing them
   correctly, refunded fast." / "shelves need to have names so we know where things go... it is

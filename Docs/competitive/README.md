@@ -36,24 +36,44 @@ here. Percent-positive tracks closely between the two either way.
 *Dates for #9–14 are Steam's "plans to unlock in X days" countdown as of Sep 6, 2026 — treat as
 approximate until each actually ships.*
 
-## What negative Steam reviews reveal (sampled 2026-09-07, ~15 per released title)
+## What negative Steam reviews reveal (ALL English-language negative reviews for all 8 released
+titles, read in full — 356 reviews total, 2026-09-07)
 
-Pulled directly from Steam's public review API, filtered to negative-only, sorted by helpfulness.
-Full complaint lists are in each game's own file; this is the cross-cutting pattern.
+Pulled directly from Steam's public review API, paginated through completely rather than sampled
+— every one of these titles has few enough reviews right now (13 to 110 negative, English-only)
+that a full read was cheap and worth doing exactly, not estimating. Full complaint lists with
+verbatim quotes are in each game's own file; this is the cross-cutting pattern, corrected from an
+earlier, smaller-sample pass that overstated how central AI complaints were for two titles
+(`Supermarket Chaos`, `Shelves and Sorcery`) where fuller data shows it's a real but secondary
+theme, not the dominant one.
 
-- **Undisclosed or disclosed generative-AI use is the single most damaging and consistent
-  complaint theme in this entire genre — present in 7 of the 8 released titles sampled, and the
-  dominant driver of negative reviews in at least 3 of them** (`Mall`, `Librarian`,
-  `Supermarket Chaos`). The pattern repeats almost word-for-word across unrelated developers:
-  a reviewer says they genuinely enjoyed the game, sank real hours into it, then either discovered
-  an AI disclosure after buying or identified AI-generated assets themselves (visual artifacting,
-  mismatched labels, unreadable text) — and reviews negatively **on principle**, separate from
-  whether the gameplay itself worked. `Shelve the Potions!` is the clean counter-example: a
-  reviewer volunteers "zero AI influence" as a specific positive. This is a trust/transparency
-  issue, not a quality one — a game can be mechanically sound and still take real review damage
-  over it. Worth keeping in mind for BookBoy regardless of what tools are used in development,
-  since the market signal here is about audience-facing disclosure, not the presence of any
-  particular tool in a pipeline.
+- **Undisclosed or disclosed generative-AI use is a real and often-dominant complaint theme, but
+  its intensity varies enormously by title — it is not evenly present across the genre.**
+  Exact share of negative reviews mentioning AI, all 8 titles:
+
+  | Game | AI-mentioning / negative | Share |
+  |---|---:|---:|
+  | Librarian | 72 / 110 | 65% |
+  | Mall: Tidy Up Together | 21 / 38 | 55% |
+  | Supermarket Chaos | 16 / 58 | 28% |
+  | Plushy Store Tidy Up | 2 / 13 | 15% |
+  | Shelves and Sorcery | 3 / 27 | 11% |
+  | Sort Them Ducks | 7 / 73 | 10% |
+  | Megastore | 1 / 12 | 8% |
+  | Shelve the Potions! | 1 / 25 | 4% |
+
+  `Librarian` and `Mall` are where it's genuinely the dominant driver of negative sentiment — the
+  pattern there repeats almost word-for-word: a reviewer says they genuinely enjoyed the game,
+  sank real hours into it, then discovered an AI disclosure or identified AI-generated assets
+  themselves (visual artifacting, mismatched labels, unreadable text), and reviews negatively **on
+  principle**, separate from whether the gameplay worked. `Shelve the Potions!` is the clean
+  counter-example at the other end: only 1 of 25 negative reviews even mentions AI, and that one
+  is a reviewer volunteering "zero AI influence" as a specific positive. This is a
+  trust/transparency issue, not a quality one — a game can be mechanically sound and still take
+  real review damage over it, but the damage is concentrated in specific titles, not ambient
+  across the genre. Worth keeping in mind for BookBoy regardless of what tools are used in
+  development, since the market signal here is about audience-facing disclosure, not the presence
+  of any particular tool in a pipeline.
 - **"No feedback on whether I did it right" is a devastating, not minor, complaint** —
   `Plushy Store Tidy Up`'s negative reviews are almost unanimous on this single point, and it's
   the plain-language version of the MVP spec's "visible slot" requirement. Directly validates a
@@ -69,9 +89,11 @@ Full complaint lists are in each game's own file; this is the cross-cutting patt
   Potions!`'s puzzle variety is exhausted after roughly the first sixth of its content. A
   deduction/ability layer needs to be budgeted for the whole experience, not just the opening
   hours.
-- **One serious reputational category, distinct from the rest**: `Sort Them Ducks` drew specific,
-  substantive complaints about culturally insensitive character designs. Worth deliberate care if
-  BookBoy ever adds culturally-themed content, well before it becomes a live issue.
+- **One serious reputational category, distinct from the rest**: 14 of `Sort Them Ducks`' 73
+  negative reviews (19% — a larger share than its AI complaints) raised specific, substantive
+  objections to culturally insensitive character designs, several from reviewers who otherwise
+  liked the game. Worth deliberate care if BookBoy ever adds culturally-themed content, well
+  before it becomes a live issue.
 - **Recycled assets across a developer's own back-catalog read as lazy to players** —
   `Megastore`'s reuse of `Supermarket Chaos` assets (same developer) is called out directly, not
   forgiven for being a sequel.

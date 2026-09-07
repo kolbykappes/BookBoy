@@ -37,24 +37,26 @@ public tester call) before things stabilized around Patch 4. Reviews stayed Very
 this, suggesting the core hook (duck variety) was strong enough to survive a bad first week — but
 also that they got lucky.
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07)
+## Common complaints (ALL 73 English-language negative reviews, read in full, 2026-09-07)
 
-- **Severe motion sickness from camera movement is the single largest complaint theme** —
-  numerous reviewers report the game is "unplayable" for them specifically, several noting they
-  don't normally get motion sickness in other games ("friends of mine watching my game who never
-  get motion sickness are getting motion sickness"). Tied to a camera-bob/settling effect when
-  moving and stopping, and no way to reduce or disable it. Compounded for some by very high
-  default mouse sensitivity independent of OS/in-game settings.
-- **Undisclosed AI-generated 3D models**, with reviewers pointing to specific visual tells
-  ("warped/melted geometry, strange texturing... characteristic of AI-generated assets").
-- **Multiple reviewers flagged specific duck designs as offensive cultural caricatures** (of
-  Indigenous and African cultures specifically, using generic rather than specific-nation
-  terminology) — the most serious complaint category in this entire competitive set, and a
-  reputational risk distinct from (and more serious than) the AI-disclosure pattern seen
-  elsewhere. Worth being deliberately careful about if BookBoy ever adds culturally-themed content
-  or costuming.
-- Save-data loss (confirmed independently in the update history above), performance/frame-rate
-  issues with many ducks visible at once.
+- **Motion sickness (10 of 73, 14%) and offensive/stereotypical duck designs (14 of 73, 19%) are
+  the two largest and most serious themes**, ahead of AI (7 of 73, 10%, the smallest AI share of
+  any title with a real AI complaint pattern at all).
+- **Motion sickness**: numerous reviewers report the game is "unplayable" for them specifically,
+  several noting they don't normally get motion sickness in other games ("friends of mine watching
+  my game who never get motion sickness are getting motion sickness"). Tied to a camera-bob/
+  settling effect when moving and stopping, and no way to reduce or disable it. Compounded for
+  some by very high default mouse sensitivity independent of OS/in-game settings.
+- **Offensive cultural caricatures — the most serious complaint category in this entire
+  competitive set**, and worse than a typical AI-disclosure objection: specific, substantive
+  complaints about duck designs stereotyping Indigenous and African cultures (generic "Native"/
+  "African" naming rather than specific nations, a "Chief Feather" design, a whole "cowboys"
+  section built around the same tropes). Several reviewers who otherwise liked the game explicitly
+  refunded over this alone. Worth being deliberately careful about if BookBoy ever adds
+  culturally-themed content or costuming.
+- Undisclosed AI-generated 3D models (specific visual tells cited: "warped/melted geometry,
+  strange texturing"), save-data loss (confirmed independently in the update history above), and
+  performance/frame-rate issues with many ducks visible at once.
 
 ## Relevance to BookBoy
 

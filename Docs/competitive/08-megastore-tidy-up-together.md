@@ -33,7 +33,7 @@ supermarket, and a two-story Megastore. Teams can split by floor, department, or
 rollback incidents — a smoother launch than `Sort Them Ducks` or `Plushy Store Tidy Up`, and it
 shows in the review score (Very Positive vs. their Very Positive/Mixed at smaller sample sizes).
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07)
+## Common complaints (ALL 12 English-language negative reviews, read in full, 2026-09-07)
 
 - **Recycled assets from the same developer's prior game, called out as lazy**: "The assets on
   level are like 80% the same as Supermarket Chaos... people have already played those bigger

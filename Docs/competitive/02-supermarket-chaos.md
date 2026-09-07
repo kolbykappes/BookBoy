@@ -36,20 +36,23 @@ product positions are temporary and dumps everything. No time limit, no game ove
 major update is "more of the same, bigger," which tracks with the "object count as differentiator"
 trend flagged in [01-vision-and-design.md](../01-vision-and-design.md).
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07)
+## Common complaints (ALL 58 English-language negative reviews, read in full, 2026-09-07)
 
-- **Undisclosed/disclosed generative AI use**, same pattern as Librarian — several reviewers say
-  they enjoyed dozens of hours before objecting on principle. Here it's compounded by AI-generated
-  *content errors*, not just the disclosure issue: "Pills clearly labeled as 'laxative' by texture
-  are called 'A Vitamins'," a Pringles-style can labeled "Banana Thick-cut Chips," product labels
-  not matching their shelf tags. One reviewer called the newest 9,999-item map specifically
-  "AI-generated slop... full of obvious errors a human would never make."
-- **"Lacks soul" compared to Librarian** — several reviewers frame this game as mechanically
-  competent but atmospherically empty ("obviously lacks cozy atmosphere and WHIMSY... practically
-  soulless"), used as the direct point of comparison against the genre's originator.
-- Items clipping through the floor (matches the personal-impressions finding above and the 1.2.4
-  patch notes), not enough shelf space for all items on some maps, one late-game progression
-  softlock (robot dialogue loop blocking a fresh playthrough).
+- **"Lacks soul" / low-effort feel compared to Librarian is the more central theme here** —
+  reviewers repeatedly frame this game as mechanically competent but atmospherically empty
+  ("obviously lacks cozy atmosphere and WHIMSY... practically soulless," "the game struggles to
+  show any sort of soul or passion"), often as a direct comparison against the genre's originator.
+- **Generative AI use is a real but secondary complaint (16 of 58 negative reviews, 28% — smaller
+  than it first looked from a partial sample)**, compounded here by AI-generated *content errors*
+  more than the disclosure issue itself: "Pills clearly labeled as 'laxative' by texture are
+  called 'A Vitamins'," a Pringles-style can labeled "Banana Thick-cut Chips," product labels not
+  matching their shelf tags. One reviewer called the 9,999-item map specifically "AI-generated
+  slop... full of obvious errors a human would never make."
+- Items clipping through/spawning under the floor is the single most-repeated concrete bug across
+  the full set (matches the personal-impressions finding above and the 1.2.4 patch notes), not
+  enough shelf space for all items on the largest map, one late-game progression softlock (robot
+  dialogue loop blocking a fresh playthrough), and several reviews calling the third/largest map
+  specifically a much weaker experience than the first two.
 
 ## Relevance to BookBoy
 

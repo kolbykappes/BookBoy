@@ -38,10 +38,11 @@ and stability, with at least two rollback incidents from regressions — a remin
 system and any "instant complete" ability (Auto-Shelving, Recall Stone) are exactly the kind of
 feature that's easy to destabilize.
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07)
+## Common complaints (ALL 110 English-language negative reviews, read in full, 2026-09-07)
 
-- **By far the largest complaint theme, dominating the negative reviews: undisclosed generative
-  AI use.** Many reviewers explicitly say they loved the game, played for hours, then discovered
+- **72 of 110 negative reviews (65%) mention generative AI — by far the largest complaint theme
+  of any game in this set.** Many reviewers explicitly say they loved the game, played for hours,
+  then discovered
   the AI disclosure (reportedly added to the store page only after launch, per several reviews)
   and either refunded or wrote a negative review out of principle — e.g. "I absolutely loved
   playing this game... I did not notice this game uses Gen AI... I'm really disappointed," "sad

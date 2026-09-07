@@ -39,12 +39,13 @@ order — **not** simply matching a picture to a labeled slot.
 incidents. Suggests the playtest-then-demo pre-launch process (playtest → demo → launch) paid off
 in launch stability, unlike `Sort Them Ducks`.
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07)
+## Common complaints (ALL 25 English-language negative reviews, read in full, 2026-09-07)
 
-- **The clear outlier in this competitive set: no AI-disclosure backlash at all.** One reviewer
-  explicitly credits this: "a beautiful game, with zero AI influence." Matches the devs' public
-  no-AI stance (Mechanics, above) actually landing with the audience — the one title here where
-  that positioning shows up as a reviewer-volunteered positive rather than a non-issue.
+- **The clear outlier in this competitive set: only 1 of 25 negative reviews (4%) mentions AI at
+  all, and that one is a compliment, not a complaint.** "A beautiful game, with zero AI
+  influence." Matches the devs' public no-AI stance (Mechanics, above) actually landing with the
+  audience — the one title here where that positioning shows up as a reviewer-volunteered positive
+  rather than a non-issue.
 - **The dominant complaint instead is content depth**: the puzzle-deduction layer (the game's
   whole differentiator) is reported to run out after roughly the first 2 of many "colors"/sections
   — "within the first 2 sections of potions, you've figured out all the puzzles... the rest of the

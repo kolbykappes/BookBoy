@@ -25,13 +25,13 @@ Only one public news post found as of 2026-09-06: the "OUT NOW" launch announcem
 (2026-08-21). No visible patch notes since — either the game hasn't needed hotfixes, or updates
 aren't being posted to the Steam news feed. Worth spot-checking again given the review score.
 
-## Common complaints (negative Steam reviews, sampled 2026-09-07) — this answers "why Mostly Positive"
+## Common complaints (ALL 38 English-language negative reviews, read in full, 2026-09-07) — this answers "why Mostly Positive"
 
-- **The most intense and consistent "AI slop" backlash in this entire competitive set.** Nearly
-  every sampled negative review leads with it, several in all-caps: "undisclosed ai assests and
-  textures. looks awful," "MASSIVE amounts of AI... extremely obvious especially on the
-  book/magazine covers," "Every product cover has janky AI writing on it." This alone appears to
-  be the dominant driver of the weak score.
+- **21 of 38 negative reviews (55%) mention generative AI — the second-highest share in this set
+  after Librarian**, and by far the most heated in tone: "undisclosed ai assests and textures.
+  looks awful," "MASSIVE amounts of AI... extremely obvious especially on the book/magazine
+  covers," "Every product cover has janky AI writing on it." This alone appears to be the single
+  biggest driver of the weak score.
 - **A direct, named echo of BookBoy's own already-fixed occlusion bug**: "Larger items are held
   in front of you, blocking the crosshair completely and the surrounding view as well... you
   can't pick up items at all." Multiple independent reviewers report this. BookBoy hit and fixed
