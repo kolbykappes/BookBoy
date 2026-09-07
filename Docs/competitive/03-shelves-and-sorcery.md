@@ -44,6 +44,22 @@ completion times.
 the last few remaining misplaced items in a large shop — which is the single most-repeated
 player-feedback theme across this whole title.
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **Generative AI use, directly blamed for hurting gameplay, not just a disclosure objection**:
+  "The books specifically, it's tedious that a bunch are identical, all are low res and the font
+  is unreadable. The lighting messes with all the colours..." — i.e., AI-generated assets are
+  cited as the *cause* of the exact pick-out-of-a-pile problem the update history and personal
+  impressions above independently identified.
+- **"Asset test game" / recycled-assets feel**: "assets were taken from their shop-keeping game,"
+  inconsistent item scale across objects makes sorting visually harder, vegetables in a *magic
+  shop* feel thematically incoherent to several reviewers ("Game called Shelves and Sorcery about
+  a magic shop... what tips it towards negative is more than half the stuff I'm picking up
+  is... vegetables?").
+- Performance/optimization complaints (struggles even on a "mid to high end PC"), Steam Deck
+  crashes and control drops, a few pile-physics bugs (items floating mid-air), and one comparison
+  naming Librarian directly as the higher bar this game doesn't clear on readability.
+
 ## Relevance to BookBoy
 
 - Closest thematic match to BookBoy (magic shop vs. magic library). Its "find the last few

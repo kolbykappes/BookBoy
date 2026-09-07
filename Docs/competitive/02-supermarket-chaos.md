@@ -36,6 +36,21 @@ product positions are temporary and dumps everything. No time limit, no game ove
 major update is "more of the same, bigger," which tracks with the "object count as differentiator"
 trend flagged in [01-vision-and-design.md](../01-vision-and-design.md).
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **Undisclosed/disclosed generative AI use**, same pattern as Librarian — several reviewers say
+  they enjoyed dozens of hours before objecting on principle. Here it's compounded by AI-generated
+  *content errors*, not just the disclosure issue: "Pills clearly labeled as 'laxative' by texture
+  are called 'A Vitamins'," a Pringles-style can labeled "Banana Thick-cut Chips," product labels
+  not matching their shelf tags. One reviewer called the newest 9,999-item map specifically
+  "AI-generated slop... full of obvious errors a human would never make."
+- **"Lacks soul" compared to Librarian** — several reviewers frame this game as mechanically
+  competent but atmospherically empty ("obviously lacks cozy atmosphere and WHIMSY... practically
+  soulless"), used as the direct point of comparison against the genre's originator.
+- Items clipping through the floor (matches the personal-impressions finding above and the 1.2.4
+  patch notes), not enough shelf space for all items on some maps, one late-game progression
+  softlock (robot dialogue loop blocking a fresh playthrough).
+
 ## Relevance to BookBoy
 
 - Its post-launch roadmap (bigger map → multiplayer) is the default, crowded path. BookBoy's

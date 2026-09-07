@@ -33,6 +33,23 @@ supermarket, and a two-story Megastore. Teams can split by floor, department, or
 rollback incidents — a smoother launch than `Sort Them Ducks` or `Plushy Store Tidy Up`, and it
 shows in the review score (Very Positive vs. their Very Positive/Mixed at smaller sample sizes).
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **Recycled assets from the same developer's prior game, called out as lazy**: "The assets on
+  level are like 80% the same as Supermarket Chaos... people have already played those bigger
+  games, so of course they're going to recognize the assets right away," "if you have that game
+  you probably don't need this one." Same developer, two titles in this competitive set — the
+  reuse is the complaint, not the existence of a second game.
+- **Unreadable shelf labels forcing appearance-only matching** — a specific, avoidable readability
+  regression: "shelf labels are not readable so matching items to shelves has to be done based on
+  appearance instead of text."
+- Save/autosave bugs causing significant lost progress (one report of losing an entire organized
+  shelf section's layout; another losing hours of progress to a crash with a failed autosave), a
+  crash pattern that also corrupts keybindings, and a widely-disliked "timed achievements" design
+  choice in an otherwise no-time-pressure game.
+- Milder AI-quality suspicion than most other titles here ("feelsl ike a lot of AI or lazy cash
+  grab"), not the dominant theme.
+
 ## Relevance to BookBoy
 
 - The disclosed custom-level-creation roadmap is worth watching: if user-generated content proves

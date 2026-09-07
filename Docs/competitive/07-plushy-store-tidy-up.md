@@ -35,12 +35,32 @@ onboarding" are three separate patches inside one week. That's a strong signal t
 shipped with a readability problem, which lines up with its current **Mixed** score — the softest
 launch reception of any released title in this set so far.
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07) — this is the whole story here
+
+- **Total absence of placement feedback is, by a wide margin, the #1 complaint** — nearly every
+  sampled negative review leads with a version of this: "I placed dozens of plushies and never
+  once knew if I got it right. No checkmark, no sparkle, nothing." / "Putting plushies on shelves
+  offers absolutely zero feedback about proper positioning." / "no clue if you are placing them
+  correctly, refunded fast." / "shelves need to have names so we know where things go... it is
+  wrong everytime." This is not a minor polish gap — it's reported as the reason people bounced
+  off entirely.
+- Resolution/display bugs (can't see part of the screen, especially Steam Deck), separate,
+  un-rebindable buttons for pickup/drop/shelve/switch-stacks criticized as needlessly complex,
+  and a "feels empty" complaint (a big store with comparatively few plushies to place).
+- Some limited AI-disclosure concern, smaller than most other titles here but present ("I feel
+  like they weren't honest about the AI Disclosure... traces of AI are everywhere").
+
 ## Relevance to BookBoy
 
-- The most directly relevant cautionary example for BookBoy's MVP: multiple post-launch patches
-  specifically chasing "can the player tell where something goes" and "does the game make clear
-  when you got it wrong" — precisely the two things
+- **This is the single strongest piece of retroactive validation in this whole competitive set for
+  a decision BookBoy already made.** The MVP spec's explicit requirement that placement "snaps
+  reliably into a **visible** slot" and that correct placement create "immediate feedback: a snap,
+  chime, glow" is precisely the thing this game shipped without, and it's the dominant reason for
+  its weak score. BookBoy's own first pass at a shelf slot was *also* invisible (an oversight,
+  caught during development, not shipped) — worth remembering this doc's origin story next time a
+  feedback affordance seems skippable "for now."
+- More generally: multiple post-launch patches here specifically chased "can the player tell where
+  something goes" and "does the game make clear when you got it wrong" — precisely the two things
   [02-mvp-spec.md](../02-mvp-spec.md)'s player-experience requirements and
   [05-implementation-plan.md](../05-implementation-plan.md)'s Phase 7 playtest questions are
-  designed to catch *before* shipping. Worth revisiting this doc once BookBoy's MVP is playable,
-  to see if the same failure mode shows up.
+  designed to catch *before* shipping.

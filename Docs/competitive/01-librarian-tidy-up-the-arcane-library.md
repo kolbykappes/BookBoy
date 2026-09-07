@@ -38,6 +38,21 @@ and stability, with at least two rollback incidents from regressions — a remin
 system and any "instant complete" ability (Auto-Shelving, Recall Stone) are exactly the kind of
 feature that's easy to destabilize.
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **By far the largest complaint theme, dominating the negative reviews: undisclosed generative
+  AI use.** Many reviewers explicitly say they loved the game, played for hours, then discovered
+  the AI disclosure (reportedly added to the store page only after launch, per several reviews)
+  and either refunded or wrote a negative review out of principle — e.g. "I absolutely loved
+  playing this game... I did not notice this game uses Gen AI... I'm really disappointed," "sad
+  they used generative ai, genuinely liked the game and will no longer be playing it now that I
+  know." This is a reputational issue layered entirely on top of gameplay satisfaction, not caused
+  by it.
+- **Progression trivializes itself.** Multiple reviewers say the ability unlocks (the same
+  `Auto-Shelving`/`Assemble` system praised elsewhere) make the game "do everything for you after
+  one bookcase," leaving nothing but repetitive motion for the remaining ~2/3 of the book count.
+- Minor: performance/heat complaints on some systems; one Steam Deck launch-compatibility report.
+
 ## Relevance to BookBoy
 
 - Confirms the core loop (find → identify → carry → shelve) sustains a large, sustained
@@ -45,10 +60,17 @@ feature that's easy to destabilize.
   MVP is a reasonable bar to clear.
 - The ability-unlock structure (`Assemble`, `Insight`, `Auto-Shelving`) is the natural next layer
   after BookBoy's MVP proves fun — see the "Potential future mechanics" list in
-  [01-vision-and-design.md](../01-vision-and-design.md).
+  [01-vision-and-design.md](../01-vision-and-design.md). But temper it against the complaint
+  above: an ability that fully automates the core action removes the game, it doesn't enhance it.
+  Any future automation/assist ability should speed up execution, not remove the
+  identify-and-place decision entirely.
 - Its rocky patch history around save/rollback is a caution for BookBoy's own eventual save/load
   system (explicitly a non-goal for the MVP per [02-mvp-spec.md](../02-mvp-spec.md), for good
   reason).
+- **The AI-disclosure backlash is the single most important cross-cutting finding in this whole
+  competitive set** (see [README.md](README.md)) — worth reading that synthesis regardless of
+  whether BookBoy's own pipeline uses AI tools anywhere, since the market reaction is about
+  transparency and trust, not the tooling itself.
 
 ## Personal impressions (Kolby, 2026-09-06)
 

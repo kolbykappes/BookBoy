@@ -39,6 +39,21 @@ order — **not** simply matching a picture to a labeled slot.
 incidents. Suggests the playtest-then-demo pre-launch process (playtest → demo → launch) paid off
 in launch stability, unlike `Sort Them Ducks`.
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **The clear outlier in this competitive set: no AI-disclosure backlash at all.** One reviewer
+  explicitly credits this: "a beautiful game, with zero AI influence." Matches the devs' public
+  no-AI stance (Mechanics, above) actually landing with the audience — the one title here where
+  that positioning shows up as a reviewer-volunteered positive rather than a non-issue.
+- **The dominant complaint instead is content depth**: the puzzle-deduction layer (the game's
+  whole differentiator) is reported to run out after roughly the first 2 of many "colors"/sections
+  — "within the first 2 sections of potions, you've figured out all the puzzles... the rest of the
+  game starts to feel like a chore," "all of the potions have the same solution." Several
+  reviewers say they liked the idea enough to keep playing out of completionism alone, past the
+  point the puzzle layer stopped delivering anything new.
+- Minor: one keybind conflict (a controller button double-bound to both "confirm puzzle" and a
+  magic ability) that silently breaks a specific achievement.
+
 ## Relevance to BookBoy
 
 - This is the title to study most closely once BookBoy's MVP is proven: it demonstrates that
@@ -46,6 +61,12 @@ in launch stability, unlike `Sort Them Ducks`.
   (2,000+ items, not tens of thousands) — a smaller, smarter game rather than a bigger, dumber one.
 - Its pre-launch process (private playtest → public demo → launch) is a reasonable template if
   BookBoy ever moves toward a real release.
+- The "puzzle solved after 2 sections, chore for the rest" complaint is directly relevant to
+  BookBoy's own eventual symbol/deduction layer (see [01-vision-and-design.md](../01-vision-and-design.md)'s
+  evolution path): a deduction mechanic needs enough *variety* of puzzle types to outlast the
+  book count it's layered onto, not just one clever idea repeated at scale. Worth designing the
+  puzzle variety budget deliberately rather than discovering the shortfall post-launch like this
+  game did.
 
 ## Personal impressions (Kolby, 2026-09-06)
 

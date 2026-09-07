@@ -37,6 +37,25 @@ public tester call) before things stabilized around Patch 4. Reviews stayed Very
 this, suggesting the core hook (duck variety) was strong enough to survive a bad first week — but
 also that they got lucky.
 
+## Common complaints (negative Steam reviews, sampled 2026-09-07)
+
+- **Severe motion sickness from camera movement is the single largest complaint theme** —
+  numerous reviewers report the game is "unplayable" for them specifically, several noting they
+  don't normally get motion sickness in other games ("friends of mine watching my game who never
+  get motion sickness are getting motion sickness"). Tied to a camera-bob/settling effect when
+  moving and stopping, and no way to reduce or disable it. Compounded for some by very high
+  default mouse sensitivity independent of OS/in-game settings.
+- **Undisclosed AI-generated 3D models**, with reviewers pointing to specific visual tells
+  ("warped/melted geometry, strange texturing... characteristic of AI-generated assets").
+- **Multiple reviewers flagged specific duck designs as offensive cultural caricatures** (of
+  Indigenous and African cultures specifically, using generic rather than specific-nation
+  terminology) — the most serious complaint category in this entire competitive set, and a
+  reputational risk distinct from (and more serious than) the AI-disclosure pattern seen
+  elsewhere. Worth being deliberately careful about if BookBoy ever adds culturally-themed content
+  or costuming.
+- Save-data loss (confirmed independently in the update history above), performance/frame-rate
+  issues with many ducks visible at once.
+
 ## Relevance to BookBoy
 
 - Direct cautionary tale: don't ship a save/progress system without hardening it first — exactly
@@ -70,4 +89,7 @@ a clear approach path to the shelf itself, not just be readable. The strong visu
 systems combo (fun ducks, weak lottery mechanic) also reinforces: get the core identify-carry-place
 loop excellent first, and be cautious about bolting on secondary economy systems (risk/reward,
 currency sinks) before they're really needed — echoes the MVP non-goals list in
-[02-mvp-spec.md](../02-mvp-spec.md) (no economy/currency systems yet).
+[02-mvp-spec.md](../02-mvp-spec.md) (no economy/currency systems yet). The motion-sickness
+complaints are also a direct, concrete argument for BookBoy's existing camera setup choices: keep
+head-bob/camera-settle effects minimal or opt-in, and playtest camera feel specifically for this
+before shipping any camera polish.

@@ -36,6 +36,46 @@ here. Percent-positive tracks closely between the two either way.
 *Dates for #9–14 are Steam's "plans to unlock in X days" countdown as of Sep 6, 2026 — treat as
 approximate until each actually ships.*
 
+## What negative Steam reviews reveal (sampled 2026-09-07, ~15 per released title)
+
+Pulled directly from Steam's public review API, filtered to negative-only, sorted by helpfulness.
+Full complaint lists are in each game's own file; this is the cross-cutting pattern.
+
+- **Undisclosed or disclosed generative-AI use is the single most damaging and consistent
+  complaint theme in this entire genre — present in 7 of the 8 released titles sampled, and the
+  dominant driver of negative reviews in at least 3 of them** (`Mall`, `Librarian`,
+  `Supermarket Chaos`). The pattern repeats almost word-for-word across unrelated developers:
+  a reviewer says they genuinely enjoyed the game, sank real hours into it, then either discovered
+  an AI disclosure after buying or identified AI-generated assets themselves (visual artifacting,
+  mismatched labels, unreadable text) — and reviews negatively **on principle**, separate from
+  whether the gameplay itself worked. `Shelve the Potions!` is the clean counter-example: a
+  reviewer volunteers "zero AI influence" as a specific positive. This is a trust/transparency
+  issue, not a quality one — a game can be mechanically sound and still take real review damage
+  over it. Worth keeping in mind for BookBoy regardless of what tools are used in development,
+  since the market signal here is about audience-facing disclosure, not the presence of any
+  particular tool in a pipeline.
+- **"No feedback on whether I did it right" is a devastating, not minor, complaint** —
+  `Plushy Store Tidy Up`'s negative reviews are almost unanimous on this single point, and it's
+  the plain-language version of the MVP spec's "visible slot" requirement. Directly validates a
+  bug this project already caught and fixed (an early shelf-slot version was invisible).
+- **"The item I'm carrying blocks my own view" shows up as a named complaint in `Mall`**,
+  independently confirming a bug BookBoy hit and fixed the same week, from direct playtesting
+  rather than review research.
+- **Physical/pile-clipping bugs recur constantly**: items floating mid-air, sinking into floors,
+  clipping into unreachable spots (`Supermarket Chaos`, `Shelves and Sorcery`, `Mall`). Reinforces
+  "tactile reliability over physical realism" as a principle worth defending, not a nice-to-have.
+- **Content/mechanic depth running out before the object count does** is a real, named failure
+  mode — `Librarian`'s abilities trivialize the game two-thirds of the way through; `Shelve the
+  Potions!`'s puzzle variety is exhausted after roughly the first sixth of its content. A
+  deduction/ability layer needs to be budgeted for the whole experience, not just the opening
+  hours.
+- **One serious reputational category, distinct from the rest**: `Sort Them Ducks` drew specific,
+  substantive complaints about culturally insensitive character designs. Worth deliberate care if
+  BookBoy ever adds culturally-themed content, well before it becomes a live issue.
+- **Recycled assets across a developer's own back-catalog read as lazy to players** —
+  `Megastore`'s reuse of `Supermarket Chaos` assets (same developer) is called out directly, not
+  forgiven for being a sequel.
+
 ## What this confirms about the market
 
 - **The wave is real and accelerating.** One release in April, one in June, then a near-weekly
