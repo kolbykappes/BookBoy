@@ -109,6 +109,10 @@ lying, and pay the one extra call that tells you.
    survive across Play sessions and only a recompile clears them. Suspect
    this first when static state looks wrong in a *fresh* play session —
    anything static that caches scene objects must prune itself on write.
+   **BookBoy has this ON** (verified 2026-10-17: `DisableDomainReload` +
+   `DisableSceneReload`, set since the first project commit). No mutable
+   statics exist yet, so nothing is hurt today — but don't add static state
+   (registries, counters, caches) without handling it.
 10. Windows + `core.autocrlf=true`: a branch switch rewrites every tracked
     file's mtime even when content is identical (`git diff` is empty, but
     Unity watches mtimes, not content). Confirm no dirty scene and Play Mode

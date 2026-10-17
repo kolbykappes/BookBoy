@@ -27,6 +27,15 @@ The *underlying trap* — two code-execution entry points with different state
 semantics — is worth assuming exists until disproven either way, because
 it's a reasonable design for exactly the reasons below.
 
+## BookBoy verification, 2026-10-17 - `eval_file` does not appear to reload
+
+Test: `AppDomain.CurrentDomain.SetData("probe", ...)` in one `unity command eval`,
+then read it back from a second `eval` and from `eval_file`. Both reads returned the
+value, so neither entry point reloaded the domain in CLI 1.0.0-beta.13 / Pipeline
+0.8.0-exp.1. Not tested: statics declared inside the eval'd code itself, and
+asset-reload-from-disk behavior. The safe habit (share state through the scene)
+still costs nothing.
+
 ## The eval-vs-file distinction eats state if you pick wrong
 
 **When** two separate editor-driving calls need to share state (a variable,
@@ -174,6 +183,23 @@ independently. That's specifically how the eventual real fix turned out to
 be one distinct cause for the bearing component and a completely different
 cause for the height component, and how a third, initially-suspected cause
 was conclusively ruled out rather than left as an open question.
+
+## A probe that cannot see anything looks like a broken feature
+
+**When** a measurement comes back zero/null/unchanged, **do** first prove the
+probe can see anything, **because** two failure modes share one shape (from the
+source notes, bootstrap E7):
+- **The measurement outlived the thing measured.** A count taken seconds after a
+  short-lived effect reads zero - exactly what a broken event looks like. Hang the
+  observation on the event, not on the aftermath.
+- **The thing was never running.** A probe acted right after an asynchronous start
+  (e.g. `editor_play`) before the subsystem was up. Gate on the subsystem's own
+  ready flag, and confirm a negative with a positive control (invoke the
+  effect-creating path directly and check *anything* appears).
+
+BookBoy example (2026-10-17): a cursor-lock check right after `editor_play` read
+`frameCount=2` twice, a second apart - the loop had not advanced, so the check
+proved only that the code set a property, not that the game was live.
 
 ## Diagnostic output needs the identity of whatever produced it
 
