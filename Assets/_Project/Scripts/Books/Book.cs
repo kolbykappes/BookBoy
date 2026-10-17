@@ -196,7 +196,9 @@ public class Book : MonoBehaviour
 
     /// <summary>Throws the book with real physics: it tumbles, lands, and once it has been still for a moment it goes back to
     /// being a trigger (so it never blocks the player's walk) that can be picked up again.</summary>
-    public void Toss(Vector3 origin, Vector3 velocity, Vector3 spin)
+    /// <param name="minSolidSeconds">Stay a solid physics body at least this long before settling (a pile being built needs the
+    /// books underneath to still be solid while the next ones land on them).</param>
+    public void Toss(Vector3 origin, Vector3 velocity, Vector3 spin, float minSolidSeconds = 0f)
     {
         if (currentSlot != null)
         {
@@ -233,7 +235,7 @@ public class Book : MonoBehaviour
             StopCoroutine(_settle);
         }
 
-        _settle = StartCoroutine(SettleRoutine(rb, bookCollider));
+        _settle = StartCoroutine(SettleRoutine(rb, bookCollider, minSolidSeconds));
     }
 
     /// <summary>Cancels a tumble in progress (the book is being picked up mid-air or mid-roll).</summary>
@@ -260,11 +262,12 @@ public class Book : MonoBehaviour
         hasPhysicsDrop = false;
     }
 
-    private IEnumerator SettleRoutine(Rigidbody rb, Collider bookCollider)
+    private IEnumerator SettleRoutine(Rigidbody rb, Collider bookCollider, float minSolidSeconds)
     {
         float elapsed = 0f;
         float still = 0f;
-        while (elapsed < 10f && still < 0.5f)
+        float limit = Mathf.Max(10f, minSolidSeconds + 6f);
+        while (elapsed < limit && (still < 0.5f || elapsed < minSolidSeconds))
         {
             yield return new WaitForFixedUpdate();
             elapsed += Time.fixedDeltaTime;

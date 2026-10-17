@@ -1,9 +1,11 @@
+using BookBoy.Rules;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
 /// G: every book of the held book's series that is not on a shelf (and not in your hands) gets a pulsing outline for a few
-/// seconds, so you can spot its sisters in a messy room. Needs the Sister Glow upgrade; has a short cooldown.
+/// seconds, so you can spot its sisters in a messy room. Needs the Sister Glow upgrade; recharges on its own 60 s timer
+/// (shorter with the recharge upgrades).
 /// </summary>
 public class SisterGlow : MonoBehaviour
 {
@@ -12,16 +14,14 @@ public class SisterGlow : MonoBehaviour
     private GameProgress _progress;
     private PlayerInteractor _interactor;
     private GameUI _ui;
-    private float _readyAt;
 
-    public float SecondsUntilReady => Mathf.Max(0f, _readyAt - Time.time);
+    public float SecondsUntilReady => _progress != null ? _progress.CooldownRemaining(AbilityId.SisterGlow) : 0f;
 
     private void Start()
     {
         _progress = FindFirstObjectByType<GameProgress>();
         _interactor = FindFirstObjectByType<PlayerInteractor>();
         _ui = FindFirstObjectByType<GameUI>();
-        _readyAt = 0f;
     }
 
     private void Update()
@@ -53,9 +53,9 @@ public class SisterGlow : MonoBehaviour
             return 0;
         }
 
-        if (Time.time < _readyAt)
+        if (!_progress.IsAbilityReady(AbilityId.SisterGlow))
         {
-            _ui?.Toast("Sister Glow is recharging (" + Mathf.CeilToInt(_readyAt - Time.time) + "s).");
+            _ui?.Toast("Sister Glow is recharging (" + Mathf.CeilToInt(SecondsUntilReady) + "s).");
             return 0;
         }
 
@@ -75,7 +75,11 @@ public class SisterGlow : MonoBehaviour
             }
         }
 
-        _readyAt = Time.time + _progress.Upgrades.GlowCooldownSeconds;
+        if (count > 0)
+        {
+            _progress.StartCooldown(AbilityId.SisterGlow);
+        }
+
         _ui?.Toast(count > 0
             ? "Sister Glow: " + count + (count == 1 ? " sister book" : " sister books") + " lit up."
             : "Every sister of this book is already shelved or in your hands.");

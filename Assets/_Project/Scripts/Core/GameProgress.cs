@@ -18,6 +18,9 @@ public class GameProgress : MonoBehaviour
 
     public readonly UpgradeState Upgrades = new UpgradeState();
 
+    /// <summary>One recharge timer per ability (Time.time based, so menus that pause the game pause the timers too).</summary>
+    public readonly AbilityTimers Timers = new AbilityTimers();
+
     private readonly FinishedTracker _tracker = new FinishedTracker();
     private Book[] _books;
     private Shelf[] _shelves;
@@ -58,6 +61,7 @@ public class GameProgress : MonoBehaviour
         }
 
         Upgrades.Reset();
+        Timers.Reset();
         _tracker.Reset();
         _elapsed = 0;
         _finalTime = 0;
@@ -191,10 +195,37 @@ public class GameProgress : MonoBehaviour
         Changed?.Invoke();
     }
 
+    /// <summary>Seconds until the ability can be used again; 0 when it is ready (or locked).</summary>
+    public float CooldownRemaining(AbilityId id)
+    {
+        return (float)Timers.Remaining(id, Time.time, Upgrades.CooldownSeconds(id));
+    }
+
+    /// <summary>Unlocked and off cooldown.</summary>
+    public bool IsAbilityReady(AbilityId id)
+    {
+        return Upgrades.HasAbility(id) && CooldownRemaining(id) <= 0f;
+    }
+
+    /// <summary>Puts the ability on its (upgrade-adjusted) cooldown. Called only when the ability actually did something.</summary>
+    public void StartCooldown(AbilityId id)
+    {
+        Timers.Start(id, Time.time, Upgrades.CooldownSeconds(id));
+        Changed?.Invoke();
+    }
+
+    /// <summary>Admin/testing: every ability is ready again.</summary>
+    public void ResetCooldowns()
+    {
+        Timers.Reset();
+        Changed?.Invoke();
+    }
+
     /// <summary>Admin/testing: clears all points and upgrades (shelf points already awarded stay awarded).</summary>
     public void ResetUpgrades()
     {
         Upgrades.Reset();
+        Timers.Reset();
         ApplyUpgrades();
         Changed?.Invoke();
     }

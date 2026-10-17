@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// F: every held book flies (along an arc, spinning, trailing a glow) to its right place on a shelf and snaps in. Needs the
-/// Quick Shelve upgrade. Where a book belongs comes from the engine-free ShelfPlanner: the bookcase and shelf that already
+/// Quick Shelve upgrade and recharges on its own 60 s timer (shorter with the recharge upgrades). Where a book belongs comes from the engine-free ShelfPlanner: the bookcase and shelf that already
 /// hold its color and series, else the first unclaimed ones; volume N goes in slot N. Books with no valid place stay in hand.
 /// </summary>
 public class QuickShelve : MonoBehaviour
@@ -19,6 +19,8 @@ public class QuickShelve : MonoBehaviour
     private int _flying;
 
     public bool IsBusy => _flying > 0;
+
+    public float SecondsUntilReady => _progress != null ? _progress.CooldownRemaining(AbilityId.QuickShelve) : 0f;
 
     private void Start()
     {
@@ -59,6 +61,12 @@ public class QuickShelve : MonoBehaviour
 
         if (IsBusy)
         {
+            return 0;
+        }
+
+        if (!_progress.IsAbilityReady(AbilityId.QuickShelve))
+        {
+            _ui?.Toast("Quick Shelve is recharging (" + Mathf.CeilToInt(SecondsUntilReady) + "s).");
             return 0;
         }
 
@@ -110,6 +118,11 @@ public class QuickShelve : MonoBehaviour
             StartCoroutine(Fly(book, slot, delay));
             delay += 0.13f;
             sent++;
+        }
+
+        if (sent > 0)
+        {
+            _progress.StartCooldown(AbilityId.QuickShelve);
         }
 
         if (sent == 0)

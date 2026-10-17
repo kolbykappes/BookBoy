@@ -28,13 +28,38 @@ public class GameUI : MonoBehaviour
         public Text Label;
     }
 
-    private const int RowPool = 16;
+    private sealed class AbilityRow
+    {
+        public AbilityId Id;
+        public string Name;
+        public string Key;
+        public RectTransform Root;
+        public Image Fill;
+        public Text Label;
+        public Text State;
+    }
+
+    private const int RowPool = 26;
+    private const float MenuRowPitch = 32f;
+    private const float AbilityRowWidth = 440f;
+    private const float AbilityRowHeight = 46f;
     private static readonly Color PanelColor = new Color(0.05f, 0.05f, 0.08f, 0.72f);
     private static readonly Color RowColor = new Color(0.14f, 0.14f, 0.19f, 0.9f);
     private static readonly Color RowSelected = new Color(0.25f, 0.38f, 0.62f, 0.95f);
     private static readonly string[] AdminRows =
     {
-        "+1 upgrade point", "+5 upgrade points", "+10 upgrade points", "Unlock every upgrade (free)", "Reset points and upgrades", "Close"
+        "+1 upgrade point", "+5 upgrade points", "+10 upgrade points", "Unlock every upgrade (free)", "Reset points and upgrades",
+        "Pile every loose book (and the ones in your hands) in the middle of the room",
+        "Pile ALL books in the middle (empty the shelves too)",
+        "Reset ability timers (all ready)", "Close"
+    };
+
+    private static readonly AbilityRow[] AbilityRowDefs =
+    {
+        new AbilityRow { Id = AbilityId.SisterGlow, Name = "Sister Glow", Key = "G" },
+        new AbilityRow { Id = AbilityId.QuickShelve, Name = "Quick Shelve", Key = "F" },
+        new AbilityRow { Id = AbilityId.GatherFamily, Name = "Gather Family", Key = "C" },
+        new AbilityRow { Id = AbilityId.HomeBeacon, Name = "Home Beacon", Key = "B" }
     };
 
     private GameProgress _progress;
@@ -58,6 +83,9 @@ public class GameUI : MonoBehaviour
     private string _lastStats = "";
     private SisterGlow _glow;
     private QuickShelve _shelve;
+    private AdminTools _admin;
+    private RectTransform _abilityPanel;
+    private readonly List<AbilityRow> _abilityRows = new List<AbilityRow>();
 
     private FirstPersonController _fpc;
     private CameraLookBridge _lookBridge;
@@ -80,6 +108,7 @@ public class GameUI : MonoBehaviour
         _inputs = FindFirstObjectByType<StarterAssetsInputs>();
         _glow = FindFirstObjectByType<SisterGlow>();
         _shelve = FindFirstObjectByType<QuickShelve>();
+        _admin = FindFirstObjectByType<AdminTools>();
         _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         Transform canvas = GameObject.Find("HUD_Canvas").transform;
@@ -119,7 +148,7 @@ public class GameUI : MonoBehaviour
 
     private static void DestroyOld(Transform canvas)
     {
-        foreach (string n in new[] { "GameUI_Stats", "GameUI_Carry", "GameUI_Legend", "GameUI_Toast", "GameUI_Menu" })
+        foreach (string n in new[] { "GameUI_Stats", "GameUI_Carry", "GameUI_Legend", "GameUI_Toast", "GameUI_Menu", "GameUI_Abilities" })
         {
             Transform old = canvas.Find(n);
             if (old != null)
@@ -178,9 +207,21 @@ public class GameUI : MonoBehaviour
         _carryText = MakeText("Text", _carryPanel, 28, TextAnchor.UpperLeft, new Vector2(18f, 10f));
         _hudPanels.Add(_carryPanel.gameObject);
 
-        RectTransform legend = MakePanel("GameUI_Legend", canvas, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(500f, 292f), PanelColor);
-        _legend = MakeText("Text", legend, 26, TextAnchor.UpperLeft, new Vector2(18f, 12f));
+        RectTransform legend = MakePanel("GameUI_Legend", canvas, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(470f, 282f), PanelColor);
+        _legend = MakeText("Text", legend, 20, TextAnchor.UpperLeft, new Vector2(14f, 8f));
         _hudPanels.Add(legend.gameObject);
+
+        _abilityPanel = MakePanel("GameUI_Abilities", canvas, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f, 24f), new Vector2(AbilityRowWidth + 24f, 60f), PanelColor);
+        _hudPanels.Add(_abilityPanel.gameObject);
+        _abilityRows.Clear();
+        foreach (AbilityRow def in AbilityRowDefs)
+        {
+            RectTransform root = MakePanel("Ability_" + def.Name, _abilityPanel, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(AbilityRowWidth, AbilityRowHeight), RowColor);
+            RectTransform fill = MakePanel("Fill", root, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(0f, AbilityRowHeight), new Color(0.2f, 0.55f, 0.35f, 0.9f));
+            Text label = MakeText("Label", root, 25, TextAnchor.MiddleLeft, new Vector2(12f, 0f));
+            Text state = MakeText("State", root, 25, TextAnchor.MiddleRight, new Vector2(12f, 0f));
+            _abilityRows.Add(new AbilityRow { Id = def.Id, Name = def.Name, Key = def.Key, Root = root, Fill = fill.GetComponent<Image>(), Label = label, State = state });
+        }
 
         RectTransform toast = MakePanel("GameUI_Toast", canvas, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -150f), new Vector2(1100f, 70f), new Color(0f, 0f, 0f, 0f));
         _toast = MakeText("Text", toast, 36, TextAnchor.MiddleCenter, Vector2.zero);
@@ -189,15 +230,15 @@ public class GameUI : MonoBehaviour
 
     private void BuildMenu(Transform canvas)
     {
-        _menuPanel = MakePanel("GameUI_Menu", canvas, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1240f, 1000f), new Color(0.03f, 0.03f, 0.06f, 0.94f));
-        _menuTitle = MakeText("Title", _menuPanel, 44, TextAnchor.UpperCenter, new Vector2(20f, 18f));
-        _menuHelp = MakeText("Help", _menuPanel, 24, TextAnchor.LowerCenter, new Vector2(20f, 14f));
+        _menuPanel = MakePanel("GameUI_Menu", canvas, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1240f, 930f), new Color(0.03f, 0.03f, 0.06f, 0.94f));
+        _menuTitle = MakeText("Title", _menuPanel, 40, TextAnchor.UpperCenter, new Vector2(20f, 14f));
+        _menuHelp = MakeText("Help", _menuPanel, 21, TextAnchor.LowerCenter, new Vector2(20f, 8f));
         _menuHelp.color = new Color(0.75f, 0.78f, 0.9f);
 
         for (int i = 0; i < RowPool; i++)
         {
-            RectTransform bg = MakePanel("Row" + i, _menuPanel, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -104f - i * 56f), new Vector2(1180f, 52f), RowColor);
-            Text label = MakeText("Label", bg, 25, TextAnchor.MiddleLeft, new Vector2(16f, 2f));
+            RectTransform bg = MakePanel("Row" + i, _menuPanel, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -84f - i * MenuRowPitch), new Vector2(1180f, MenuRowPitch - 3f), RowColor);
+            Text label = MakeText("Label", bg, 20, TextAnchor.MiddleLeft, new Vector2(14f, 0f));
             _rows.Add(new Row { Background = bg.GetComponent<Image>(), Label = label });
         }
 
@@ -280,21 +321,64 @@ public class GameUI : MonoBehaviour
         }
 
         UpgradeState u = _progress != null ? _progress.Upgrades : null;
-        bool shelve = u != null && u.HasQuickShelve;
-        bool glow = u != null && u.HasSisterGlow;
         string Line(string key, string what, bool on)
         {
             return on ? "<b>" + key + "</b>   " + what : "<color=#777b8c><b>" + key + "</b>   " + what + "  (locked)</color>";
         }
 
         _legend.text = "<b>CONTROLS</b>\n"
-            + Line("E", "pick up / place", true) + "\n"
-            + Line("Q", "toss held book", true) + "\n"
+            + Line("E / Click", "pick up / place", true) + "\n"
+            + Line("Q / Right-click", "toss held book", true) + "\n"
             + Line("R / Wheel", "next held book", true) + "\n"
-            + Line("F", "quick shelve all held", shelve) + "\n"
-            + Line("G", "sister glow", glow) + "\n"
+            + Line("G", "sister glow", u != null && u.HasSisterGlow) + "\n"
+            + Line("F", "quick shelve all held", u != null && u.HasQuickShelve) + "\n"
+            + Line("C", "gather family", u != null && u.HasGatherFamily) + "\n"
+            + Line("B", "home beacon", u != null && u.HasHomeBeacon) + "\n"
             + Line("Tab", "upgrades menu", true) + "\n"
             + Line("F10", "admin (testing)", true);
+    }
+
+    /// <summary>Per-frame: shows each unlocked ability with its own recharge bar and countdown (locked ones are hidden).</summary>
+    private void RefreshAbilities()
+    {
+        if (_abilityPanel == null || _progress == null)
+        {
+            return;
+        }
+
+        UpgradeState u = _progress.Upgrades;
+        int unlockedCount = 0;
+        foreach (AbilityRow row in _abilityRows)
+        {
+            if (u.HasAbility(row.Id))
+            {
+                unlockedCount++;
+            }
+        }
+
+        int shown = 0;
+        foreach (AbilityRow row in _abilityRows)
+        {
+            bool unlocked = u.HasAbility(row.Id);
+            row.Root.gameObject.SetActive(unlocked);
+            if (!unlocked)
+            {
+                continue;
+            }
+
+            float cooldown = u.CooldownSeconds(row.Id);
+            float left = _progress.CooldownRemaining(row.Id);
+            bool ready = left <= 0f;
+            row.Root.anchoredPosition = new Vector2(0f, 10f + (unlockedCount - 1 - shown) * (AbilityRowHeight + 6f));   // first ability at the top
+            row.Fill.rectTransform.sizeDelta = new Vector2(AbilityRowWidth * (ready ? 1f : 1f - left / cooldown), AbilityRowHeight);
+            row.Fill.color = ready ? new Color(0.2f, 0.6f, 0.35f, 0.9f) : new Color(0.3f, 0.34f, 0.5f, 0.9f);
+            row.Label.text = "<b>" + row.Key + "</b>  " + row.Name;
+            row.State.text = ready ? "<b>READY</b>" : Mathf.CeilToInt(left) + " s";
+            shown++;
+        }
+
+        _abilityPanel.gameObject.SetActive(shown > 0 && !MenuOpen);
+        _abilityPanel.sizeDelta = new Vector2(AbilityRowWidth + 24f, 10f + shown * (AbilityRowHeight + 6f) + 4f);
     }
 
     public void Toast(string message, float seconds = 2.6f)
@@ -393,7 +477,7 @@ public class GameUI : MonoBehaviour
         if (_menu == Menu.Upgrades)
         {
             _menuTitle.text = "UPGRADES        <color=#FFE680>" + u.Points + " point" + (u.Points == 1 ? "" : "s") + " to spend</color>";
-            _menuHelp.text = "Finish a shelf to earn a point.   Up/Down + Enter, 1-9 (first nine), or click to buy.   Tab or Esc to close.";
+            _menuHelp.text = "Finish a shelf to earn a point (the whole tree costs 32).   Up/Down + Enter, 1-9 (first nine), or click to buy.   Tab or Esc to close.";
         }
         else
         {
@@ -475,6 +559,13 @@ public class GameUI : MonoBehaviour
                 case 2: _progress.AddPoints(10); done = true; break;
                 case 3: _progress.UnlockAll(); done = true; break;
                 case 4: _progress.ResetUpgrades(); done = true; break;
+                case 5:
+                case 6:
+                    CloseMenu();   // the books fall in real time, so the game has to be running
+                    int piled = _admin != null ? _admin.PileUp(row == 6) : 0;
+                    Toast(piled > 0 ? "Dropping " + piled + " books in the middle of the room..." : "No books to pile.", 3f);
+                    return piled > 0;
+                case 7: _progress.ResetCooldowns(); done = true; break;
                 default: CloseMenu(); return true;
             }
         }
@@ -488,6 +579,7 @@ public class GameUI : MonoBehaviour
     private void Update()
     {
         RefreshStats();
+        RefreshAbilities();
 
         if (_toast != null)
         {

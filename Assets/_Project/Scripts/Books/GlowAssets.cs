@@ -8,4 +8,7 @@ public class GlowAssets : MonoBehaviour
 
     [Tooltip("Draws a glowing book's silhouette through whatever hides it (sister glow).")]
     public Material xrayMaterial;
+
+    [Tooltip("Additive, vertex-colored material for the Home Beacon's frame lines around a bookcase.")]
+    public Material beaconMaterial;
 }

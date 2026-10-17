@@ -7,7 +7,8 @@ using UnityEngine.UI;
 /// the current book, place it on any shelf, or toss it. The slot the crosshair is on is used for placing; the placement is
 /// graded (wrong bookcase / right bookcase / all right) and the book's outline flashes accordingly. Shelved books can be
 /// picked up again. No generic item framework.
-/// Keys (read directly, no input-binding changes): E pick up / place, Q toss, R or mouse wheel cycle.
+/// Input (read directly, no input-binding changes): E or left click pick up / place, Q or right click toss, R or mouse wheel
+/// cycle. Once a book is placed correctly the readout in the middle of the screen moves on to the next book in your hands.
 /// </summary>
 [RequireComponent(typeof(CarryInventory))]
 public class PlayerInteractor : MonoBehaviour
@@ -29,6 +30,7 @@ public class PlayerInteractor : MonoBehaviour
     private Book _focusedBook;
     private ShelfSlot _focusedSlot;
     private bool _targetOutOfRange;
+    private bool _aimingAtFinishedBook;
     private Book _litBook;
     private ShelfSlot _litSlot;
     private static readonly System.Comparison<RaycastHit> ByDistance = (a, b) => a.distance.CompareTo(b.distance);
@@ -48,6 +50,7 @@ public class PlayerInteractor : MonoBehaviour
         _focusedBook = null;
         _focusedSlot = null;
         _targetOutOfRange = false;
+        _aimingAtFinishedBook = false;
 
         if (interactionCamera == null)
         {
@@ -107,7 +110,16 @@ public class PlayerInteractor : MonoBehaviour
                 ShelfSlot slot = shelf.NearestSlot(ray, hit.point);
                 if (slot != null && slot.occupied)
                 {
-                    _focusedBook = slot.occupant;     // pick the shelved book up instead
+                    if (slot.occupant != null && slot.occupant.IsCorrectlyShelved)
+                    {
+                        // a finished (green) book is done with: no point picking it up while your hands are busy, and
+                        // the readout should show the book you are about to place next
+                        _aimingAtFinishedBook = true;
+                    }
+                    else
+                    {
+                        _focusedBook = slot.occupant;     // pick the shelved book up instead
+                    }
                 }
                 else
                 {
@@ -209,11 +221,15 @@ public class PlayerInteractor : MonoBehaviour
         {
             SetPrompt(DisplayName(_focusedBook), Carry.IsFull
                 ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")"
-                : "Press (E) to pick up");
+                : "Press (E) or click to pick up");
         }
         else if (_focusedSlot != null && Carry.Current != null)
         {
-            SetPrompt(DisplayName(Carry.Current), "Press (E) to place");
+            SetPrompt(DisplayName(Carry.Current), "Press (E) or click to place");
+        }
+        else if (_aimingAtFinishedBook && Carry.Current != null)
+        {
+            SetPrompt(DisplayName(Carry.Current), "Next up  -  aim at an open spot to place");
         }
         else
         {
@@ -236,22 +252,24 @@ public class PlayerInteractor : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Keyboard.current == null)
+        Keyboard keyboard = Keyboard.current;
+        Mouse mouse = Mouse.current;
+        if (keyboard == null && mouse == null)
         {
             return;
         }
 
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+        if ((keyboard != null && keyboard.qKey.wasPressedThisFrame) || (mouse != null && mouse.rightButton.wasPressedThisFrame))
         {
             TossCurrent();
         }
 
-        if (Keyboard.current.rKey.wasPressedThisFrame)
+        if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
         {
             Carry.Cycle(+1);
         }
 
-        if (Mouse.current != null)
+        if (mouse != null)
         {
             float wheel = Mouse.current.scroll.ReadValue().y;
             if (wheel > 0.1f)
@@ -264,7 +282,8 @@ public class PlayerInteractor : MonoBehaviour
             }
         }
 
-        if (!Keyboard.current.eKey.wasPressedThisFrame)
+        bool act = (keyboard != null && keyboard.eKey.wasPressedThisFrame) || (mouse != null && mouse.leftButton.wasPressedThisFrame);
+        if (!act)
         {
             return;
         }
