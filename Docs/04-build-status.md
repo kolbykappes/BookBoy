@@ -46,6 +46,40 @@ rule in [02-mvp-spec.md](02-mvp-spec.md) (updated).
   not advance the game loop and input cannot be injected). Bookcases are narrow towers (0.44 m wide)
   because a shelf holds exactly one packed 4-book series.
 
+## Books seat flush at the front of the shelf (2026-10-17)
+
+Placed books were centered in the shelf depth (~9 cm back from the front edge) and hard to read. Slots now mark a front
+line (`local z = -0.14`) and `ShelfSlot.Accept` places each book's spine face on it (`+ forward * depth/2`), so books of
+different depth line up flush near the front. The aim plane in `Shelf.NearestSlot` moved to mid-book depth to match, and the
+highlight bar sits under where the book stands. Re-verified: 26/26 Play Mode shelf checks; render from the real eye
+height shows the spine numbers clearly.
+
+## Mouse "dragging" fix: uncapped frame rate (2026-10-17)
+
+Reported: sweeping the mouse across the shelves (worst while holding a book) felt laggy and draggy.
+
+- **Cause: the game ran uncapped.** VSync is off and `Application.targetFrameRate` was -1, so the game rendered
+  190-260 fps flat out in the Editor, saturating the GPU/CPU and queuing input behind rendering. Evidence from an
+  in-game frame logger during a real hand sweep: slow frames took 23-80 ms of wall-clock while the main thread did
+  only ~5-12 ms of work (so the time was spent waiting, not in scripts), they clustered while the mouse was moving
+  (p99 11-19 ms vs 5.5-8 ms when still), and the per-frame aim detection never exceeded 0.34 ms. Capping the rate at
+  runtime to 60 fps made it feel "much better" immediately.
+- **Fix:** `FrameRateCap` (`Assets/_Project/Scripts/Core/`) sets `Application.targetFrameRate` to the display's
+  refresh rate (clamped 30-240) at startup when VSync is off and no target is set. Code only; `ProjectSettings` is
+  untouched (turning on VSync in Quality settings, or the Game view's VSync toggle, would also work).
+- **Ruled out by measurement:** the interaction/aim code (5-8 us per frame even with books in the ray's path, no GC),
+  every `Update`, the yaw wrap at 0/360 deg, camera-vs-player latency (exactly 0 frames with the shake off), and
+  rendering cost (~90 draw calls looking at the bookcases).
+- **Also found and changed - camera shake disabled.** The follow camera's `CinemachineBasicMultiChannelPerlin`
+  (`Handheld_normal_mild`, gain 0.5) made the camera wander on its own (~+/-0.1 deg yaw, ~0.45 deg pitch with no
+  input), which hurts aiming at 7 cm slots. It is off via a prefab override on the scene's follow camera (component
+  kept; re-enable or lower its amplitude for a gentler shake). It was not the cause of the drag.
+- **Open - player eye height is 0.79 m, not 1.7 m.** The Player starts at y = 1.0 but gravity drops it to rest at
+  y = 0.09 (CharacterController center 0.93, height 2), so the camera (local y 0.7) sits at 0.79 m. The 1.7 m in
+  `09-scale-reference.md` was computed from the starting transform, not the rest height. Raising
+  `PlayerCameraRoot`'s local Y to ~1.61 would give 1.7 m; not changed yet because it alters the whole feel and
+  aim geometry.
+
 ## Dev workflow (2026-10-17)
 
 - Adopted a Unity operating-rules set from a friend's six-month lessons-learned notes: ~24 hot

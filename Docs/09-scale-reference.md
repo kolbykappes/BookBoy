@@ -59,13 +59,15 @@ Updated 2026-10-17 (the earlier wide boards at z=5.1 and the `ShelfBack` slab we
 | Shelf tops | 0.85 m and 1.30 m | 0.45 m apart: clears the tallest book (0.32 m) with room for a hand |
 | Bookcase spacing | 0.5 m centers, z = 5.67 | A wall of four, 0.06 m gaps, against the back wall (front face at z = 5.85) |
 | Slot pitch | 0.072 m | Widest book (0.055 m) plus a little: "barely wider than a book" |
-| Slots per shelf | 4, centered, at local z = +0.02 | Volume N in slot N, left to right |
+| Slots per shelf | 4, centered, at local z = -0.14 (the books' front line) | Volume N in slot N, left to right; the shelf's front edge is at z = -0.17 |
 
 Each `Shelf` object's origin is on its board's top surface; it carries a trigger `BoxCollider`
 (size `0.36 x 0.40 x 0.34`, center `(0, 0.2, 0)`) that the interact ray uses to find it, and 4 `ShelfSlot`
 children. The aimed slot is chosen where the ray crosses the plane the books stand in (not at the front of the
 volume), so off-axis aiming stays accurate with slots only 7 cm apart. A shelved book stands at
-`slot.position + up * (bookHeight / 2)`. Keep the 0.40 m volume under the 0.45 m board spacing minus the
+`slot.position + up * (bookHeight / 2) + forward * (bookDepth / 2)`: the slot origin is a front line 3 cm inside the board's
+front edge, and every book's spine face is placed on it whatever its depth, so books sit flush near the front where the
+numbers are readable (they used to be centered in the shelf depth, ~9 cm back). Keep the 0.40 m volume under the 0.45 m board spacing minus the
 board thickness, or neighboring shelves overlap.
 
 Series differ by shade and size so a player can tell them apart: series A is the base color at the sizes in
