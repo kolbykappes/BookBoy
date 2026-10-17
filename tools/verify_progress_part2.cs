@@ -13,14 +13,14 @@ Check("the hands are empty afterwards", held.IsEmpty);
 double t0 = (double)System.AppDomain.CurrentDomain.GetData("t0"); double t1 = gp.ElapsedSeconds;
 Check("the run timer advances while playing (and is shown as m:ss)", t1 > t0 + 1.0 && BookBoy.Rules.TimeFormat.Format(t1).Contains(":"), t0.ToString("F1") + " -> " + t1.ToString("F1"));
 
-// ---- completion: arrange every book correctly -> level complete, time frozen ----
-var cats = new[] { "Alchemy", "Astronomy", "Beasts", "History" };
+// ---- completion: arrange every book correctly (all 16 colors) -> level complete, time frozen ----
+var catNames = System.Enum.GetNames(typeof(BookCategory));
 foreach (var b in UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.FindObjectsInactive.Include)) if (b.currentSlot != null) b.currentSlot.Release();
-for (int c = 0; c < 4; c++) for (int s = 0; s < 2; s++) for (int v = 1; v <= 4; v++) {
-  var b = UnityEngine.GameObject.Find("Book_" + cats[c] + "_" + (s == 0 ? "A" : "B") + v).GetComponent<Book>();
+for (int c = 0; c < catNames.Length; c++) for (int s = 0; s < 2; s++) for (int v = 1; v <= 4; v++) {
+  var b = UnityEngine.GameObject.Find("Book_" + catNames[c] + "_" + (s == 0 ? "A" : "B") + v).GetComponent<Book>();
   UnityEngine.GameObject.Find("Bookcase_" + (c + 1)).GetComponent<Bookcase>().shelves[s].slots[v - 1].Accept(b, b.transform.localScale); }
 gp.Recompute();
-Check("all 32 correct: 8 shelves finished, level complete", gp.BooksCorrect == 32 && gp.ShelvesFinished == 8 && gp.LevelComplete, gp.BooksCorrect + " " + gp.ShelvesFinished);
+Check("all 128 correct: 32 shelves finished, level complete", gp.BooksCorrect == 128 && gp.ShelvesFinished == 32 && gp.LevelComplete, gp.BooksCorrect + " " + gp.ShelvesFinished);
 var text = gp.completionText; Check("the completion message shows the final time", text != null && text.enabled && text.text.Contains("restored") && text.text.Contains(":"), text != null ? text.text : "null");
 double frozen = gp.ElapsedSeconds; sb.Append("final time " + BookBoy.Rules.TimeFormat.Format(frozen) + ", points earned in total " + gp.Upgrades.TotalEarned + "\n");
 sb.Append(fails == 0 ? "ALL PASSED (part 2)" : (fails + " FAILED"));
