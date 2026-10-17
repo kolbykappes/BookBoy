@@ -23,6 +23,11 @@ namespace BookBoy.Rules
         public int CurrentIndex => _items.Count == 0 ? -1 : _current;
         public T Current => _items.Count == 0 ? null : _items[_current];
 
+        public bool Contains(T item)
+        {
+            return _items.Contains(item);
+        }
+
         public bool TryAdd(T item)
         {
             if (item == null || IsFull || _items.Contains(item))

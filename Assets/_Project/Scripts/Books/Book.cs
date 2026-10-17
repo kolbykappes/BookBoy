@@ -1,3 +1,4 @@
+using System.Collections;
 using BookBoy.Rules;
 using UnityEngine;
 
@@ -33,8 +34,11 @@ public class Book : MonoBehaviour
 
     public static readonly Color FocusColor = new Color(1f, 0.93f, 0.55f);
 
+    private static PhysicsMaterial _tossMaterial;
+
     private MaterialPropertyBlock _propertyBlock;
     private BookOutline _outline;
+    private Coroutine _settle;
 
     private void OnEnable()
     {
@@ -53,6 +57,12 @@ public class Book : MonoBehaviour
                 bookCollider.isTrigger = true;
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        // Disabling stops a tumble in progress without letting it finish; forget it so a later toss works.
+        _settle = null;
     }
 
     private void OnValidate()
@@ -164,6 +174,118 @@ public class Book : MonoBehaviour
         {
             outline.Flash(ColorFor(result), result == PlacementResult.Correct);
         }
+    }
+
+    private static PhysicsMaterial TossMaterial()
+    {
+        if (_tossMaterial == null)
+        {
+            _tossMaterial = new PhysicsMaterial("BookToss")
+            {
+                bounciness = 0.05f,
+                dynamicFriction = 0.6f,
+                staticFriction = 0.7f,
+                frictionCombine = PhysicsMaterialCombine.Maximum,
+                bounceCombine = PhysicsMaterialCombine.Minimum,
+                hideFlags = HideFlags.HideAndDontSave
+            };
+        }
+
+        return _tossMaterial;
+    }
+
+    /// <summary>Throws the book with real physics: it tumbles, lands, and once it has been still for a moment it goes back to
+    /// being a trigger (so it never blocks the player's walk) that can be picked up again.</summary>
+    public void Toss(Vector3 origin, Vector3 velocity, Vector3 spin)
+    {
+        if (currentSlot != null)
+        {
+            currentSlot.Release();
+        }
+
+        transform.SetParent(null, worldPositionStays: true);
+        transform.position = origin;
+
+        Collider bookCollider = GetComponent<Collider>();
+        bookCollider.enabled = true;
+        bookCollider.isTrigger = false;
+        bookCollider.sharedMaterial = TossMaterial();
+        hasPhysicsDrop = true;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        rb.isKinematic = false;
+        rb.mass = 0.4f;
+        rb.linearDamping = 0.05f;
+        rb.angularDamping = 0.6f;
+        // Continuous: a small, fast book tunnels through thin colliders (walls, shelf boards) with discrete detection.
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.linearVelocity = velocity;
+        rb.angularVelocity = spin;
+
+        if (_settle != null)
+        {
+            StopCoroutine(_settle);
+        }
+
+        _settle = StartCoroutine(SettleRoutine(rb, bookCollider));
+    }
+
+    /// <summary>Cancels a tumble in progress (the book is being picked up mid-air or mid-roll).</summary>
+    public void StopPhysicsTumble()
+    {
+        if (_settle != null)
+        {
+            StopCoroutine(_settle);
+            _settle = null;
+        }
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            Destroy(rb);
+        }
+
+        Collider bookCollider = GetComponent<Collider>();
+        if (bookCollider != null)
+        {
+            bookCollider.sharedMaterial = null;
+        }
+
+        hasPhysicsDrop = false;
+    }
+
+    private IEnumerator SettleRoutine(Rigidbody rb, Collider bookCollider)
+    {
+        float elapsed = 0f;
+        float still = 0f;
+        while (elapsed < 10f && still < 0.5f)
+        {
+            yield return new WaitForFixedUpdate();
+            elapsed += Time.fixedDeltaTime;
+
+            if (transform.position.y < -2f)
+            {
+                // fell out of the world: put it back on the floor near where it left
+                transform.position = new Vector3(Mathf.Clamp(transform.position.x, -6f, 6f), 0.3f, Mathf.Clamp(transform.position.z, -4f, 4f));
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            bool resting = rb.linearVelocity.sqrMagnitude < 0.0025f && rb.angularVelocity.sqrMagnitude < 0.04f;
+            still = resting ? still + Time.fixedDeltaTime : 0f;
+        }
+
+        _settle = null;
+        Destroy(rb);
+        bookCollider.sharedMaterial = null;
+        bookCollider.isTrigger = true;
+        hasPhysicsDrop = false;
     }
 
     public static Color ColorFor(PlacementResult result)

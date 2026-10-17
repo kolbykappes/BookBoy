@@ -86,7 +86,7 @@ ClearAll();
 // ---- aim logic, crosshair, highlight (private members via reflection) ----
 var pi = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>();
 var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance; var tPi = typeof(PlayerInteractor);
-var fHeld = tPi.GetField("_heldBook", flags); var fSlot = tPi.GetField("_focusedSlot", flags); var fBook = tPi.GetField("_focusedBook", flags);
+var fSlot = tPi.GetField("_focusedSlot", flags); var fBook = tPi.GetField("_focusedBook", flags);
 var mFocus = tPi.GetMethod("UpdateFocus", flags); var mVisuals = tPi.GetMethod("UpdateFocusVisuals", flags); var mPrompt = tPi.GetMethod("UpdatePrompt", flags);
 var cam2 = pi.interactionCamera.transform;
 void Aim(UnityEngine.Vector3 from, UnityEngine.Vector3 target) {
@@ -96,7 +96,7 @@ void Aim(UnityEngine.Vector3 from, UnityEngine.Vector3 target) {
 float DotSize() { return pi.crosshair.dot.rectTransform.sizeDelta.x; }
 
 var held = B(BookCategory.History, 1, 4);
-fHeld.SetValue(pi, held);
+pi.Carry.SetCapacity(6); foreach (var cb in new System.Collections.Generic.List<Book>(pi.Carry.Items)) pi.Carry.Release(cb, out _); pi.PickUp(held);
 foreach (var side in new[] { 0f, 0.4f, -0.4f })
 {
     int ok = 0, total = 0; string bad = "";
@@ -121,9 +121,9 @@ Check("exactly one slot highlighted", litCount == 1, litCount.ToString());
 var other = B(BookCategory.History, 0, 1); Put(other, tgt);
 Aim(new UnityEngine.Vector3(tp.x, 1.55f, 3.2f), tp + new UnityEngine.Vector3(0f, 0.05f, 0f));
 mPrompt.Invoke(pi, null);
-Check("aiming at a taken slot: 'taken' prompt, no highlight, blocked (red) crosshair", pi.promptHintText.text.Contains("taken") && !tgt.highlight.enabled && DotSize() == 18f && pi.crosshair.dot.color.g < 0.5f, pi.promptHintText.text + " dot=" + DotSize() + " " + pi.crosshair.dot.color);
+Check("carrying + aiming at a taken slot (with room in the hands): offers to pick the shelved book up, no placement highlight, active crosshair", pi.promptHintText.text.Contains("pick up") && !tgt.highlight.enabled && DotSize() == 18f && pi.crosshair.dot.color.g > 0.7f, pi.promptHintText.text + " dot=" + DotSize() + " " + pi.crosshair.dot.color);
 
-fHeld.SetValue(pi, null);
+foreach (var cb in new System.Collections.Generic.List<Book>(pi.Carry.Items)) pi.Carry.Release(cb, out _);
 Aim(new UnityEngine.Vector3(tp.x, 1.55f, 3.2f), tp + new UnityEngine.Vector3(0f, other.transform.localScale.y * 0.5f, 0f));
 Check("empty-handed aim at a shelved book focuses that book (pick it back up)", (Book)fBook.GetValue(pi) == other, ((Book)fBook.GetValue(pi)) ? ((Book)fBook.GetValue(pi)).name : "null");
 ClearAll();

@@ -3,15 +3,16 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// Minimal first-person interaction: raycast from the camera, carry exactly one book at a
-/// time, and place it on any shelf. The slot the crosshair is on is used; the placement is graded
-/// (wrong bookcase / right bookcase / all right) and the book flashes accordingly. Placed books
-/// can be picked up again. No inventory, no generic item framework.
+/// First-person interaction: raycast from the camera, pick up books into the carry inventory (up to its capacity), cycle
+/// the current book, place it on any shelf, or toss it. The slot the crosshair is on is used for placing; the placement is
+/// graded (wrong bookcase / right bookcase / all right) and the book's outline flashes accordingly. Shelved books can be
+/// picked up again. No generic item framework.
+/// Keys (read directly, no input-binding changes): E pick up / place, Q toss, R or mouse wheel cycle.
 /// </summary>
+[RequireComponent(typeof(CarryInventory))]
 public class PlayerInteractor : MonoBehaviour
 {
     public Camera interactionCamera;
-    public Transform carryPoint;
     public Text promptTitleText;
     public Text promptHintText;
     public float interactionRange = 3f;
@@ -21,18 +22,18 @@ public class PlayerInteractor : MonoBehaviour
 
     public Crosshair crosshair;
 
-    [Tooltip("Held books are shown at this fraction of their real size so they don't occlude " +
-        "as much of the view. Restored to full size on place/drop.")]
-    public float carryScale = 0.6f;
+    [Tooltip("How fast a tossed book leaves the hand, in metres per second (it also gets a little lift).")]
+    public float tossSpeed = 5.5f;
 
-    private Book _heldBook;
-    private Vector3 _heldOriginalScale;
+    private CarryInventory _carry;
     private Book _focusedBook;
     private ShelfSlot _focusedSlot;
     private bool _targetOutOfRange;
     private Book _litBook;
     private ShelfSlot _litSlot;
     private static readonly System.Comparison<RaycastHit> ByDistance = (a, b) => a.distance.CompareTo(b.distance);
+
+    public CarryInventory Carry => _carry != null ? _carry : (_carry = GetComponent<CarryInventory>());
 
     private void Update()
     {
@@ -53,6 +54,7 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
+        bool carrying = !Carry.IsEmpty;
         Ray ray = new Ray(interactionCamera.transform.position, interactionCamera.transform.forward);
         RaycastHit[] hits = Physics.RaycastAll(ray, maxAimRange, ~0, QueryTriggerInteraction.Collide);
         System.Array.Sort(hits, ByDistance);
@@ -63,7 +65,7 @@ public class PlayerInteractor : MonoBehaviour
             Book book = hit.collider.GetComponentInParent<Book>();
             bool inRange = hit.distance <= interactionRange;
 
-            if (_heldBook == null)
+            if (!carrying)
             {
                 if (book != null)
                 {
@@ -88,6 +90,7 @@ public class PlayerInteractor : MonoBehaviour
                 return;
             }
 
+            // Carrying: a loose book can still be picked up (if there is room); a shelf means "place the current book here".
             if (shelf == null && book != null && book.currentSlot != null)
             {
                 shelf = book.currentSlot.shelf;
@@ -95,9 +98,30 @@ public class PlayerInteractor : MonoBehaviour
 
             if (shelf != null)
             {
+                if (!inRange)
+                {
+                    _targetOutOfRange = true;
+                    return;
+                }
+
+                ShelfSlot slot = shelf.NearestSlot(ray, hit.point);
+                if (slot != null && slot.occupied)
+                {
+                    _focusedBook = slot.occupant;     // pick the shelved book up instead
+                }
+                else
+                {
+                    _focusedSlot = slot;
+                }
+
+                return;
+            }
+
+            if (book != null)
+            {
                 if (inRange)
                 {
-                    _focusedSlot = shelf.NearestSlot(ray, hit.point);
+                    _focusedBook = book;
                 }
                 else
                 {
@@ -123,7 +147,7 @@ public class PlayerInteractor : MonoBehaviour
             _litBook.SetFocused(true);
         }
 
-        ShelfSlot slotToLight = _focusedSlot != null && !_focusedSlot.occupied ? _focusedSlot : null;
+        ShelfSlot slotToLight = _focusedSlot;
         if (_litSlot != null && _litSlot != slotToLight)
         {
             _litSlot.SetHighlight(false);
@@ -140,13 +164,13 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_focusedBook != null || (_focusedSlot != null && !_focusedSlot.occupied))
-        {
-            crosshair.SetState(Crosshair.State.Active);
-        }
-        else if (_focusedSlot != null)
+        if (_focusedBook != null && Carry.IsFull)
         {
             crosshair.SetState(Crosshair.State.Blocked);
+        }
+        else if (_focusedBook != null || _focusedSlot != null)
+        {
+            crosshair.SetState(Crosshair.State.Active);
         }
         else if (_targetOutOfRange)
         {
@@ -169,6 +193,9 @@ public class PlayerInteractor : MonoBehaviour
         {
             _litSlot.SetHighlight(false);
         }
+
+        _litBook = null;
+        _litSlot = null;
     }
 
     private void UpdatePrompt()
@@ -178,15 +205,15 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_heldBook == null && _focusedBook != null)
+        if (_focusedBook != null)
         {
-            SetPrompt(DisplayName(_focusedBook), "Press (E) to pick up");
+            SetPrompt(DisplayName(_focusedBook), Carry.IsFull
+                ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")"
+                : "Press (E) to pick up");
         }
-        else if (_heldBook != null && _focusedSlot != null)
+        else if (_focusedSlot != null && Carry.Current != null)
         {
-            SetPrompt(DisplayName(_heldBook), _focusedSlot.occupied
-                ? "That spot is taken"
-                : "Press (E) to place");
+            SetPrompt(DisplayName(Carry.Current), "Press (E) to place");
         }
         else
         {
@@ -214,10 +241,27 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_heldBook != null && Keyboard.current.qKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            Drop(_heldBook);
-            return;
+            TossCurrent();
+        }
+
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            Carry.Cycle(+1);
+        }
+
+        if (Mouse.current != null)
+        {
+            float wheel = Mouse.current.scroll.ReadValue().y;
+            if (wheel > 0.1f)
+            {
+                Carry.Cycle(+1);
+            }
+            else if (wheel < -0.1f)
+            {
+                Carry.Cycle(-1);
+            }
         }
 
         if (!Keyboard.current.eKey.wasPressedThisFrame)
@@ -225,87 +269,59 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_heldBook == null && _focusedBook != null)
+        if (_focusedBook != null && !Carry.IsFull)
         {
             PickUp(_focusedBook);
         }
-        else if (_heldBook != null && _focusedSlot != null && !_focusedSlot.occupied)
+        else if (_focusedSlot != null && !_focusedSlot.occupied && Carry.Current != null)
         {
-            Place(_heldBook, _focusedSlot);
+            PlaceCurrent(_focusedSlot);
         }
-        // An occupied spot just keeps showing "That spot is taken" - pick that book up first.
     }
 
-    private void PickUp(Book book)
+    public bool PickUp(Book book)
     {
-        if (book.currentSlot != null)
-        {
-            book.currentSlot.Release();
-        }
-
-        _heldBook = book;
-        _heldOriginalScale = book.transform.localScale;
-
-        Collider bookCollider = book.GetComponent<Collider>();
-        if (bookCollider != null)
-        {
-            bookCollider.enabled = false;
-        }
-
-        Rigidbody rb = book.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-        }
-
-        Transform bookTransform = book.transform;
-        bookTransform.SetParent(carryPoint, worldPositionStays: false);
-        bookTransform.localPosition = Vector3.zero;
-        bookTransform.localRotation = Quaternion.identity;
-        bookTransform.localScale = _heldOriginalScale * carryScale;
+        return Carry.TryPickUp(book);
     }
 
-    private void Place(Book book, ShelfSlot slot)
+    /// <summary>Places the current book in an empty slot. Returns false if there is nothing to place or the slot is taken.</summary>
+    public bool PlaceCurrent(ShelfSlot slot)
     {
-        slot.Accept(book, _heldOriginalScale);
-        _heldBook = null;
+        Book book = Carry.Current;
+        if (book == null || slot == null || slot.occupied)
+        {
+            return false;
+        }
+
+        if (!Carry.Release(book, out Vector3 scale))
+        {
+            return false;
+        }
+
+        slot.Accept(book, scale);
+        return true;
     }
 
-    /// <summary>Q: let go of the held book wherever the player is looking, no penalty. Gives it
-    /// real physics so it tumbles and collides with static level geometry (walls, floor, shelf)
-    /// instead of just resting exactly where it's released.</summary>
-    private void Drop(Book book)
+    /// <summary>Q: throws the current book where the player is looking. It gets real physics, tumbles, lands, and goes back to
+    /// being a normal pick-up-able book once it has settled.</summary>
+    public bool TossCurrent()
     {
-        Transform bookTransform = book.transform;
-        bookTransform.SetParent(null);
-        bookTransform.localScale = _heldOriginalScale;
-
-        Collider bookCollider = book.GetComponent<Collider>();
-        if (bookCollider != null)
+        Book book = Carry.Current;
+        if (book == null || interactionCamera == null)
         {
-            bookCollider.enabled = true;
-            bookCollider.isTrigger = false;
+            return false;
         }
 
-        book.hasPhysicsDrop = true;
-
-        Rigidbody rb = book.GetComponent<Rigidbody>();
-        if (rb == null)
+        if (!Carry.Release(book, out _))
         {
-            rb = book.gameObject.AddComponent<Rigidbody>();
+            return false;
         }
-        rb.isKinematic = false;
-        // Continuous detection: a book falling/tumbling at typical drop speed is small and fast
-        // enough relative to thin colliders (walls, shelf boards) to tunnel through with the
-        // default discrete detection.
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.linearVelocity = interactionCamera.transform.forward * 0.5f;
-        rb.angularVelocity = new Vector3(
-            Random.Range(-6f, 6f),
-            Random.Range(-6f, 6f),
-            Random.Range(-6f, 6f));
 
-        _heldBook = null;
+        Transform cam = interactionCamera.transform;
+        Vector3 velocity = cam.forward * tossSpeed + Vector3.up * 1.3f;
+        Vector3 spin = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+        book.Toss(cam.position + cam.forward * 0.5f - Vector3.up * 0.1f, velocity, spin);
+        return true;
     }
 
     private static string DisplayName(Book book)
