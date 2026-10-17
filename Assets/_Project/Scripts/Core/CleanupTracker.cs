@@ -1,3 +1,4 @@
+using BookBoy.Rules;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,12 +26,18 @@ public class CleanupTracker : MonoBehaviour
             return;
         }
 
+        int occupied = 0;
         foreach (ShelfSlot slot in _slots)
         {
-            if (slot == null || !slot.occupied)
+            if (slot != null && slot.occupied)
             {
-                return;
+                occupied++;
             }
+        }
+
+        if (!PlacementRules.IsCleanupComplete(_slots.Length, occupied))
+        {
+            return;
         }
 
         _announced = true;

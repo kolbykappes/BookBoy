@@ -1,3 +1,4 @@
+using BookBoy.Rules;
 using UnityEngine;
 
 /// <summary>
@@ -54,7 +55,8 @@ public class ShelfSlot : MonoBehaviour
 
     public bool Accepts(Book book)
     {
-        return !occupied && book != null && book.definition != null && book.definition.bookId == acceptedBookId;
+        return book != null && book.definition != null
+            && PlacementRules.Accepts(acceptedBookId, occupied, book.definition.bookId);
     }
 
     public void MarkOccupied()

@@ -3,5 +3,7 @@
   <Project Path="Unity.StarterAssets.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="BookBoy.Rules.csproj" />
   <Project Path="URPWizard.csproj" />
+  <Project Path="BookBoy.Tests.EditMode.csproj" />
 </Solution>
