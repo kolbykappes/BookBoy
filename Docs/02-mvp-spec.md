@@ -44,7 +44,10 @@ twelve books and exact-slot placement until 2026-10-17; see [04-build-status.md]
   **B Home Beacon** (the held book's bookcase glows around its outer edges for 8 s). Each ability has its own timer: it is
   ready when bought, goes on a 60 s recharge when it actually does something, and recharge upgrades make it 40 s then 20 s.
 - The HUD shows the run time, correct books out of all books, finished shelves, upgrade points, what is carried, a
-  controls legend that marks locked abilities, and one recharge bar with a countdown per unlocked ability.
+  controls legend that marks locked abilities, and one recharge bar with a countdown per unlocked ability (on the middle of
+  the right side, so it never covers the carried books in the lower right).
+- Menus never free the Windows cursor: it stays locked and hidden, and the menus draw their own pointer that moves with
+  the mouse (left click chooses a row; keyboard also works). Carried books get a soft light so they stay bright in the dim room.
 - The room is lit by four warm floating "magelights" (soft point lights, two with soft shadows) and a dim shadowless
   moon fill instead of one directional light; the floor is a tiled marble texture.
 - Completing all 128 correct placements shows `The Arcane Library Is Restored` and a simple restart option.

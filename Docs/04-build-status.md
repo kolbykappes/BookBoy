@@ -360,3 +360,16 @@ The player asked for a key telling them which bookcase is which, by theme and no
 - **Verified:** 74 Edit Mode tests; Play Mode suites: shelves 30, carry 21 + toss 4, progress 29 + 6, abilities 20 + 8, pile 5 + 7 + 4,
   mouse 8 (driven through the Input System, not just by calling methods). Renders checked for the lighting, floor, signs, pile,
   HUD, beacon and the 24-row upgrade menu. Not verified by me: how the lighting reads on the user's monitor, and mouse feel.
+
+### Follow-up: menu cursor, HUD position, carried-book light (2026-10-17)
+
+- **Menus no longer release the Windows cursor.** Tab / F10 used to free it, which broke out of the game window. Now
+  `CursorLock.Suspend` keeps it locked and hidden (and re-takes the lock if the OS drops it, e.g. alt-tab), and `GameUI` draws a
+  software arrow pointer (`GameUI_Pointer`) moved by the mouse delta and clamped to the screen; hover and left click use it.
+  `tools/verify_menu_pointer.cs` (13 checks) drives Tab / F10 / Esc / clicks through the Input System.
+- **Ability timer panel moved** to the middle of the right-hand side (narrower: 330 px rows) so it no longer covers the books
+  you carry (drawn in the lower right). Checked numerically: no overlap with the legend, carry panel or held-book corner.
+- **Carried books in dim light:** a soft warm point light ("HandLight", range 2.6, no shadows) on the player camera lights the
+  carried books and the shelf in front of you. Edit-mode renders show the held books clearly brighter with it.
+- Not verified by me: how it looks live (the Editor was in the background, so the Game view only gave stale captures, and the
+  frame loop was frozen; the pointer and cursor checks are synchronous and passed).

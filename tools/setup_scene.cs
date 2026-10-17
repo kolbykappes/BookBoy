@@ -70,6 +70,16 @@ foreach (var spec in orbSpecs)
 }
 log.Append("orbs=" + orbSpecs.Length + "; ");
 
+// ---------------------------------------------------------------- a soft light on the player's hands so carried books stay bright in the dim room
+var handCam = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>().interactionCamera.transform;
+var handLight = handCam.Find("HandLight");
+if (handLight == null) { var hl = new UnityEngine.GameObject("HandLight"); hl.transform.SetParent(handCam, false); handLight = hl.transform; hl.AddComponent<UnityEngine.Light>(); }
+handLight.localPosition = new UnityEngine.Vector3(0.1f, 0.05f, 0.2f);
+var handL = handLight.GetComponent<UnityEngine.Light>();
+handL.type = UnityEngine.LightType.Point; handL.color = new UnityEngine.Color(1f, 0.93f, 0.8f); handL.intensity = 2.0f; handL.range = 2.6f; handL.shadows = UnityEngine.LightShadows.None;
+UnityEditor.EditorUtility.SetDirty(handL);
+log.Append("handlight; ");
+
 // ---------------------------------------------------------------- floor and walls
 var floorRenderer = UnityEngine.GameObject.Find("Floor").GetComponent<UnityEngine.Renderer>();
 floorRenderer.sharedMaterial = floorMat;

@@ -6,10 +6,12 @@ using UnityEngine.InputSystem;
 /// which does not reliably fire in the Editor when entering Play. Cursor.lockState only reports
 /// what was requested, not whether the Game view actually holds the lock (Esc or losing focus
 /// releases it without changing the property), so every click re-asserts the lock.
+/// Menus do NOT free the Windows cursor (that would break out of the game window): the cursor stays locked and hidden and
+/// the menus draw their own pointer (see GameUI), driven by the mouse movement.
 /// </summary>
 public class CursorLock : MonoBehaviour
 {
-    /// <summary>While true (a menu is open) the cursor stays free and visible.</summary>
+    /// <summary>True while a menu is open. The cursor stays locked and hidden; the menu uses a software pointer.</summary>
     public bool suspended;
 
     private void OnEnable()
@@ -20,7 +22,7 @@ public class CursorLock : MonoBehaviour
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (hasFocus && !suspended)
+        if (hasFocus)
         {
             Lock(true);
         }
@@ -28,18 +30,24 @@ public class CursorLock : MonoBehaviour
 
     private void Update()
     {
-        if (!suspended && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        if (suspended)
+        {
+            if (Cursor.lockState != CursorLockMode.Locked || Cursor.visible)
+            {
+                Lock(false);
+            }
+        }
+        else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             Lock(true);
         }
     }
 
-    /// <summary>Frees the cursor for a menu.</summary>
+    /// <summary>A menu opened: the game pauses, but the cursor stays locked and hidden.</summary>
     public void Suspend()
     {
         suspended = true;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        Lock(false);
     }
 
     /// <summary>Hides and locks the cursor again after a menu.</summary>

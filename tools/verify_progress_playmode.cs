@@ -72,7 +72,7 @@ Check("while flying, the destination slots are reserved (nobody else can take th
 // ---- menus ----
 gp.ResetUpgrades(); gp.AddPoints(3);
 ui.OpenUpgrades();
-Check("the upgrade menu opens, pauses the game and frees the cursor", ui.MenuOpen && ui.UpgradesOpen && UnityEngine.Time.timeScale == 0f && !fpc.enabled && !pi.enabled && cursor.suspended && UnityEngine.Cursor.lockState == UnityEngine.CursorLockMode.None && UnityEngine.Cursor.visible);
+Check("the upgrade menu opens, pauses the game and keeps the Windows cursor locked and hidden", ui.MenuOpen && ui.UpgradesOpen && UnityEngine.Time.timeScale == 0f && !fpc.enabled && !pi.enabled && cursor.suspended && UnityEngine.Cursor.lockState == UnityEngine.CursorLockMode.Locked && !UnityEngine.Cursor.visible);
 Check("rows describe the upgrades with cost and state", ui.RowText(0).Contains("Strong Arms I") && ui.RowText(0).Contains("BUY") && ui.RowText(1).Contains("needs Strong Arms I") && ui.RowText(13).Contains("Quick Shelve"), ui.RowText(0) + " | " + ui.RowText(1));
 Check("choosing a row buys it: Strong Arms I costs 1 of the 3 points", ui.Activate(0) && gp.Upgrades.IsUnlocked("arms1") && gp.Upgrades.Points == 2, "points=" + gp.Upgrades.Points);
 Check("a row you cannot buy yet (Fleet Feet II needs Fleet Feet I) does nothing and costs nothing", !ui.Activate(7) && !gp.Upgrades.IsUnlocked("feet2") && gp.Upgrades.Points == 2);

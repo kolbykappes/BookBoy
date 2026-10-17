@@ -41,8 +41,8 @@ public class GameUI : MonoBehaviour
 
     private const int RowPool = 26;
     private const float MenuRowPitch = 32f;
-    private const float AbilityRowWidth = 440f;
-    private const float AbilityRowHeight = 46f;
+    private const float AbilityRowWidth = 330f;
+    private const float AbilityRowHeight = 42f;
     private static readonly Color PanelColor = new Color(0.05f, 0.05f, 0.08f, 0.72f);
     private static readonly Color RowColor = new Color(0.14f, 0.14f, 0.19f, 0.9f);
     private static readonly Color RowSelected = new Color(0.25f, 0.38f, 0.62f, 0.95f);
@@ -85,6 +85,9 @@ public class GameUI : MonoBehaviour
     private QuickShelve _shelve;
     private AdminTools _admin;
     private RectTransform _abilityPanel;
+    private RectTransform _pointer;
+    private Canvas _canvas;
+    private Vector2 _virtualCursor;
     private readonly List<AbilityRow> _abilityRows = new List<AbilityRow>();
 
     private FirstPersonController _fpc;
@@ -94,6 +97,29 @@ public class GameUI : MonoBehaviour
     public bool MenuOpen => _menu != Menu.None;
     public bool UpgradesOpen => _menu == Menu.Upgrades;
     public bool AdminOpen => _menu == Menu.Admin;
+
+    /// <summary>Where the menu pointer is, in screen pixels (origin bottom-left). The real cursor stays locked and hidden.</summary>
+    public Vector2 VirtualCursor => _virtualCursor;
+
+    /// <summary>Moves the menu pointer by a mouse movement (pixels), keeping it on screen.</summary>
+    public void MoveVirtualCursor(Vector2 delta)
+    {
+        _virtualCursor += delta;
+        _virtualCursor.x = Mathf.Clamp(_virtualCursor.x, 0f, Screen.width - 1f);
+        _virtualCursor.y = Mathf.Clamp(_virtualCursor.y, 0f, Screen.height - 1f);
+        PlacePointer();
+    }
+
+    private void PlacePointer()
+    {
+        if (_pointer == null)
+        {
+            return;
+        }
+
+        float scale = _canvas != null && _canvas.scaleFactor > 0f ? _canvas.scaleFactor : 1f;
+        _pointer.anchoredPosition = _virtualCursor / scale;
+    }
 
     private void Start()
     {
@@ -112,9 +138,11 @@ public class GameUI : MonoBehaviour
         _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         Transform canvas = GameObject.Find("HUD_Canvas").transform;
+        _canvas = canvas.GetComponent<Canvas>();
         DestroyOld(canvas);
         BuildHud(canvas);
         BuildMenu(canvas);
+        BuildPointer(canvas);
 
         if (_progress != null)
         {
@@ -148,7 +176,7 @@ public class GameUI : MonoBehaviour
 
     private static void DestroyOld(Transform canvas)
     {
-        foreach (string n in new[] { "GameUI_Stats", "GameUI_Carry", "GameUI_Legend", "GameUI_Toast", "GameUI_Menu", "GameUI_Abilities" })
+        foreach (string n in new[] { "GameUI_Stats", "GameUI_Carry", "GameUI_Legend", "GameUI_Toast", "GameUI_Menu", "GameUI_Abilities", "GameUI_Pointer" })
         {
             Transform old = canvas.Find(n);
             if (old != null)
@@ -211,15 +239,16 @@ public class GameUI : MonoBehaviour
         _legend = MakeText("Text", legend, 20, TextAnchor.UpperLeft, new Vector2(14f, 8f));
         _hudPanels.Add(legend.gameObject);
 
-        _abilityPanel = MakePanel("GameUI_Abilities", canvas, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f, 24f), new Vector2(AbilityRowWidth + 24f, 60f), PanelColor);
+        // middle of the right-hand side: the held books are drawn in the lower right, so keep that corner clear
+        _abilityPanel = MakePanel("GameUI_Abilities", canvas, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-24f, 0f), new Vector2(AbilityRowWidth + 24f, 60f), PanelColor);
         _hudPanels.Add(_abilityPanel.gameObject);
         _abilityRows.Clear();
         foreach (AbilityRow def in AbilityRowDefs)
         {
             RectTransform root = MakePanel("Ability_" + def.Name, _abilityPanel, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(AbilityRowWidth, AbilityRowHeight), RowColor);
             RectTransform fill = MakePanel("Fill", root, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(0f, AbilityRowHeight), new Color(0.2f, 0.55f, 0.35f, 0.9f));
-            Text label = MakeText("Label", root, 25, TextAnchor.MiddleLeft, new Vector2(12f, 0f));
-            Text state = MakeText("State", root, 25, TextAnchor.MiddleRight, new Vector2(12f, 0f));
+            Text label = MakeText("Label", root, 22, TextAnchor.MiddleLeft, new Vector2(10f, 0f));
+            Text state = MakeText("State", root, 22, TextAnchor.MiddleRight, new Vector2(10f, 0f));
             _abilityRows.Add(new AbilityRow { Id = def.Id, Name = def.Name, Key = def.Key, Root = root, Fill = fill.GetComponent<Image>(), Label = label, State = state });
         }
 
@@ -243,6 +272,63 @@ public class GameUI : MonoBehaviour
         }
 
         _menuPanel.gameObject.SetActive(false);
+    }
+
+    /// <summary>A small arrow drawn on top of everything while a menu is open (the real cursor stays hidden and locked).</summary>
+    private void BuildPointer(Transform canvas)
+    {
+        const int w = 22, h = 32;
+        var tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
+        Vector2 a = new Vector2(2f, h - 2f), b = new Vector2(2f, 6f), c = new Vector2(16f, 14f);
+        bool Inside(float x, float y)
+        {
+            float d1 = (x - b.x) * (a.y - b.y) - (a.x - b.x) * (y - b.y);
+            float d2 = (x - c.x) * (b.y - c.y) - (b.x - c.x) * (y - c.y);
+            float d3 = (x - a.x) * (c.y - a.y) - (c.x - a.x) * (y - a.y);
+            bool neg = d1 < 0 || d2 < 0 || d3 < 0, pos = d1 > 0 || d2 > 0 || d3 > 0;
+            return !(neg && pos);
+        }
+
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                Color pixel = Color.clear;
+                if (Inside(x, y))
+                {
+                    pixel = Color.white;
+                }
+                else
+                {
+                    for (int oy = -2; oy <= 2 && pixel.a == 0f; oy++)
+                    {
+                        for (int ox = -2; ox <= 2; ox++)
+                        {
+                            if (Inside(x + ox, y + oy))
+                            {
+                                pixel = new Color(0.05f, 0.05f, 0.08f, 0.95f);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                tex.SetPixel(x, y, pixel);
+            }
+        }
+
+        tex.Apply();
+        var go = new GameObject("GameUI_Pointer", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(canvas, false);
+        _pointer = (RectTransform)go.transform;
+        _pointer.anchorMin = Vector2.zero;
+        _pointer.anchorMax = Vector2.zero;
+        _pointer.pivot = new Vector2(2f / w, (h - 2f) / h);   // the arrow's tip is the hot spot
+        _pointer.sizeDelta = new Vector2(w * 1.2f, h * 1.2f);
+        var img = go.GetComponent<Image>();
+        img.sprite = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f));
+        img.raycastTarget = false;
+        go.SetActive(false);
     }
 
     // ---------------------------------------------------------------- refresh
@@ -413,6 +499,17 @@ public class GameUI : MonoBehaviour
         _menuPanel.gameObject.SetActive(true);
         if (!wasOpen)
         {
+            _virtualCursor = new Vector2(Screen.width, Screen.height) * 0.5f;
+        }
+
+        if (_pointer != null)
+        {
+            _pointer.gameObject.SetActive(true);
+            _pointer.SetAsLastSibling();
+            PlacePointer();
+        }
+        if (!wasOpen)
+        {
             SetGameplayActive(false);
         }
 
@@ -428,6 +525,11 @@ public class GameUI : MonoBehaviour
 
         _menu = Menu.None;
         _menuPanel.gameObject.SetActive(false);
+        if (_pointer != null)
+        {
+            _pointer.gameObject.SetActive(false);
+        }
+
         SetHudVisible(true);
         SetGameplayActive(true);
     }
@@ -650,7 +752,8 @@ public class GameUI : MonoBehaviour
             return;
         }
 
-        Vector2 pos = mouse.position.ReadValue();
+        MoveVirtualCursor(mouse.delta.ReadValue());
+        Vector2 pos = _virtualCursor;
         for (int i = 0; i < count; i++)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(_rows[i].Background.rectTransform, pos, null))
