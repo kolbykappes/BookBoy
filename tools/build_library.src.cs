@@ -180,7 +180,8 @@ log.Append("books=" + books.Count + "; ");
 
 // ---- 4. Four bookcases, two shelves each, four packed slots per shelf ----
 const float W = 0.44f, D = 0.36f, H = 1.79f;
-const float slotPitch = 0.072f;           // widest book (0.055) + a little; slots are barely wider than a book
+const float slotPitch = 0.072f;
+const float frontLine = -0.14f;           // local z of the books' front (spine) face; the shelf's front edge is at -0.17           // widest book (0.055) + a little; slots are barely wider than a book
 float[] shelfTops = { 0.85f, 1.30f };
 
 GameObject Part(string name, Transform parentT, Vector3 localPos, Vector3 size)
@@ -229,7 +230,7 @@ for (int i = 0; i < 4; i++)
         {
             var slotGo = new GameObject("Slot_" + (k + 1));
             slotGo.transform.SetParent(shelfGo.transform, false);
-            slotGo.transform.localPosition = new Vector3((k - (volumes - 1) / 2f) * slotPitch, 0f, 0.02f);
+            slotGo.transform.localPosition = new Vector3((k - (volumes - 1) / 2f) * slotPitch, 0f, frontLine);   // front line: books sit flush near the front edge
             var slot = slotGo.AddComponent<ShelfSlot>();
             slot.shelf = shelf;
             slot.slotIndex = k;
@@ -238,7 +239,7 @@ for (int i = 0; i < 4; i++)
             bar.name = "Highlight";
             Object.DestroyImmediate(bar.GetComponent<Collider>());
             bar.transform.SetParent(slotGo.transform, false);
-            bar.transform.localPosition = new Vector3(0f, 0.002f, 0f);
+            bar.transform.localPosition = new Vector3(0f, 0.002f, 0.1f);   // centered under where a book will stand (front line + half a typical depth)
             bar.transform.localScale = new Vector3(slotPitch - 0.008f, 0.004f, 0.2f);
             var mr = bar.GetComponent<MeshRenderer>();
             mr.sharedMaterial = highlightMat;

@@ -39,9 +39,10 @@ public class ShelfSlot : MonoBehaviour
         Transform bookTransform = book.transform;
         bookTransform.SetParent(null);
         bookTransform.localScale = bookScale;
-        // Slot origin is on the board top; stand the book on it.
+        // The slot origin is on the board top at the front line: stand the book on it with its front (spine) face on
+        // that line, so every book sits flush near the front of the shelf whatever its depth.
         bookTransform.SetPositionAndRotation(
-            transform.position + Vector3.up * (bookScale.y * 0.5f),
+            transform.position + Vector3.up * (bookScale.y * 0.5f) + transform.forward * (bookScale.z * 0.5f),
             transform.rotation);
 
         Collider bookCollider = book.GetComponent<Collider>();
