@@ -6,6 +6,48 @@
 
 **Last updated:** 2026-10-17 (shelf system reworked: 16 numbered books, free placement with color feedback).
 
+## Progression, abilities, and the 128-book room (2026-10-17, overnight batch)
+
+Ten features requested by Kolby, built in small slices, each committed with tests and a Play Mode check:
+
+1. **Carry several books** (`CarryInventory`, `CarryList` rules): hands start at 4, shown as a small fan at the carry point; a
+   loose or shelved book can be picked up while there is room ("Hands full (n/n)" otherwise).
+2. **Cycle** the current book with R or the mouse wheel (E places the current one).
+3. **Capacity is an upgrade**: starts at 4; Strong Arms I-VI take it to 10.
+4. **Points for finished shelves** (`GameProgress`, `FinishedTracker`): a shelf with all 4 books of one series in order
+   pays 1 upgrade point, once per shelf (re-finishing does not pay again).
+5. **Toss** with Q (`Book.Toss`): real physics (continuous detection, low bounce, high friction); it settles after being still
+   for 0.5 s, then returns to a normal trigger book. Eight tosses in eight directions all landed on the floor (one came to rest
+   on top of a bookcase) and all settled.
+6. **Quick Shelve** (F, `QuickShelve`, `ShelfPlanner` rules): plans every held book against the live claims (the bookcase and
+   shelf that already hold its color/series, else the first unclaimed; volume N in slot N), reserves the slots, and flies each
+   book along an arc with a spin and a glow trail, snapping it in with the normal green/yellow/red feedback.
+7. **Sister Glow** (G, `SisterGlow`): pulses the outline on every unshelved book of the held book's series (not the held
+   ones, not shelved ones); a 6 s cooldown (3 s with Quick Recharge). Needs the upgrade.
+8. **HUD** (`GameUI`): run time, books correct / total, shelves finished, upgrade points, what you carry, toasts, and a
+   completion message with the final time (your score is the time to finish).
+9. **Outline glow instead of whole-book glow** (`BookOutline`, `BookOutline.shader`): a thin outline plus a faint halo (back-face
+   shells of the book mesh) and sparkles for focus, sister glow and placement feedback; the book's body color is never
+   changed. Shells are flat in depth, otherwise they read as a slab behind the book.
+10. **Tech tree and menus**: `UpgradeCatalog` (13 upgrades, 24 points: Strong Arms I-VI, Fleet Feet I-III, Sister Glow, Lingering
+    Glow, Quick Recharge, Quick Shelve), the upgrade menu on Tab, an admin menu on F10 (+1/+5/+10 points, unlock all, reset), and
+    a controls legend that greys out locked abilities. Menus pause the game, free the cursor, and are driven by direct
+    mouse/keyboard handling (no EventSystem). Keys are read directly: no input-binding changes.
+
+Then the room grew to **16 bookcases / 32 shelves / 128 books in 16 colors** (so up to 32 points): `BookCategory` has 16 values
+(append-only), the generator builds all 16 colors (light colors get a darker second series), the original 32 definitions were
+updated in place (GUIDs unchanged), and the scatter keeps the spawn point clear.
+
+**Verified:** 58 Edit Mode tests; Play Mode suites in `tools/`: `verify_shelves_playmode.cs` (26 checks), `verify_carry_playmode.cs` +
+`verify_toss_settle.cs` (23), `verify_progress_playmode.cs` + `verify_progress_part2.cs` (33: points, upgrades, abilities, menus, the
+Quick Shelve flights landing every book Correct, the timer, and completing all 128 books). Screenshots of the HUD, both menus,
+the glow and the 16-bookcase wall were reviewed.
+
+**Not verified by me / open:** how the glow, flights and tosses *feel* in motion with a real mouse and keyboard (input cannot be
+injected here); no sound effects exist yet; the legend is always visible (no hide toggle); a book tossed onto a bookcase top
+stays there (still pickable with the crosshair); the 16 colors are distinguishable in screenshots but the closest pairs
+(amber/lemon, rust/brown) are worth a look in play; no save/load (still a non-goal), so upgrades and points reset each run.
+
 ## Bookcase rework (2026-10-17)
 
 Design from Kolby, modeled on the layered color -> title -> volume sort in Librarian (see

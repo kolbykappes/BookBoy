@@ -57,7 +57,7 @@ Updated 2026-10-17 (the earlier wide boards at z=5.1 and the `ShelfBack` slab we
 | Bookcase height | 1.79 m | A real tall bookcase, under 2 m; the top board is above eye height (1.7 m) |
 | Base cabinet | 0.85 m tall, solid | Lower cabinet like the reference pictures; shelf 1 sits on it |
 | Shelf tops | 0.85 m and 1.30 m | 0.45 m apart: clears the tallest book (0.32 m) with room for a hand |
-| Bookcase spacing | 0.5 m centers, z = 5.67 | A wall of four, 0.06 m gaps, against the back wall (front face at z = 5.85) |
+| Bookcase spacing | 0.5 m centers, z = 5.67 | A wall of sixteen (x = -3.75 to 3.75), 0.06 m gaps, against the back wall (front face at z = 5.85) |
 | Slot pitch | 0.072 m | Widest book (0.055 m) plus a little: "barely wider than a book" |
 | Slots per shelf | 4, centered, at local z = -0.14 (the books' front line) | Volume N in slot N, left to right; the shelf's front edge is at z = -0.17 |
 

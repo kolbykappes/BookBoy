@@ -2,18 +2,24 @@
 
 ## MVP scope
 
-The first end-to-end playable MVP is **one room, thirty-two books (four colors x two series x four
-volumes), four bookcases with two shelves each, and one complete sorting loop**. (Was twelve books and
-exact-slot placement until 2026-10-17; see [04-build-status.md](04-build-status.md).)
+The first end-to-end playable MVP is **one room, 128 books (16 colors x two series x four volumes), 16
+bookcases with two shelves each (32 shelves), and one complete sorting loop with light progression**. (Was
+twelve books and exact-slot placement until 2026-10-17; see [04-build-status.md](04-build-status.md).)
+
+> **Scope decisions made by request, 2026-10-17 (these override items that were on the non-goals list below):**
+> a run timer whose result is your score (time to finish the room), upgrade points earned per finished shelf, a small
+> tech tree to spend them on, and unlockable abilities. They were requested explicitly; the "hard timers / score
+> attacks / economy" non-goals were written to keep the first loop simple and are relaxed for these features only.
 
 ## Player experience requirements
 
 - First-person player can walk, look around, collide with geometry, and approach shelves.
-- The room contains 32 scattered books.
+- The room contains 128 scattered books.
 - Books are visibly distinct at normal player distance.
-- There are four colors, each with two series of four numbered books (volumes 1-4).
+- There are 16 colors, each with two series of four numbered books (volumes 1-4).
 - Player can identify a book's intended section using color and/or a clear category marker.
-- Player can pick up exactly one book at a time.
+- The player carries several books at once (starts at 4; upgrades raise it up to 10), can cycle which one is current
+  (R or mouse wheel), and can toss the current one (Q): it tumbles with real physics and settles where it lands.
 - Player can place a carried book on any shelf; the slot under the crosshair is used.
 - Bookcases and shelves start unlabeled. The first book shelved claims the bookcase's color and the
   shelf's series (the earlier claim wins a conflict); all other books on them must match.
@@ -21,9 +27,15 @@ exact-slot placement until 2026-10-17; see [04-build-status.md](04-build-status.
 - Feedback is a flash on the book: red = wrong bookcase (color), yellow = right bookcase but wrong shelf
   (series) or wrong slot, green = right bookcase, shelf and slot.
 - A wrong placement is never refused and never penalized; the player can pick the book back up.
-- A crosshair dot shows what is targeted and whether it is in reach.
-- HUD reports `Books Restored: X / 32`.
-- Completing 32 correct placements shows `The Arcane Library Is Restored` and a simple restart option.
+- A crosshair dot shows what is targeted and whether it is in reach. A targeted book, a flash on placement, and the
+  sister glow are drawn as an outline with sparkles; the book's own color never changes.
+- Finishing a shelf (4 books of one series in order) earns 1 upgrade point, once per shelf. Tab opens the upgrade menu
+  (capacity, move speed, Sister Glow, Quick Shelve and their refinements; the tree totals 24 points of the 32 available).
+  F is Quick Shelve (every held book flies to its right place) and G is Sister Glow (the held book's unshelved sisters
+  glow); both are unlocked by upgrades. F10 opens an admin menu for testing.
+- The HUD shows the run time, correct books out of all books, finished shelves, upgrade points, what is carried, and a
+  controls legend that marks locked abilities.
+- Completing all 128 correct placements shows `The Arcane Library Is Restored` and a simple restart option.
 
 ## Initial categories
 
