@@ -28,7 +28,7 @@ public class GameUI : MonoBehaviour
         public Text Label;
     }
 
-    private const int RowPool = 10;
+    private const int RowPool = 16;
     private static readonly Color PanelColor = new Color(0.05f, 0.05f, 0.08f, 0.72f);
     private static readonly Color RowColor = new Color(0.14f, 0.14f, 0.19f, 0.9f);
     private static readonly Color RowSelected = new Color(0.25f, 0.38f, 0.62f, 0.95f);
@@ -189,15 +189,15 @@ public class GameUI : MonoBehaviour
 
     private void BuildMenu(Transform canvas)
     {
-        _menuPanel = MakePanel("GameUI_Menu", canvas, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1240f, 860f), new Color(0.03f, 0.03f, 0.06f, 0.94f));
+        _menuPanel = MakePanel("GameUI_Menu", canvas, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1240f, 1000f), new Color(0.03f, 0.03f, 0.06f, 0.94f));
         _menuTitle = MakeText("Title", _menuPanel, 44, TextAnchor.UpperCenter, new Vector2(20f, 18f));
         _menuHelp = MakeText("Help", _menuPanel, 24, TextAnchor.LowerCenter, new Vector2(20f, 14f));
         _menuHelp.color = new Color(0.75f, 0.78f, 0.9f);
 
         for (int i = 0; i < RowPool; i++)
         {
-            RectTransform bg = MakePanel("Row" + i, _menuPanel, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -110f - i * 66f), new Vector2(1180f, 60f), RowColor);
-            Text label = MakeText("Label", bg, 27, TextAnchor.MiddleLeft, new Vector2(16f, 2f));
+            RectTransform bg = MakePanel("Row" + i, _menuPanel, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -104f - i * 56f), new Vector2(1180f, 52f), RowColor);
+            Text label = MakeText("Label", bg, 25, TextAnchor.MiddleLeft, new Vector2(16f, 2f));
             _rows.Add(new Row { Background = bg.GetComponent<Image>(), Label = label });
         }
 
@@ -393,7 +393,7 @@ public class GameUI : MonoBehaviour
         if (_menu == Menu.Upgrades)
         {
             _menuTitle.text = "UPGRADES        <color=#FFE680>" + u.Points + " point" + (u.Points == 1 ? "" : "s") + " to spend</color>";
-            _menuHelp.text = "Finish a shelf to earn a point.   Up/Down + Enter, 1-9, or click to buy.   Tab or Esc to close.";
+            _menuHelp.text = "Finish a shelf to earn a point.   Up/Down + Enter, 1-9 (first nine), or click to buy.   Tab or Esc to close.";
         }
         else
         {

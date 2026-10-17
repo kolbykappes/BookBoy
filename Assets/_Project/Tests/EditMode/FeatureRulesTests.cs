@@ -175,6 +175,28 @@ namespace BookBoy.Tests
         }
 
         [Test]
+        public void GlowCooldown_HalvesOnlyWithItsUpgrade()
+        {
+            var u = new UpgradeState();
+            Assert.AreEqual(6f, u.GlowCooldownSeconds);
+            u.AddPoints(10);
+            Assert.IsFalse(u.TryUnlock("glow3"), "needs Sister Glow first");
+            u.TryUnlock("glow");
+            Assert.IsTrue(u.TryUnlock("glow3"));
+            Assert.AreEqual(3f, u.GlowCooldownSeconds);
+        }
+
+        [Test]
+        public void CapacityTiersReachTen_AndSpeedTiersReachPlus45Percent()
+        {
+            var u = new UpgradeState();
+            u.AddPoints(40);
+            foreach (string id in new[] { "arms1", "arms2", "arms3", "arms4", "arms5", "arms6", "feet1", "feet2", "feet3" }) Assert.IsTrue(u.TryUnlock(id), id);
+            Assert.AreEqual(10, u.CarryCapacity);
+            Assert.AreEqual(1.45f, u.MoveSpeedMultiplier, 0.0001f);
+        }
+
+        [Test]
         public void AddPoints_IgnoresNonPositive()
         {
             var u = new UpgradeState();
@@ -188,15 +210,16 @@ namespace BookBoy.Tests
         {
             var u = new UpgradeState();
             u.UnlockAll();
-            Assert.AreEqual(8, u.CarryCapacity);
+            Assert.AreEqual(10, u.CarryCapacity);
             Assert.IsTrue(u.HasQuickShelve && u.HasSisterGlow);
+            Assert.AreEqual(3f, u.GlowCooldownSeconds);
             u.Reset();
             Assert.AreEqual(4, u.CarryCapacity);
             Assert.IsFalse(u.HasQuickShelve);
         }
 
         [Test]
-        public void Catalog_HasUniqueIds_ValidPrerequisites_AndExceedsTheEightPointsInTheRoom()
+        public void Catalog_HasUniqueIds_ValidPrerequisites_AndSitsBetweenEightAndThirtyTwoPoints()
         {
             var ids = new HashSet<string>();
             int total = 0;
@@ -213,6 +236,7 @@ namespace BookBoy.Tests
             }
 
             Assert.Greater(total, 8, "the tree should force choices with only 8 points available");
+            Assert.LessOrEqual(total, 32, "with all 32 shelves finished everything should be affordable");
         }
     }
 

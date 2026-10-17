@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class SisterGlow : MonoBehaviour
 {
-    private const float Cooldown = 6f;
     private static readonly Color GlowColor = new Color(0.45f, 0.9f, 1f);
 
     private GameProgress _progress;
@@ -76,7 +75,7 @@ public class SisterGlow : MonoBehaviour
             }
         }
 
-        _readyAt = Time.time + Cooldown;
+        _readyAt = Time.time + _progress.Upgrades.GlowCooldownSeconds;
         _ui?.Toast(count > 0
             ? "Sister Glow: " + count + (count == 1 ? " sister book" : " sister books") + " lit up."
             : "Every sister of this book is already shelved or in your hands.");

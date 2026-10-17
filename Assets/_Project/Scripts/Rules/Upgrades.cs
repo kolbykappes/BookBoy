@@ -8,7 +8,8 @@ namespace BookBoy.Rules
         MoveSpeed,
         QuickShelve,
         SisterGlow,
-        GlowDuration
+        GlowDuration,
+        GlowCooldown
     }
 
     public sealed class UpgradeNode
@@ -36,8 +37,8 @@ namespace BookBoy.Rules
         public float Amount { get; }
     }
 
-    /// <summary>The tech tree. Sized for the 8 shelves in the room today (8 points), so the total cost is higher than the
-    /// points available and the player has to choose.</summary>
+    /// <summary>The tech tree. One point is earned per finished shelf. With 8 shelves the player must choose; with the full 32
+    /// shelves (32 points) everything can be bought with some left over.</summary>
     public static class UpgradeCatalog
     {
         public const int BaseCarryCapacity = 4;
@@ -48,10 +49,14 @@ namespace BookBoy.Rules
             new UpgradeNode("arms2", "Strong Arms II", "Carry 1 more book (6).", 1, "arms1", UpgradeEffect.CarryCapacity, 1),
             new UpgradeNode("arms3", "Strong Arms III", "Carry 1 more book (7).", 2, "arms2", UpgradeEffect.CarryCapacity, 1),
             new UpgradeNode("arms4", "Strong Arms IV", "Carry 1 more book (8).", 2, "arms3", UpgradeEffect.CarryCapacity, 1),
+            new UpgradeNode("arms5", "Strong Arms V", "Carry 1 more book (9).", 3, "arms4", UpgradeEffect.CarryCapacity, 1),
+            new UpgradeNode("arms6", "Strong Arms VI", "Carry 1 more book (10).", 3, "arms5", UpgradeEffect.CarryCapacity, 1),
             new UpgradeNode("feet1", "Fleet Feet I", "Move 15% faster.", 1, null, UpgradeEffect.MoveSpeed, 0.15f),
             new UpgradeNode("feet2", "Fleet Feet II", "Move another 15% faster.", 2, "feet1", UpgradeEffect.MoveSpeed, 0.15f),
+            new UpgradeNode("feet3", "Fleet Feet III", "Move yet another 15% faster.", 3, "feet2", UpgradeEffect.MoveSpeed, 0.15f),
             new UpgradeNode("glow", "Sister Glow", "Press G: books of the held book's series that are not on a shelf glow.", 1, null, UpgradeEffect.SisterGlow, 1),
             new UpgradeNode("glow2", "Lingering Glow", "Sister Glow lasts twice as long.", 1, "glow", UpgradeEffect.GlowDuration, 1),
+            new UpgradeNode("glow3", "Quick Recharge", "Sister Glow recharges twice as fast.", 2, "glow", UpgradeEffect.GlowCooldown, 1),
             new UpgradeNode("shelve", "Quick Shelve", "Press F: every held book flies to its right place on a shelf.", 2, null, UpgradeEffect.QuickShelve, 1),
         };
 
@@ -159,5 +164,6 @@ namespace BookBoy.Rules
         public bool HasQuickShelve => Has(UpgradeEffect.QuickShelve);
         public bool HasSisterGlow => Has(UpgradeEffect.SisterGlow);
         public float GlowSeconds => Has(UpgradeEffect.GlowDuration) ? 8f : 4f;
+        public float GlowCooldownSeconds => Has(UpgradeEffect.GlowCooldown) ? 3f : 6f;
     }
 }
