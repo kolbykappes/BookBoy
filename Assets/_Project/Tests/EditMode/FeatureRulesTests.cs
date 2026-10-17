@@ -175,15 +175,17 @@ namespace BookBoy.Tests
         }
 
         [Test]
-        public void GlowCooldown_HalvesOnlyWithItsUpgrade()
+        public void GlowCooldown_ShortensOnlyWithItsUpgrades()
         {
             var u = new UpgradeState();
-            Assert.AreEqual(6f, u.GlowCooldownSeconds);
+            Assert.AreEqual(60f, u.GlowCooldownSeconds);
             u.AddPoints(10);
-            Assert.IsFalse(u.TryUnlock("glow3"), "needs Sister Glow first");
+            Assert.IsFalse(u.TryUnlock("glowcd1"), "needs Sister Glow first");
             u.TryUnlock("glow");
-            Assert.IsTrue(u.TryUnlock("glow3"));
-            Assert.AreEqual(3f, u.GlowCooldownSeconds);
+            Assert.IsTrue(u.TryUnlock("glowcd1"));
+            Assert.AreEqual(40f, u.GlowCooldownSeconds);
+            Assert.IsTrue(u.TryUnlock("glowcd2"));
+            Assert.AreEqual(20f, u.GlowCooldownSeconds);
         }
 
         [Test]
@@ -212,7 +214,7 @@ namespace BookBoy.Tests
             u.UnlockAll();
             Assert.AreEqual(10, u.CarryCapacity);
             Assert.IsTrue(u.HasQuickShelve && u.HasSisterGlow);
-            Assert.AreEqual(3f, u.GlowCooldownSeconds);
+            Assert.AreEqual(20f, u.GlowCooldownSeconds);
             u.Reset();
             Assert.AreEqual(4, u.CarryCapacity);
             Assert.IsFalse(u.HasQuickShelve);
