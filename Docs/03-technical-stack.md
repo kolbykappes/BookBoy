@@ -4,7 +4,7 @@
 
 | Component | Current choice | Why |
 |---|---|---|
-| Engine | Unity 6.6.0f1 (`6000.6.0f1`) | Current Unity 6 generation, suitable for rapid PC prototype work |
+| Engine | Unity 6.6.6f1 (`6000.6.6f1`; upgraded from 6000.6.0f1 on 2026-10-17) | Current Unity 6 generation, suitable for rapid PC prototype work |
 | Rendering | Universal Render Pipeline (URP) Empty Template | Correct default for a stylized, cozy, room-scale 3D game; avoids HDRP complexity |
 | Target platform | Windows PC | Fastest test/build iteration; Steam-friendly eventual target |
 | Language | C# | Unity-native gameplay scripting |
@@ -38,14 +38,13 @@ Recommended AI roles:
 | External coding agent, such as Claude Code or Cursor | Plan multi-file C# changes, create focused scripts, review diffs, explain Inspector wiring, help debug compile/runtime errors |
 | Human developer/designer | Own game feel, feature scope, visual readability, architectural constraints, test gameplay, and approve every change |
 
-## Unity AI/MCP status
+## Unity Editor driving status
 
-**Connected and in active use** as of 2026-09-06 — Claude Code talks directly to a running Unity
-Editor instance via the Unity MCP Server (`Edit → Project Settings → AI → Unity MCP Server`).
-See [07-unity-mcp-tools.md](07-unity-mcp-tools.md) for the full setup, which tools are enabled
-and why, and — importantly — what part of this setup is **not** saved in the repo and has to be
-redone on a fresh machine or clone (most of it: the Editor↔Claude Code connection and the
-per-tool enable/disable state both live outside version control).
+**Changed 2026-10-17:** the Unity MCP bridge (used from 2026-09-06) is superseded by the official
+Unity CLI (`unity`, beta) plus the `com.unity.pipeline` package. Both are installed and verified
+(Pipeline `0.8.0-exp.1`, added to `Packages/manifest.json` via `unity pipeline install`). Rules and traps: root [CLAUDE.md](../CLAUDE.md) (hot tier) and
+`.claude/memory/unity-*.md` (cold tier). The old MCP setup is kept for history in
+[07-unity-mcp-tools.md](07-unity-mcp-tools.md).
 
 ## AI guardrails
 

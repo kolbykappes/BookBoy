@@ -2,6 +2,10 @@
 
 ## Suggested agent prompt sequence
 
+Editor-driving rules (verify on disk, stop Play Mode before writes, save dirty scenes, pin the
+target Editor) live in the root [CLAUDE.md](../CLAUDE.md); read them before running these prompts.
+Updated 2026-10-17 to use the Unity CLI instead of the deprecated Unity MCP bridge.
+
 ### First AI/MCP prompt: read only
 
 Use this before allowing an agent to change anything:
@@ -10,10 +14,11 @@ Use this before allowing an agent to change anything:
 We are building a small Unity 6 URP prototype called BookBoy. It is a first-person cozy
 book-sorting game in one greybox library room.
 
-Do not modify files yet. Use Unity MCP to inspect the current project, active scene, Console,
-installed packages, and relevant Player/Camera objects. Tell me:
+Do not modify files yet. Use the Unity CLI (`unity command ...`, per the root CLAUDE.md §0) to
+inspect the current project, active scene, Console, installed packages, and relevant
+Player/Camera objects. Start with `unity command eval "return Application.unityVersion;"`. Tell me:
 1. Unity version and render pipeline.
-2. Whether the Input System, Cinemachine, AI Assistant, and Unity MCP are installed and working.
+2. Whether the Input System, Cinemachine, and the Unity CLI Pipeline package are installed and working.
 3. Any red Console errors or material runtime warnings.
 4. The active scene hierarchy relevant to player and camera.
 5. The smallest safe plan for adding a project-specific BookDefinition ScriptableObject, 12

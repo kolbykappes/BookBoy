@@ -16,12 +16,13 @@ them as decisions change, don't re-import the original brief.
 | [05-implementation-plan.md](05-implementation-plan.md) | Phase-by-phase build plan (project structure → books → interaction → shelves → feedback → playtest) |
 | [06-agent-workflow.md](06-agent-workflow.md) | Suggested agent prompts, Git commit rhythm, Unity MCP setup notes |
 | [competitive/](competitive/README.md) | Deep competitive analysis of the "tidy up" Steam sorting wave — one file per game (release date, patch history, reviews) plus a dated review tracker |
-| [07-unity-mcp-tools.md](07-unity-mcp-tools.md) | Unity MCP setup, which of the 54 available tools are enabled and why, what's deliberately left off, and what's NOT saved in this repo (most of it — needs redoing per machine) |
+| [07-unity-mcp-tools.md](07-unity-mcp-tools.md) | **Superseded 2026-10-17** — historical record of the Unity MCP bridge setup; replaced by the Unity CLI workflow in the root `CLAUDE.md` |
+| [../.claude/memory/](../.claude/memory/unity-editor-state.md) | Unity dev lessons (cold tier, read on demand; each file has a `retrieval_hook`): [editor state](../.claude/memory/unity-editor-state.md), [prefabs & assets](../.claude/memory/unity-prefabs-and-assets.md), [testing](../.claude/memory/unity-testing.md), [editor-driving tooling](../.claude/memory/unity-tooling-editor-drivers.md), [geometry/physics](../.claude/memory/unity-measuring-geometry-animation-physics.md). **These take precedence over other docs on Unity workflow.** |
 | [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation
 
-- **Engine:** Unity 6.6.0f1 (`6000.6.0f1`), URP, Windows PC target.
+- **Engine:** Unity 6.6.6f1 (`6000.6.6f1`), URP, Windows PC target.
 - **Working scene:** `Assets/Scenes/LibraryPrototype.unity`.
 - **Current state:** Greybox room + Starter Assets first-person controller/camera are playable.
   No project-specific scripts, book system, pickup, or shelf logic exist yet — see

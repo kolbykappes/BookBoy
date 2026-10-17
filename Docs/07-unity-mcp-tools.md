@@ -1,5 +1,11 @@
 # Unity MCP: Setup & Enabled Tools
 
+> **SUPERSEDED 2026-10-17.** The Unity MCP bridge described below is the deprecated way to drive
+> the Editor. The project now follows the Unity CLI + `com.unity.pipeline` path documented in the
+> root [CLAUDE.md](../CLAUDE.md) (§0) and the traps in `.claude/memory/unity-*.md`. Kept as a
+> historical record of the 2026-09 setup; don't extend it. The troubleshooting notes at the
+> bottom (domain-reload timing, `SaveScene` vs `SaveAssets`) are still true regardless of bridge.
+
 Unity MCP connects Claude Code directly to a running Unity Editor instance, so an agent can
 create/inspect GameObjects, assets, and scenes live instead of hand-authoring YAML or waiting for
 manual Editor steps. See [03-technical-stack.md](03-technical-stack.md) for the original

@@ -6,6 +6,30 @@
 
 **Last updated:** 2026-09-06 (Phases 1-5 landed via Unity MCP; expanded to 8 of 12 books/slots).
 
+## Dev workflow (2026-10-17)
+
+- Adopted a Unity operating-rules set from a friend's six-month lessons-learned notes: ~24 hot
+  rules merged into the root `CLAUDE.md`, detailed traps in `.claude/memory/unity-*.md`. They
+  **supersede older workflow docs** (`07-unity-mcp-tools.md` is marked superseded; `06`/`03`
+  updated to the Unity CLI).
+- `com.unity.pipeline` `0.8.0-exp.1` installed (approved) and verified: `unity command eval`
+  returns `6000.6.6f1` from the live Editor.
+- Warm-tier skill built: `.claude/skills/unity-editor-ops/` (`SKILL.md` + `unity-ops.sh`),
+  validated live. First test run: **0 tests** (no test assemblies exist yet) - correctly reported
+  as "no tests ran", not a pass. No scene/asset changes resulted.
+- **First Edit Mode tests landed (15, all passing):** `Assets/_Project/Scripts/Rules/`
+  (`BookBoy.Rules.asmdef`, engine-free `PlacementRules`: exact-`bookId` slot matching and
+  cleanup-complete check) and `Assets/_Project/Tests/EditMode/` (`BookBoy.Tests.EditMode.asmdef`,
+  `PlacementRulesTests`). `ShelfSlot.Accepts` and `CleanupTracker` now call `PlacementRules`, so the
+  tests cover the code the game runs. One deliberate behavior tightening: a slot or book with a
+  null/empty id never matches (previously two empty ids would). Verified in the live scene: 8 books,
+  8 slots, each book fits exactly one slot, no empty slot ids. Run with
+  `bash .claude/skills/unity-editor-ops/unity-ops.sh test editor`. The helper's failure path was
+  verified by breaking an assertion on purpose.
+- **Open items:** not yet play-tested after the refactor (logic is covered by tests and the
+  scene check, but pickup/place in Play Mode hasn't been run since); no PlayMode tests yet.
+- Project upgraded from Unity `6000.6.0f1` to `6000.6.6f1` on 2026-10-17 (`ProjectVersion.txt`).
+
 ## Completed
 
 - **Expanded to 8 books, 2 per category, each with its own shelf target** (12 is the full MVP
