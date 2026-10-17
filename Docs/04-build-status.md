@@ -23,14 +23,13 @@ Ten features requested by Kolby, built in small slices, each committed with test
    theme and the shelf that already holds its series, else the first unclaimed shelf; volume N in slot N), reserves the slots, and flies each
    book along an arc with a spin and a glow trail, snapping it in with the normal green/yellow/red feedback.
 7. **Sister Glow** (G, `SisterGlow`): pulses the outline on every unshelved book of the held book's series (not the held
-   ones, not shelved ones); a 6 s cooldown (3 s with Quick Recharge). Needs the upgrade.
+   ones, not shelved ones). Needs the upgrade (locked at the start); own 60 s timer (see "Abilities, timers..." below).
 8. **HUD** (`GameUI`): run time, books correct / total, shelves finished, upgrade points, what you carry, toasts, and a
    completion message with the final time (your score is the time to finish).
 9. **Outline glow instead of whole-book glow** (`BookOutline`, `BookOutline.shader`): a thin outline plus a faint halo (back-face
    shells of the book mesh) and sparkles for focus, sister glow and placement feedback; the book's body color is never
    changed. Shells are flat in depth, otherwise they read as a slab behind the book.
-10. **Tech tree and menus**: `UpgradeCatalog` (13 upgrades, 24 points: Strong Arms I-VI, Fleet Feet I-III, Sister Glow, Lingering
-    Glow, Quick Recharge, Quick Shelve), the upgrade menu on Tab, an admin menu on F10 (+1/+5/+10 points, unlock all, reset), and
+10. **Tech tree and menus**: `UpgradeCatalog` (24 upgrades, exactly 32 points; see the abilities section below), the upgrade menu on Tab, an admin menu on F10 (+1/+5/+10 points, unlock all, reset), and
     a controls legend that greys out locked abilities. Menus pause the game, free the cursor, and are driven by direct
     mouse/keyboard handling (no EventSystem). Keys are read directly: no input-binding changes.
 
@@ -329,3 +328,35 @@ The player asked for a key telling them which bookcase is which, by theme and no
 - **Verified:** the Play Mode suites (shelves 30 checks incl. themes/signs/no color words, carry 19, toss 4,
   progress 27 + 6) and 58 Edit Mode tests pass; the scene file was byte-identical after Play. Not verified by me: how
   the plaques read at game-window resolution while walking (checked in a 1920x900 render from the spawn point only).
+
+## Abilities, timers, mouse controls, lighting and floor (2026-10-17)
+
+- **Mouse:** left click = E (pick up / place), right click = Q (toss). The keys still work.
+- **Readout:** after a correct (green) placement, aiming at that book shows the NEXT held book's name in the middle of the
+  screen ("Next up - aim at an open spot to place"). A finished green book is not picked up while the hands are busy
+  (with empty hands it still can be); yellow/red shelved books are still pick-up-able.
+- **Four abilities, all locked at the start** (Sister Glow was already locked by default; a test now asserts it): G Sister
+  Glow, F Quick Shelve, C Gather Family (`GatherFamily`), B Home Beacon (`HomeBeacon`).
+- **Own timer per ability** (`AbilityTimers`, engine-free, Time.time based so menus pause it): ready when bought, 60 s after it
+  does something (a use that does nothing - no sisters, hands full - costs nothing). Each ability has two recharge upgrades:
+  40 s and 20 s (never below 5 s); buying one shortens a running timer at once. The HUD (bottom right) lists each unlocked
+  ability with a fill bar and READY / countdown.
+- **Gather Family:** pulls loose (unshelved) books of the held book's series, nearest first, along curved, spinning flights with
+  a sparkle trail; 2 books, 3 with Bigger Pull, the whole series with Whole Family; never more than the free hand space
+  (books already in flight count) or the loose sisters. A book that finds the hands full on arrival drops to the floor.
+- **Home Beacon:** a pulsing gold 12-edge frame (LineRenderers, `Mat_Beacon`) around the outer bounds of the bookcase whose theme
+  matches the held book, plus a soft light, for 8 s.
+- **Tree:** 24 nodes costing exactly 32 points (Strong Arms I-VI 10, Fleet Feet I-III 5, per ability: unlock + recharge I + II,
+  Lingering Glow, Bigger Pull, Whole Family). The menu rows are 32 px so all 24 fit.
+- **Admin menu (F10):** two new buttons pile every unshelved book (hands included) - or every book, shelves emptied - in the middle
+  of the room (`AdminTools`): the books are dropped in bursts and stay solid physics bodies until the whole pile has landed,
+  then become normal pick-up-able books. Also "reset ability timers".
+- **Lighting:** the single directional light (soft, 50 m shadows) is now a dim, shadowless moon fill; four floating warm
+  "magelights" (`MageLight`: bobbing orb + flickering point light; two cast soft shadows), trilight ambient, dark night sky
+  behind the open room, warmer wall material. URP's per-object additional-light limit is 4, so there are exactly 4 orbs; changing
+  the pipeline asset (e.g. Forward+) was not done (needs approval).
+- **Floor:** generated 2x2 marble checker tiles with grout, veining and a normal map (`tools/setup_assets.cs` writes the PNGs and
+  materials; `tools/setup_scene.cs` applies them and adds the new components; both re-runnable).
+- **Verified:** 74 Edit Mode tests; Play Mode suites: shelves 30, carry 21 + toss 4, progress 29 + 6, abilities 20 + 8, pile 5 + 7 + 4,
+  mouse 8 (driven through the Input System, not just by calling methods). Renders checked for the lighting, floor, signs, pile,
+  HUD, beacon and the 24-row upgrade menu. Not verified by me: how the lighting reads on the user's monitor, and mouse feel.
