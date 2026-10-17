@@ -22,6 +22,13 @@ MVP spec, tech stack, build status, implementation plan, agent workflow). Keep
   tree and unlockable abilities, and carrying several books are in scope; see the note at the top of the MVP spec.
   Save/load, procedural generation, combat/fail states and the rest of the non-goals list still stand.
 
+## Backlog and changelog
+
+- To-do list: [Docs/10-backlog.md](Docs/10-backlog.md). When Kolby mentions a new feature or chore, add it there (id, status,
+  priority, goal, details, acceptance, and whether it needs approval). Work from it one item at a time.
+- Log of completed work: [Docs/11-changelog.md](Docs/11-changelog.md). When work lands, add a dated line (newest first, include the
+  commit) and delete the item from the backlog. Keep [Docs/04-build-status.md](Docs/04-build-status.md) current as before.
+
 ## Unity operating rules (hot tier)
 
 Read every session. This file is the ~24-rule summary; the *why* behind each

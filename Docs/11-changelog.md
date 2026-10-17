@@ -1,0 +1,74 @@
+# Changelog
+
+A dated log of what has been completed, newest first. Add an entry when a piece of work lands (same day, one short line per
+change, with the commit if there is one). Planned work lives in [10-backlog.md](10-backlog.md); the current state of the game is
+in [04-build-status.md](04-build-status.md). The full record is `git log`; this is the readable version.
+
+Format: `### YYYY-MM-DD` then bullets. Entries before 2026-10-17 were backfilled from the git history on 2026-10-17, so they are
+grouped by commit date, not by hour.
+
+---
+
+### 2026-10-17
+
+*Docs and process*
+- Added this changelog and the [backlog](10-backlog.md); seeded the backlog with controller support, achievements and save/load.
+- Refreshed the competitive research (new deep dives, screenshots index) (`611df0b`, `8aea8c2`).
+
+*Menus, HUD and lighting follow-up*
+- Menus no longer free the Windows cursor: it stays locked and hidden and the menus draw their own pointer (`dc720bd`).
+- Ability timer panel moved to the middle of the right side so it stops covering the carried books (`dc720bd`).
+- Soft "hand light" on the camera so carried books stay bright in the dim room (`dc720bd`).
+
+*Abilities, mouse, lighting, floor*
+- Four abilities, each locked at the start and on its own 60 s timer with recharge upgrades (40 s, 20 s): Sister Glow, Quick Shelve, and
+  the new Gather Family (pulls 2 / 3 / the whole series of loose books to you, with a sparkle trail) and Home Beacon (glowing frame
+  around the held book's bookcase). The tech tree is now 24 upgrades costing exactly 32 points (`a9903fd`, `970ad6c`).
+- Left click picks up / places, right click tosses; after a correct placement the readout shows the next held book (`970ad6c`).
+- Admin menu: pile every loose book (or every book) in the middle of the room; reset ability timers (`970ad6c`).
+- New lighting (four floating magelights, dim moon fill, night sky) and a tiled marble floor (`21596d8`).
+- Docs updated (`37d4037`).
+
+*Themes and wall signs*
+- Every bookcase has a fixed magical theme (Healing Magic, Fire Magic, ...) named on a wall plaque above it; book titles use the
+  theme word; colors are never shown to the player (`4df9bc2`, `27aef56`, `908a722`).
+- Sister Glow made much more noticeable: thicker outline, halo, light, sparkles, x-ray through occluders (`997d391`).
+
+*Scale-up and progression*
+- Run timer (score is the time), points per finished shelf, tech tree, F10 admin menu, Tab upgrade menu (`9ecf278`, `f1c8e33`).
+- Library expanded to 16 bookcases, 32 shelves and 128 books in 16 colors (`000e862`); non-goals relaxed for progression (`3eb44cc`, `c1c6d2d`).
+- Carry several books, cycle them, toss with real physics (`7aa87c3`); engine-free rules for carrying, upgrades and quick shelve (`bffea2f`).
+- Outline glow with sparkles replaces whole-book glow (`d556b02`).
+
+*Feel and fixes*
+- Player eye height raised to a true 1.7 m (`b1ef133`, `c1d6b6a`); camera shake off; frame rate capped to the display refresh when VSync is off,
+  which fixed the mouse drag (`a17f84c`, `55dd300`, `5355752`).
+- Books and slots moved to the front line of the shelf so books sit flush (`34baac2`, `55dd300`).
+- Cursor hidden and locked during play (`6a575dc`).
+
+*Shelving rework*
+- Bookcases claim a color, shelves claim a series, volume N goes in slot N; crosshair added (`1cf972e`); 4 bookcases and 32 books (`f1e665b`);
+  docs updated (`7c404a1`).
+- Placement rules extracted into an engine-free assembly with the first Edit Mode tests (`6596672`).
+
+*Tooling*
+- Upgraded to Unity 6000.6.6f1 and added the Unity CLI Pipeline package (`7ba3b95`); adopted the Unity operating rules, CLI
+  workflow and the `unity-editor-ops` skill (`d9b4dea`); Play Mode options and eval notes recorded (`f7413f5`).
+
+### 2026-09-07
+
+- Competitive research: negative Steam review analysis with exact numbers, and the abilities/unlocks of all 8 released competitors
+  (`163d302`, `1fb469c`, `b290fd0`).
+
+### 2026-09-06
+
+*Project start*
+- Arcane library greybox with a first-person controller (`c66cf16`); project docs and `CLAUDE.md` from the brief (`738ecec`).
+- Competitive analysis docs for the 2026 Steam tidy-up wave, plus Kolby's hands-on impressions (`b499282`, `803aaf2`).
+
+*First playable slice*
+- Project folder structure and the book data layer (`727d80a`); visual book proof (`8a26e72`); pickup and single-slot placement (`849c9d7`).
+- Expanded to 8 books and 8 shelf targets with a cleanup indicator (`3a30471`, `9ec739a`); Unity MCP tool setup documented (`17c99ba`,
+  later superseded by the Unity CLI).
+- Fixes: mouse look, shelf slot marker, books that block walking, drop on Q, movement drift, placement feel, Astronomy placement,
+  human-scale proportions, sluggish horizontal look (`f2c38a4`, `ba341ca`, `10f5593`, `4c40329`, `c322131`, `d2e106f`).

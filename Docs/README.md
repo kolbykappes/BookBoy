@@ -18,15 +18,15 @@ them as decisions change, don't re-import the original brief.
 | [competitive/](competitive/README.md) | Deep competitive analysis of the "tidy up" Steam sorting wave — one file per game (release date, patch history, reviews) plus a dated review tracker |
 | [07-unity-mcp-tools.md](07-unity-mcp-tools.md) | **Superseded 2026-10-17** — historical record of the Unity MCP bridge setup; replaced by the Unity CLI workflow in the root `CLAUDE.md` |
 | [../.claude/memory/](../.claude/memory/unity-editor-state.md) | Unity dev lessons (cold tier, read on demand; each file has a `retrieval_hook`): [editor state](../.claude/memory/unity-editor-state.md), [prefabs & assets](../.claude/memory/unity-prefabs-and-assets.md), [testing](../.claude/memory/unity-testing.md), [editor-driving tooling](../.claude/memory/unity-tooling-editor-drivers.md), [geometry/physics](../.claude/memory/unity-measuring-geometry-animation-physics.md). **These take precedence over other docs on Unity workflow.** |
+| [10-backlog.md](10-backlog.md) | **The to-do list**: requested features (controller support, achievements, ...), ideas, chores and open decisions. Add to it; hand any item to an agent |
+| [11-changelog.md](11-changelog.md) | **Dated log of what was completed**, newest first. Add an entry whenever work lands |
 | [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation
 
 - **Engine:** Unity 6.6.6f1 (`6000.6.6f1`), URP, Windows PC target.
 - **Working scene:** `Assets/Scenes/LibraryPrototype.unity`.
-- **Current state:** Greybox room + Starter Assets first-person controller/camera are playable.
-  No project-specific scripts, book system, pickup, or shelf logic exist yet — see
-  [04-build-status.md](04-build-status.md).
-- **Next step:** Phase 1 of [05-implementation-plan.md](05-implementation-plan.md) — create the
-  `Assets/_Project/` folder structure — then Phase 2 (visual book proof), per the handoff note
-  at the end of that file.
+- **Current state:** a playable library: 128 books in 16 colors, 16 themed bookcases with wall signs, carrying, tossing,
+  green/yellow/red placement feedback, a run timer, an upgrade tree and four timed abilities, menus, lighting and a tiled floor.
+  See [04-build-status.md](04-build-status.md) for details and [11-changelog.md](11-changelog.md) for what landed when.
+- **Next step:** pick from [10-backlog.md](10-backlog.md) (controller support and achievements are the requested ones).
