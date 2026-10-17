@@ -40,20 +40,31 @@ Check("a placed book gets its real size back (not the carried size)", (B("Book_A
 Check("a placed book is graded (Alchemy vol 1 in the Alchemy bookcase, slot 1 = Correct)", B("Book_Alchemy_A1").Grade() == BookBoy.Rules.PlacementResult.Correct);
 Check("cannot place into a taken slot", !pi.PlaceCurrent(slot));
 
+// a finished (green) book while carrying: the readout moves on to the NEXT book in the hands and the shelved one is left alone
+AimAt(slot.transform.position + new UnityEngine.Vector3(0f, 0.1f, 0f));
+Check("aiming at the book just placed correctly (green): the readout names the NEXT held book, offers no pick-up, crosshair idle",
+    (Book)fBook.GetValue(pi) == null && pi.promptTitleText.enabled && pi.promptTitleText.text == carry.Current.definition.displayName && !pi.promptHintText.text.Contains("pick up") && pi.crosshair.dot.rectTransform.sizeDelta.x < 14f,
+    pi.promptTitleText.text + " / " + pi.promptHintText.text + " dot=" + pi.crosshair.dot.rectTransform.sizeDelta.x);
+// now make it a wrongly shelved (yellow) book: wrong slot of the right shelf
+B("Book_Alchemy_A1").currentSlot.Release();
+slot = CaseOfTheme(BookCategory.Alchemy).shelves[0].slots[1];
+slot.Accept(B("Book_Alchemy_A1"), scales[0]);
+Check("a book on the wrong spot is yellow, not finished", B("Book_Alchemy_A1").Grade() == BookBoy.Rules.PlacementResult.RightBookcaseWrongSpot);
+
 // pickup while carrying: full hands first, then with room
 AimAt(slot.transform.position + new UnityEngine.Vector3(0f, 0.1f, 0f));
 Check("full hands, aiming at a shelved book: it is focused, the prompt says 'Hands full (4/4)', the crosshair is the blocked red",
     (Book)fBook.GetValue(pi) == B("Book_Alchemy_A1") && pi.promptHintText.text.Contains("Hands full (4/4)") && pi.crosshair.dot.color.g < 0.5f, pi.promptHintText.text + " dot=" + pi.crosshair.dot.color);
 Check("full hands: E does not pick it up", !pi.PickUp(B("Book_Alchemy_A1")) && slot.occupant == B("Book_Alchemy_A1"));
 carry.SetCapacity(5); AimAt(slot.transform.position + new UnityEngine.Vector3(0f, 0.1f, 0f));
-Check("with room, the same book says 'Press (E) to pick up' and the crosshair is active", pi.promptHintText.text.Contains("pick up") && pi.crosshair.dot.color.g > 0.7f, pi.promptHintText.text);
+Check("with room, the same book says 'Press (E) or click to pick up' and the crosshair is active", pi.promptHintText.text.Contains("pick up") && pi.crosshair.dot.color.g > 0.7f, pi.promptHintText.text);
 Check("picking a shelved book up while carrying frees its slot", pi.PickUp(B("Book_Alchemy_A1")) && !slot.occupied && carry.Count == 5);
 carry.SetCapacity(4);
 
 // aiming at an empty slot while carrying -> place target
 var empty = CaseOfTheme(BookCategory.Astronomy).shelves[0].slots[2];
 AimAt(empty.transform.position + new UnityEngine.Vector3(0f, 0.05f, 0f));
-Check("carrying + aiming at an empty slot: 'Press (E) to place' for the CURRENT book", pi.promptHintText.text.Contains("place") && pi.promptTitleText.text == carry.Current.definition.displayName, pi.promptTitleText.text + " / " + pi.promptHintText.text);
+Check("carrying + aiming at an empty slot: 'Press (E) or click to place' for the CURRENT book", pi.promptHintText.text.Contains("click to place") && pi.promptTitleText.text == carry.Current.definition.displayName, pi.promptTitleText.text + " / " + pi.promptHintText.text);
 
 // toss: start of the physics
 var tossed = carry.Current; int before = carry.Count;

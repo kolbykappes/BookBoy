@@ -133,7 +133,7 @@ foreach (var side in new[] { 0f, 0.4f, -0.4f })
 Aim(new UnityEngine.Vector3(tp.x, 1.55f, 3.2f), tp + new UnityEngine.Vector3(0f, 0.05f, 0f));
 mPrompt.Invoke(pi, null);
 Check("holding + aiming at an empty slot: place prompt, highlight bar on that slot only, active crosshair",
-    pi.promptHintText.text.Contains("Press (E) to place") && tgt.highlight.enabled && DotSize() == 18f, pi.promptHintText.text + " hl=" + tgt.highlight.enabled + " dot=" + DotSize());
+    pi.promptHintText.text.Contains("click to place") && tgt.highlight.enabled && DotSize() == 18f, pi.promptHintText.text + " hl=" + tgt.highlight.enabled + " dot=" + DotSize());
 int litCount = 0; foreach (var s in UnityEngine.Object.FindObjectsByType<ShelfSlot>(UnityEngine.FindObjectsInactive.Include)) if (s.highlight.enabled) litCount++;
 Check("exactly one slot highlighted", litCount == 1, litCount.ToString());
 

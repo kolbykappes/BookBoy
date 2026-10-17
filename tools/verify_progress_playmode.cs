@@ -15,6 +15,7 @@ void PlaceAt(Book b, ShelfSlot s) { if (b.currentSlot != null) b.currentSlot.Rel
 
 // ---- a fresh run ----
 Reset(); gp.ResetUpgrades(); gp.Recompute();
+Check("fresh run: every ability starts locked (Sister Glow too)", !gp.Upgrades.HasSisterGlow && !gp.Upgrades.HasQuickShelve && !gp.Upgrades.HasGatherFamily && !gp.Upgrades.HasHomeBeacon);
 Check("fresh run: 128 books, 32 shelves, 0 correct, 0 finished, 0 points, capacity 4", gp.BooksTotal == 128 && gp.ShelvesTotal == 32 && gp.BooksCorrect == 0 && gp.ShelvesFinished == 0 && gp.Upgrades.Points == 0 && carry.Capacity == 4, gp.BooksTotal + "/" + gp.ShelvesTotal + " cap=" + carry.Capacity);
 double t0 = gp.ElapsedSeconds; System.AppDomain.CurrentDomain.SetData("t0", t0);
 
@@ -56,7 +57,7 @@ int lit = sg.Activate();
 bool a1 = B(BN(2, 0, 1)).Outline.IsPulsing, a4 = B(BN(2, 0, 4)).Outline.IsPulsing, a2 = B(BN(2, 0, 2)).Outline.IsPulsing, held = B(BN(2, 0, 3)).Outline.IsPulsing;
 bool otherSeries = B(BN(2, 1, 1)).Outline.IsPulsing, otherColor = B(BN(1, 0, 1)).Outline.IsPulsing;
 Check("Sister Glow lights the held book's unshelved sisters only", lit == 2 && a1 && a4 && !a2 && !held && !otherSeries && !otherColor, "lit=" + lit + " A1=" + a1 + " A4=" + a4 + " A2(shelved)=" + a2 + " held=" + held + " B1=" + otherSeries + " other color=" + otherColor);
-Check("Sister Glow then recharges (a second press is refused)", sg.Activate() == 0 && sg.SecondsUntilReady > 3f);
+Check("Sister Glow then recharges (a second press is refused)", sg.Activate() == 0 && sg.SecondsUntilReady > 50f);
 
 // ---- Quick Shelve (flights finish in part 2) ----
 gp.AddPoints(2); gp.TryBuy("shelve");
@@ -72,10 +73,10 @@ Check("while flying, the destination slots are reserved (nobody else can take th
 gp.ResetUpgrades(); gp.AddPoints(3);
 ui.OpenUpgrades();
 Check("the upgrade menu opens, pauses the game and frees the cursor", ui.MenuOpen && ui.UpgradesOpen && UnityEngine.Time.timeScale == 0f && !fpc.enabled && !pi.enabled && cursor.suspended && UnityEngine.Cursor.lockState == UnityEngine.CursorLockMode.None && UnityEngine.Cursor.visible);
-Check("rows describe the upgrades with cost and state", ui.RowText(0).Contains("Strong Arms I") && ui.RowText(0).Contains("BUY") && ui.RowText(1).Contains("needs Strong Arms I") && ui.RowText(12).Contains("Quick Shelve"), ui.RowText(0) + " | " + ui.RowText(1));
+Check("rows describe the upgrades with cost and state", ui.RowText(0).Contains("Strong Arms I") && ui.RowText(0).Contains("BUY") && ui.RowText(1).Contains("needs Strong Arms I") && ui.RowText(13).Contains("Quick Shelve"), ui.RowText(0) + " | " + ui.RowText(1));
 Check("choosing a row buys it: Strong Arms I costs 1 of the 3 points", ui.Activate(0) && gp.Upgrades.IsUnlocked("arms1") && gp.Upgrades.Points == 2, "points=" + gp.Upgrades.Points);
 Check("a row you cannot buy yet (Fleet Feet II needs Fleet Feet I) does nothing and costs nothing", !ui.Activate(7) && !gp.Upgrades.IsUnlocked("feet2") && gp.Upgrades.Points == 2);
-Check("the 2-point Quick Shelve row buys with the remaining points", ui.Activate(12) && gp.Upgrades.IsUnlocked("shelve") && gp.Upgrades.Points == 0, "points=" + gp.Upgrades.Points);
+Check("the 2-point Quick Shelve row buys with the remaining points", ui.Activate(13) && gp.Upgrades.IsUnlocked("shelve") && gp.Upgrades.Points == 0, "points=" + gp.Upgrades.Points);
 ui.CloseMenu();
 Check("closing restores play: time runs, player enabled, cursor locked", !ui.MenuOpen && UnityEngine.Time.timeScale == 1f && fpc.enabled && pi.enabled && !cursor.suspended && UnityEngine.Cursor.lockState == UnityEngine.CursorLockMode.Locked && !UnityEngine.Cursor.visible);
 ui.OpenAdmin();
@@ -83,7 +84,8 @@ int before = gp.Upgrades.Points; ui.Activate(2);
 Check("the admin menu opens and its buttons work (+10 points)", ui.AdminOpen && gp.Upgrades.Points == before + 10, "points=" + gp.Upgrades.Points);
 ui.Activate(3); Check("admin 'unlock every upgrade' works", gp.Upgrades.HasQuickShelve && gp.Upgrades.HasSisterGlow && carry.Capacity == 10);
 ui.Activate(4); Check("admin 'reset' works", gp.Upgrades.Points == 0 && carry.Capacity == 4);
-ui.Activate(5); Check("admin 'close' closes the menu and restores play", !ui.MenuOpen && UnityEngine.Time.timeScale == 1f);
+ui.Activate(7); Check("admin 'reset ability timers' works", gp.IsAbilityReady(BookBoy.Rules.AbilityId.QuickShelve) || !gp.Upgrades.HasQuickShelve);
+ui.Activate(8); Check("admin 'close' closes the menu and restores play", !ui.MenuOpen && UnityEngine.Time.timeScale == 1f);
 
 sb.Append(fails == 0 ? "ALL PASSED (part 1)" : (fails + " FAILED"));
 return sb.ToString();
