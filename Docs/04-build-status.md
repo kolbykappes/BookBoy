@@ -4,7 +4,47 @@
 > [05-implementation-plan.md](05-implementation-plan.md) land, so it always reflects what's
 > actually in the repo, not what's planned.
 
-**Last updated:** 2026-09-06 (Phases 1-5 landed via Unity MCP; expanded to 8 of 12 books/slots).
+**Last updated:** 2026-10-17 (shelf system reworked: 16 numbered books, free placement with color feedback).
+
+## Bookcase rework (2026-10-17)
+
+Design from Kolby, modeled on the layered color -> title -> volume sort in Librarian (see
+[competitive/01-librarian-tidy-up-the-arcane-library.md](competitive/01-librarian-tidy-up-the-arcane-library.md)).
+Supersedes the earlier "colored shelf sections" attempt and the "only the correct slot accepts a book"
+rule in [02-mvp-spec.md](02-mvp-spec.md) (updated).
+
+- **4 bookcases x 2 shelves x 4 slots.** One bookcase per color, one series per shelf, volume N in slot N
+  (left to right). Nothing is labeled or color-coded: the **first book shelved claims** the bookcase's
+  color and the shelf's series; if two claim the same thing the earlier claim wins. Slots are only
+  slightly wider than a book (0.072 m pitch) and invisible, apart from a thin bar on the board that
+  lights up under the crosshair while holding a book.
+- **32 books: 4 colors x 2 series x 4 volumes.** The second series of a color is a lighter shade and a
+  different size. Volume numbers are small pixel digits near the bottom of the spine (`PixelDigit`,
+  depth-tested; legacy `TextMesh` was rejected because its shader renders through geometry). Titles:
+  "Amber Tome Vol. 3", "Amber Codex Vol. 1", etc.
+- **Feedback flash on the book:** red = wrong bookcase (wrong color), yellow = right bookcase but wrong
+  shelf (series) or wrong slot, green = all right. Wrong placements are never refused or penalized;
+  shelved books can be picked back up. Completion ("All 32 books restored!") needs every book green;
+  grades are recomputed from live state, so removing the first book of a shelf re-decides its claim.
+- **Crosshair:** a dot at screen center. Small white = nothing; large gold = something in reach (a book to
+  pick up, or a free slot to place in); large red = in reach but blocked (slot taken); faint = a target
+  beyond reach (3 m; seen out to 12 m). A targeted book is brightened.
+- **Code:** `Bookcase` (claims a color), `Shelf` (claims a series, aim volume, ray-plane slot picking),
+  `ShelfSlot`, `Book` (`Grade()`, `placedTime` from wall-clock time so placements never tie),
+  `PlayerInteractor`, `Crosshair`, `PixelDigit`. Engine-free rules in `BookBoy.Rules.PlacementRules`
+  (`Evaluate`, `ClaimHolds`, `NearestSlot`, `IsCleanupComplete`) with 20 Edit Mode tests.
+- **Player capsule no longer casts a shadow.**
+- **Generated scene content:** `tools/build_library.src.cs` (then `node tools/qualify.js`, then
+  `unity command eval_file tools/build_library.cs`, then save). Re-runnable; mutates the existing 16
+  `BookDefinition` assets in place (GUIDs unchanged) and adds 16. The eval call can report a 5 s
+  main-thread timeout while the script still completes - check the scene state instead of re-running blind.
+- **Verified in Play Mode** (`tools/verify_shelves_playmode.cs`, 26 checks): every grade and claim rule,
+  two different valid solutions (32/32 each), one swap leaving exactly 30, all 32 slots picked correctly
+  from three viewing angles, highlight/prompt/crosshair states, pickup of shelved books, brightening of the
+  focused book. The Editor was restored byte-for-byte afterwards.
+- **Not verified by me:** how the flashes look in motion and the E-key/mouse feel (an unfocused Editor does
+  not advance the game loop and input cannot be injected). Bookcases are narrow towers (0.44 m wide)
+  because a shelf holds exactly one packed 4-book series.
 
 ## Dev workflow (2026-10-17)
 

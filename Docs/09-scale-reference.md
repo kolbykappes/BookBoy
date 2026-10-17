@@ -47,24 +47,27 @@ thickness/height/width):
 | Beasts | `(0.05, 0.32, 0.15)` |
 | History | `(0.055, 0.22, 0.19)` |
 
-## Shelf
+## Bookcases and shelves
+
+Updated 2026-10-17 (the earlier wide boards at z=5.1 and the `ShelfBack` slab were removed).
 
 | Measurement | Value | Reasoning |
 |---|---:|---|
-| Board spacing | 0.45m | Fits books up to ~0.32m tall with clearance for a hand to reach in. |
-| Board thickness | 0.05m | ~2" — a normal shelf board, not a slab. |
-| Board Y positions | `0.35, 0.80, 1.25, 1.70` | Bottom shelf at comfortable reach-down height; top shelf at ~eye level (1.7m) rather than towering above it. |
-| Total shelf unit height | ~1.75m | Under 2m — a real tall bookcase, not an industrial rack. |
+| Bookcase footprint | 0.44 x 0.36 m (W x D) | Narrow tower: one shelf holds exactly one packed 4-book series |
+| Bookcase height | 1.79 m | A real tall bookcase, under 2 m; the top board is above eye height (1.7 m) |
+| Base cabinet | 0.85 m tall, solid | Lower cabinet like the reference pictures; shelf 1 sits on it |
+| Shelf tops | 0.85 m and 1.30 m | 0.45 m apart: clears the tallest book (0.32 m) with room for a hand |
+| Bookcase spacing | 0.5 m centers, z = 5.67 | A wall of four, 0.06 m gaps, against the back wall (front face at z = 5.85) |
+| Slot pitch | 0.072 m | Widest book (0.055 m) plus a little: "barely wider than a book" |
+| Slots per shelf | 4, centered, at local z = +0.02 | Volume N in slot N, left to right |
 
-`ShelfBack`, the walls, and the floor were **not** rescaled — only the shelf boards, books, and
-player eye height. A tall-ceilinged room with a human-scale bookcase inside it is a normal, even
-appealingly grand, library layout; the oversized *shelf* specifically was the actual problem.
+Each `Shelf` object's origin is on its board's top surface; it carries a trigger `BoxCollider`
+(size `0.36 x 0.40 x 0.34`, center `(0, 0.2, 0)`) that the interact ray uses to find it, and 4 `ShelfSlot`
+children. The aimed slot is chosen where the ray crosses the plane the books stand in (not at the front of the
+volume), so off-axis aiming stays accurate with slots only 7 cm apart. A shelved book stands at
+`slot.position + up * (bookHeight / 2)`. Keep the 0.40 m volume under the 0.45 m board spacing minus the
+board thickness, or neighboring shelves overlap.
 
-## Shelf slots
-
-Each `ShelfSlot`'s position is derived, not hand-placed: `slotY = boardTopY + (book height / 2)`,
-so a slot always sits flush on its board regardless of that category's specific book height. The
-visible marker panel (see [04-build-status.md](04-build-status.md)) is `1.6m` wide × `0.6m` deep,
-and the slot's own hit-detection `BoxCollider` is sized to match it — the two must stay in sync,
-or the panel look clickable in an area that isn't (an actual bug hit once: the panel was widened
-without widening the collider underneath it, making most of the "shelf" area unresponsive).
+Series differ by shade and size so a player can tell them apart: series A is the base color at the sizes in
+the table above, series B is a lighter shade and a different size (thickness 0.045-0.055, height 0.24-0.30,
+depth 0.17-0.18). Volume numbers are 0.03 m pixel digits near the bottom of the spine.

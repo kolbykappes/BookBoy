@@ -2,22 +2,28 @@
 
 ## MVP scope
 
-The first end-to-end playable MVP is **one room, twelve books, four shelf categories, and one
-complete sorting loop**.
+The first end-to-end playable MVP is **one room, thirty-two books (four colors x two series x four
+volumes), four bookcases with two shelves each, and one complete sorting loop**. (Was twelve books and
+exact-slot placement until 2026-10-17; see [04-build-status.md](04-build-status.md).)
 
 ## Player experience requirements
 
 - First-person player can walk, look around, collide with geometry, and approach shelves.
-- The room contains 12 scattered books.
+- The room contains 32 scattered books.
 - Books are visibly distinct at normal player distance.
-- There are four categories with three books each.
+- There are four colors, each with two series of four numbered books (volumes 1-4).
 - Player can identify a book's intended section using color and/or a clear category marker.
 - Player can pick up exactly one book at a time.
-- Player can only place a carried book in its explicitly correct shelf slot.
-- Correct placement snaps reliably into a visible slot.
-- Wrong placement gives a gentle "this belongs elsewhere" response and never loses the book.
-- HUD reports `Books Restored: X / 12`.
-- Completing 12 placements shows `The Arcane Library Is Restored` and a simple restart option.
+- Player can place a carried book on any shelf; the slot under the crosshair is used.
+- Bookcases and shelves start unlabeled. The first book shelved claims the bookcase's color and the
+  shelf's series (the earlier claim wins a conflict); all other books on them must match.
+- Volume N goes in slot N, left to right. Slots are barely wider than a book.
+- Feedback is a flash on the book: red = wrong bookcase (color), yellow = right bookcase but wrong shelf
+  (series) or wrong slot, green = right bookcase, shelf and slot.
+- A wrong placement is never refused and never penalized; the player can pick the book back up.
+- A crosshair dot shows what is targeted and whether it is in reach.
+- HUD reports `Books Restored: X / 32`.
+- Completing 32 correct placements shows `The Arcane Library Is Restored` and a simple restart option.
 
 ## Initial categories
 
