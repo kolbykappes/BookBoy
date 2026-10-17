@@ -3,39 +3,44 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Watches every ShelfSlot in the scene and shows a message once all of them are occupied.
-/// Deliberately not the full Phase 6 "Books Restored: X/N" HUD — just enough to prove the
-/// system knows when cleanup is actually finished.
+/// Shows a message once every book is in the right bookcase, on the right shelf, in the right slot. Deliberately not
+/// the full Phase 6 "Books Restored: X/N" HUD — just enough to prove the system knows when cleanup is done.
+/// Grades are recomputed from live state (claims move as books are added or removed), a few times a second.
 /// </summary>
 public class CleanupTracker : MonoBehaviour
 {
+    private const float CheckInterval = 0.25f;
+
     public Text completionText;
 
-    private ShelfSlot[] _slots;
+    private Book[] _books;
     private bool _announced;
+    private float _nextCheck;
 
     private void Start()
     {
-        _slots = Object.FindObjectsByType<ShelfSlot>(FindObjectsInactive.Exclude);
+        _books = Object.FindObjectsByType<Book>(FindObjectsInactive.Exclude);
     }
 
     private void Update()
     {
-        if (_announced || _slots == null || _slots.Length == 0)
+        if (_announced || _books == null || _books.Length == 0 || Time.unscaledTime < _nextCheck)
         {
             return;
         }
 
-        int occupied = 0;
-        foreach (ShelfSlot slot in _slots)
+        _nextCheck = Time.unscaledTime + CheckInterval;
+
+        int correct = 0;
+        foreach (Book book in _books)
         {
-            if (slot != null && slot.occupied)
+            if (book != null && book.IsCorrectlyShelved)
             {
-                occupied++;
+                correct++;
             }
         }
 
-        if (!PlacementRules.IsCleanupComplete(_slots.Length, occupied))
+        if (!PlacementRules.IsCleanupComplete(_books.Length, correct))
         {
             return;
         }
@@ -43,9 +48,9 @@ public class CleanupTracker : MonoBehaviour
         _announced = true;
         if (completionText != null)
         {
-            completionText.text = "All " + _slots.Length + " books restored!";
+            completionText.text = "All " + _books.Length + " books restored!";
             completionText.enabled = true;
         }
-        Debug.Log("CleanupTracker: all " + _slots.Length + " shelf slots occupied — cleanup complete.");
+        Debug.Log("CleanupTracker: all " + _books.Length + " books correctly shelved — cleanup complete.");
     }
 }

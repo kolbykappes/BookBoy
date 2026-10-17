@@ -2,69 +2,72 @@ using BookBoy.Rules;
 using UnityEngine;
 
 /// <summary>
-/// An explicit shelf destination for exactly one book. Matching is by BookDefinition.bookId,
-/// not by category or position — a carried book can only occupy the slot that names it.
+/// One position on a <see cref="Shelf"/>, barely wider than a book. Holds at most one book. Slot N (1-based)
+/// is where volume N of the shelf's series belongs. Invisible except for a thin bar on the board that lights up
+/// while the player aims at it with a book in hand.
 /// </summary>
-[ExecuteAlways]
 public class ShelfSlot : MonoBehaviour
 {
-    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-    private static readonly int ColorId = Shader.PropertyToID("_Color");
+    public Shelf shelf;
 
-    public string acceptedBookId;
-    public Transform snapTransform;
-    public bool occupied;
-    public BookCategory categoryMarker;
+    [Tooltip("0-based position on the shelf; the book that belongs here has volume slotIndex + 1.")]
+    public int slotIndex;
 
-    [Tooltip("Visible placeholder shown at the slot until a book is placed here — required by " +
-        "the MVP spec ('correct placement snaps reliably into a visible slot'). Hidden once occupied.")]
-    public Renderer markerRenderer;
+    public Book occupant;
 
-    [Tooltip("The marker's color, matching the accepted book's spine color. Stored as a plain " +
-        "field (not just set once via MaterialPropertyBlock) because property blocks set purely " +
-        "via script do not survive an Editor domain reload — a real bug hit during development: " +
-        "a marker silently went back to the shader's default color after an unrelated script " +
-        "recompiled. OnEnable/OnValidate re-apply this every time, so it's self-healing.")]
-    public Color markerColor = Color.white;
+    [Tooltip("Thin bar on the board, shown only while this slot is the aimed placement target.")]
+    public Renderer highlight;
 
-    private MaterialPropertyBlock _block;
+    public bool occupied => occupant != null;
 
     private void OnEnable()
     {
-        ApplyMarkerColor();
+        SetHighlight(false);
     }
 
-    private void OnValidate()
+    public void SetHighlight(bool on)
     {
-        ApplyMarkerColor();
-    }
-
-    public void ApplyMarkerColor()
-    {
-        if (markerRenderer == null)
+        if (highlight != null)
         {
-            return;
+            highlight.enabled = on;
+        }
+    }
+
+    /// <summary>Snaps the book into this empty slot, grades the placement, flashes feedback, and returns the grade.</summary>
+    public PlacementResult Accept(Book book, Vector3 bookScale)
+    {
+        Transform bookTransform = book.transform;
+        bookTransform.SetParent(null);
+        bookTransform.localScale = bookScale;
+        // Slot origin is on the board top; stand the book on it.
+        bookTransform.SetPositionAndRotation(
+            transform.position + Vector3.up * (bookScale.y * 0.5f),
+            transform.rotation);
+
+        Collider bookCollider = book.GetComponent<Collider>();
+        if (bookCollider != null)
+        {
+            bookCollider.enabled = true;
         }
 
-        _block ??= new MaterialPropertyBlock();
-        markerRenderer.GetPropertyBlock(_block);
-        _block.SetColor(BaseColorId, markerColor);
-        _block.SetColor(ColorId, markerColor);
-        markerRenderer.SetPropertyBlock(_block);
+        occupant = book;
+        book.currentSlot = this;
+        book.placedTime = Time.realtimeSinceStartupAsDouble;
+
+        PlacementResult result = book.Grade();
+        book.PlayFeedback(result);
+        SetHighlight(false);
+        return result;
     }
 
-    public bool Accepts(Book book)
+    /// <summary>Frees the slot because its book is being picked up.</summary>
+    public void Release()
     {
-        return book != null && book.definition != null
-            && PlacementRules.Accepts(acceptedBookId, occupied, book.definition.bookId);
-    }
-
-    public void MarkOccupied()
-    {
-        occupied = true;
-        if (markerRenderer != null)
+        if (occupant != null)
         {
-            markerRenderer.enabled = false;
+            occupant.currentSlot = null;
         }
+
+        occupant = null;
     }
 }

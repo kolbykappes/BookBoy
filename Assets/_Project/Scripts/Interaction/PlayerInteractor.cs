@@ -4,8 +4,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Minimal first-person interaction: raycast from the camera, carry exactly one book at a
-/// time, and place it in a matching, empty ShelfSlot. No inventory, no generic item framework —
-/// just enough to prove pick up -> carry -> place -> (Q to) drop feels good.
+/// time, and place it on any shelf. The slot the crosshair is on is used; the placement is graded
+/// (wrong bookcase / right bookcase / all right) and the book flashes accordingly. Placed books
+/// can be picked up again. No inventory, no generic item framework.
 /// </summary>
 public class PlayerInteractor : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class PlayerInteractor : MonoBehaviour
     public Text promptHintText;
     public float interactionRange = 3f;
 
+    [Tooltip("Targets beyond interactionRange but within this distance show the crosshair as 'too far'.")]
+    public float maxAimRange = 12f;
+
+    public Crosshair crosshair;
+
     [Tooltip("Held books are shown at this fraction of their real size so they don't occlude " +
         "as much of the view. Restored to full size on place/drop.")]
     public float carryScale = 0.6f;
@@ -23,10 +29,15 @@ public class PlayerInteractor : MonoBehaviour
     private Vector3 _heldOriginalScale;
     private Book _focusedBook;
     private ShelfSlot _focusedSlot;
+    private bool _targetOutOfRange;
+    private Book _litBook;
+    private ShelfSlot _litSlot;
+    private static readonly System.Comparison<RaycastHit> ByDistance = (a, b) => a.distance.CompareTo(b.distance);
 
     private void Update()
     {
         UpdateFocus();
+        UpdateFocusVisuals();
         UpdatePrompt();
         HandleInput();
     }
@@ -35,6 +46,7 @@ public class PlayerInteractor : MonoBehaviour
     {
         _focusedBook = null;
         _focusedSlot = null;
+        _targetOutOfRange = false;
 
         if (interactionCamera == null)
         {
@@ -42,26 +54,120 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         Ray ray = new Ray(interactionCamera.transform.position, interactionCamera.transform.forward);
-        if (!Physics.Raycast(ray, out RaycastHit hit, interactionRange))
+        RaycastHit[] hits = Physics.RaycastAll(ray, maxAimRange, ~0, QueryTriggerInteraction.Collide);
+        System.Array.Sort(hits, ByDistance);
+
+        foreach (RaycastHit hit in hits)
+        {
+            Shelf shelf = hit.collider.GetComponentInParent<Shelf>();
+            Book book = hit.collider.GetComponentInParent<Book>();
+            bool inRange = hit.distance <= interactionRange;
+
+            if (_heldBook == null)
+            {
+                if (book != null)
+                {
+                    if (inRange)
+                    {
+                        _focusedBook = book;
+                    }
+                    else
+                    {
+                        _targetOutOfRange = true;
+                    }
+
+                    return;
+                }
+
+                if (shelf != null)
+                {
+                    // The shelf's aim volume is invisible to pickup; keep looking for a book inside it.
+                    continue;
+                }
+
+                return;
+            }
+
+            if (shelf == null && book != null && book.currentSlot != null)
+            {
+                shelf = book.currentSlot.shelf;
+            }
+
+            if (shelf != null)
+            {
+                if (inRange)
+                {
+                    _focusedSlot = shelf.NearestSlot(ray, hit.point);
+                }
+                else
+                {
+                    _targetOutOfRange = true;
+                }
+            }
+
+            return;
+        }
+    }
+
+    private void UpdateFocusVisuals()
+    {
+        Book bookToLight = _focusedBook;
+        if (_litBook != null && _litBook != bookToLight)
+        {
+            _litBook.SetFocused(false);
+        }
+
+        _litBook = bookToLight;
+        if (_litBook != null)
+        {
+            _litBook.SetFocused(true);
+        }
+
+        ShelfSlot slotToLight = _focusedSlot != null && !_focusedSlot.occupied ? _focusedSlot : null;
+        if (_litSlot != null && _litSlot != slotToLight)
+        {
+            _litSlot.SetHighlight(false);
+        }
+
+        _litSlot = slotToLight;
+        if (_litSlot != null)
+        {
+            _litSlot.SetHighlight(true);
+        }
+
+        if (crosshair == null)
         {
             return;
         }
 
-        if (_heldBook == null)
+        if (_focusedBook != null || (_focusedSlot != null && !_focusedSlot.occupied))
         {
-            Book book = hit.collider.GetComponentInParent<Book>();
-            if (book != null && !book.isPlaced)
-            {
-                _focusedBook = book;
-            }
+            crosshair.SetState(Crosshair.State.Active);
+        }
+        else if (_focusedSlot != null)
+        {
+            crosshair.SetState(Crosshair.State.Blocked);
+        }
+        else if (_targetOutOfRange)
+        {
+            crosshair.SetState(Crosshair.State.Far);
         }
         else
         {
-            ShelfSlot slot = hit.collider.GetComponentInParent<ShelfSlot>();
-            if (slot != null)
-            {
-                _focusedSlot = slot;
-            }
+            crosshair.SetState(Crosshair.State.Idle);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_litBook != null)
+        {
+            _litBook.SetFocused(false);
+        }
+
+        if (_litSlot != null)
+        {
+            _litSlot.SetHighlight(false);
         }
     }
 
@@ -76,11 +182,11 @@ public class PlayerInteractor : MonoBehaviour
         {
             SetPrompt(DisplayName(_focusedBook), "Press (E) to pick up");
         }
-        else if (_heldBook != null && _focusedSlot != null && !_focusedSlot.occupied)
+        else if (_heldBook != null && _focusedSlot != null)
         {
-            SetPrompt(DisplayName(_heldBook), _focusedSlot.Accepts(_heldBook)
-                ? "Press (E) to place"
-                : "This belongs elsewhere");
+            SetPrompt(DisplayName(_heldBook), _focusedSlot.occupied
+                ? "That spot is taken"
+                : "Press (E) to place");
         }
         else
         {
@@ -123,15 +229,20 @@ public class PlayerInteractor : MonoBehaviour
         {
             PickUp(_focusedBook);
         }
-        else if (_heldBook != null && _focusedSlot != null && _focusedSlot.Accepts(_heldBook))
+        else if (_heldBook != null && _focusedSlot != null && !_focusedSlot.occupied)
         {
             Place(_heldBook, _focusedSlot);
         }
-        // A mismatched slot just keeps showing "This belongs elsewhere" — no penalty, book stays held.
+        // An occupied spot just keeps showing "That spot is taken" - pick that book up first.
     }
 
     private void PickUp(Book book)
     {
+        if (book.currentSlot != null)
+        {
+            book.currentSlot.Release();
+        }
+
         _heldBook = book;
         _heldOriginalScale = book.transform.localScale;
 
@@ -156,22 +267,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Place(Book book, ShelfSlot slot)
     {
-        Transform target = slot.snapTransform != null ? slot.snapTransform : slot.transform;
-
-        Transform bookTransform = book.transform;
-        bookTransform.SetParent(null);
-        bookTransform.SetPositionAndRotation(target.position, target.rotation);
-        bookTransform.localScale = _heldOriginalScale;
-
-        Collider bookCollider = book.GetComponent<Collider>();
-        if (bookCollider != null)
-        {
-            bookCollider.enabled = true;
-        }
-
-        book.isPlaced = true;
-        book.PlayPlacedPulse();
-        slot.MarkOccupied();
+        slot.Accept(book, _heldOriginalScale);
         _heldBook = null;
     }
 
