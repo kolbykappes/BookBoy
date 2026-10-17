@@ -9,14 +9,18 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class CursorLock : MonoBehaviour
 {
+    /// <summary>While true (a menu is open) the cursor stays free and visible.</summary>
+    public bool suspended;
+
     private void OnEnable()
     {
+        suspended = false;
         Lock(false);
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (hasFocus)
+        if (hasFocus && !suspended)
         {
             Lock(true);
         }
@@ -24,10 +28,25 @@ public class CursorLock : MonoBehaviour
 
     private void Update()
     {
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        if (!suspended && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             Lock(true);
         }
+    }
+
+    /// <summary>Frees the cursor for a menu.</summary>
+    public void Suspend()
+    {
+        suspended = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    /// <summary>Hides and locks the cursor again after a menu.</summary>
+    public void Resume()
+    {
+        suspended = false;
+        Lock(true);
     }
 
     private static void Lock(bool reassert)

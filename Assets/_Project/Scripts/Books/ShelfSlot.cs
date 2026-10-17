@@ -18,7 +18,11 @@ public class ShelfSlot : MonoBehaviour
     [Tooltip("Thin bar on the board, shown only while this slot is the aimed placement target.")]
     public Renderer highlight;
 
-    public bool occupied => occupant != null;
+    /// <summary>True while a book is flying toward this slot (quick shelve): nobody else may use it, but it holds no claim yet.</summary>
+    public bool reserved;
+
+    /// <summary>Taken: holds a book, or is reserved for one that is on its way.</summary>
+    public bool occupied => occupant != null || reserved;
 
     private void OnEnable()
     {
@@ -51,6 +55,7 @@ public class ShelfSlot : MonoBehaviour
             bookCollider.enabled = true;
         }
 
+        reserved = false;
         occupant = book;
         book.currentSlot = this;
         book.placedTime = Time.realtimeSinceStartupAsDouble;

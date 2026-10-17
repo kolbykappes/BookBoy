@@ -440,6 +440,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 1317777740}
+  reserved: 0
 --- !u!4 &76211536
 Transform:
   m_ObjectHideFlags: 0
@@ -980,6 +981,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 906044298}
+  reserved: 0
 --- !u!1 &136140434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1368,6 +1370,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 618930062}
+  reserved: 0
 --- !u!1 &220243607
 GameObject:
   m_ObjectHideFlags: 0
@@ -1728,6 +1731,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 127639722}
+  reserved: 0
 --- !u!4 &245629675
 Transform:
   m_ObjectHideFlags: 0
@@ -2417,6 +2421,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 1270196050}
+  reserved: 0
 --- !u!1 &307139400
 GameObject:
   m_ObjectHideFlags: 0
@@ -2450,6 +2455,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 1364525861}
+  reserved: 0
 --- !u!4 &307139402
 Transform:
   m_ObjectHideFlags: 0
@@ -2515,6 +2521,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 566187714}
+  reserved: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2701,6 +2708,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 1839551336}
+  reserved: 0
 --- !u!1 &351730693
 GameObject:
   m_ObjectHideFlags: 0
@@ -2952,6 +2960,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 1141932820}
+  reserved: 0
 --- !u!1 &404425506
 GameObject:
   m_ObjectHideFlags: 0
@@ -3131,6 +3140,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 913972738}
+  reserved: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -3354,6 +3364,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 1956546694}
+  reserved: 0
 --- !u!1 &433624602
 GameObject:
   m_ObjectHideFlags: 0
@@ -3669,6 +3680,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 1903123151}
+  reserved: 0
 --- !u!1 &492648832
 GameObject:
   m_ObjectHideFlags: 0
@@ -3718,6 +3730,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 2070880632}
+  reserved: 0
 --- !u!1 &503193632
 GameObject:
   m_ObjectHideFlags: 0
@@ -4067,6 +4080,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 1655820369}
+  reserved: 0
 --- !u!1 &566187712
 GameObject:
   m_ObjectHideFlags: 0
@@ -4336,6 +4350,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 1036750787}
+  reserved: 0
 --- !u!1 &588096846
 GameObject:
   m_ObjectHideFlags: 0
@@ -5310,6 +5325,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 235315948}
+  reserved: 0
 --- !u!1 &706832169
 GameObject:
   m_ObjectHideFlags: 0
@@ -6899,6 +6915,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 1489197249}
+  reserved: 0
 --- !u!1 &924971381
 GameObject:
   m_ObjectHideFlags: 0
@@ -7320,6 +7337,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 2128131776}
+  reserved: 0
 --- !u!1 &1007769102
 GameObject:
   m_ObjectHideFlags: 0
@@ -7784,7 +7802,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1077402387}
-  - component: {fileID: 1077402386}
   m_Layer: 0
   m_Name: CleanupTracker
   m_TagString: Untagged
@@ -7792,19 +7809,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1077402386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1077402385}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e783472b902501f42ba490ac12f4df78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CleanupTracker
-  completionText: {fileID: 1136357391}
 --- !u!4 &1077402387
 Transform:
   m_ObjectHideFlags: 0
@@ -7853,6 +7857,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 1913304770}
+  reserved: 0
 --- !u!4 &1126994084
 Transform:
   m_ObjectHideFlags: 0
@@ -8423,6 +8428,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 712273935}
+  reserved: 0
 --- !u!1 &1224203958
 GameObject:
   m_ObjectHideFlags: 0
@@ -8595,6 +8601,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 1271262357}
+  reserved: 0
 --- !u!1 &1242354585
 GameObject:
   m_ObjectHideFlags: 0
@@ -9075,6 +9082,7 @@ MonoBehaviour:
   slotIndex: 3
   occupant: {fileID: 0}
   highlight: {fileID: 278146820}
+  reserved: 0
 --- !u!4 &1325253568
 Transform:
   m_ObjectHideFlags: 0
@@ -9140,6 +9148,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 1554415966}
+  reserved: 0
 --- !u!1 &1340118279
 GameObject:
   m_ObjectHideFlags: 0
@@ -10005,6 +10014,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 1929164619}
+  reserved: 0
 --- !u!1 &1430468003
 GameObject:
   m_ObjectHideFlags: 0
@@ -10159,6 +10169,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 2122106564}
+  reserved: 0
 --- !u!1 &1433869255
 GameObject:
   m_ObjectHideFlags: 0
@@ -10208,6 +10219,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 351730695}
+  reserved: 0
 --- !u!1 &1462694058
 GameObject:
   m_ObjectHideFlags: 0
@@ -11051,6 +11063,7 @@ MonoBehaviour:
   slotIndex: 1
   occupant: {fileID: 0}
   highlight: {fileID: 1362739530}
+  reserved: 0
 --- !u!1 &1549516112
 GameObject:
   m_ObjectHideFlags: 0
@@ -11562,6 +11575,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 659113551}
+  reserved: 0
 --- !u!1 &1614951449
 GameObject:
   m_ObjectHideFlags: 0
@@ -12216,6 +12230,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 2001741578}
+  reserved: 0
 --- !u!1 &1775617992
 GameObject:
   m_ObjectHideFlags: 0
@@ -12962,6 +12977,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 1648791905}
+  reserved: 0
 --- !u!1 &1851336231
 GameObject:
   m_ObjectHideFlags: 0
@@ -13794,6 +13810,7 @@ MonoBehaviour:
   slotIndex: 2
   occupant: {fileID: 0}
   highlight: {fileID: 1468584441}
+  reserved: 0
 --- !u!1 &1902093182
 GameObject:
   m_ObjectHideFlags: 0
@@ -13843,6 +13860,7 @@ MonoBehaviour:
   slotIndex: 0
   occupant: {fileID: 0}
   highlight: {fileID: 87690082}
+  reserved: 0
 --- !u!1 &1903123149
 GameObject:
   m_ObjectHideFlags: 0
@@ -14734,6 +14752,90 @@ MonoBehaviour:
   value: 4
   color: {r: 1, g: 1, b: 1, a: 1}
   material: {fileID: 2100000, guid: 9d3a9748df6020a4aa9efb59fe43c80f, type: 2}
+--- !u!1 &2047723120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2047723125}
+  - component: {fileID: 2047723124}
+  - component: {fileID: 2047723123}
+  - component: {fileID: 2047723122}
+  - component: {fileID: 2047723121}
+  m_Layer: 0
+  m_Name: Game
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2047723121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047723120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 394c75d634e068c48bdee3e2f6ea15b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SisterGlow
+--- !u!114 &2047723122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047723120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3d31b4c7ad448488ff7d2576774c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuickShelve
+--- !u!114 &2047723123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047723120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97f777ae31234834f90c5ce7f93376ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameUI
+--- !u!114 &2047723124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047723120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f047a4b5b41ca4545a72896bf392c9a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameProgress
+  completionText: {fileID: 1136357391}
+--- !u!4 &2047723125
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047723120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2051946700 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
@@ -14786,6 +14888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be069934a53909340b60888da08cee2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CursorLock
+  suspended: 0
 --- !u!114 &2051946717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15569,3 +15672,4 @@ SceneRoots:
   - {fileID: 129781373}
   - {fileID: 1678849131}
   - {fileID: 56585564}
+  - {fileID: 2047723125}

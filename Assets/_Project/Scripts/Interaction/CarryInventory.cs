@@ -27,6 +27,11 @@ public class CarryInventory : MonoBehaviour
     public int CurrentIndex => _list.CurrentIndex;
     public IReadOnlyList<Book> Items => _list.Items;
 
+    public bool Contains(Book book)
+    {
+        return _list.Contains(book);
+    }
+
     public void SetCapacity(int capacity)
     {
         _list.SetCapacity(capacity);
