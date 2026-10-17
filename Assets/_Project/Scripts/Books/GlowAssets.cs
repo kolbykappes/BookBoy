@@ -5,4 +5,7 @@ public class GlowAssets : MonoBehaviour
 {
     public Material outlineMaterial;
     public Material sparkleMaterial;
+
+    [Tooltip("Draws a glowing book's silhouette through whatever hides it (sister glow).")]
+    public Material xrayMaterial;
 }

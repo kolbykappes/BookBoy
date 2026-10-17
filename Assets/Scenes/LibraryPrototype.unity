@@ -1840,6 +1840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GlowAssets
   outlineMaterial: {fileID: 2100000, guid: 045f472fcbcde7744a6ef4b337282959, type: 2}
   sparkleMaterial: {fileID: 2100000, guid: 6e1150a392c771848aa27bc9f387324b, type: 2}
+  xrayMaterial: {fileID: 2100000, guid: bccb638952b2ef7459d8e86928fc41e1, type: 2}
 --- !u!4 &56585564
 Transform:
   m_ObjectHideFlags: 0

@@ -27,6 +27,9 @@ public class BookOutline : MonoBehaviour
     private MeshFilter _bookMesh;
     private MeshRenderer _inner;
     private MeshRenderer _halo;
+    private MeshRenderer _xray;
+    private Light _light;
+    private Layer _lastLayer = Layer.None;
     private ParticleSystem _sparks;
     private MaterialPropertyBlock _block;
 
@@ -66,6 +69,19 @@ public class BookOutline : MonoBehaviour
 
         _inner = MakeHull("GlowInner");
         _halo = MakeHull("GlowHalo");
+        _xray = MakeHull("GlowXray");
+        if (_assets.xrayMaterial != null)
+        {
+            _xray.sharedMaterial = _assets.xrayMaterial;
+        }
+
+        var lightGo = new GameObject("GlowLight") { hideFlags = HideFlags.HideAndDontSave };
+        _light = lightGo.AddComponent<Light>();
+        _light.type = LightType.Point;
+        _light.range = 1.8f;
+        _light.shadows = LightShadows.None;
+        _light.intensity = 0f;
+        _light.enabled = false;
 
         var sparkGo = new GameObject("GlowSparks") { hideFlags = HideFlags.HideAndDontSave };
         _sparks = sparkGo.AddComponent<ParticleSystem>();
@@ -174,6 +190,9 @@ public class BookOutline : MonoBehaviour
         {
             _inner.enabled = false;
             _halo.enabled = false;
+            _xray.enabled = false;
+            _light.enabled = false;
+            _lastLayer = Layer.None;
             _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
@@ -217,7 +236,7 @@ public class BookOutline : MonoBehaviour
         {
             float remaining = _pulseUntil - now;
             float fadeOut = Mathf.Clamp01(remaining / 0.5f);
-            float beat = 0.6f + 0.4f * Mathf.Sin((now - _pulseStart) * 6f);
+            float beat = 0.7f + 0.3f * Mathf.Sin((now - _pulseStart) * 8f);
             float a = beat * fadeOut;
             if (layer == Layer.None || a > alpha * 0.5f)
             {
@@ -237,11 +256,15 @@ public class BookOutline : MonoBehaviour
         }
 
         bool visible = layer != Layer.None && alpha > 0.01f;
+        bool strong = visible && layer == Layer.Pulse;   // sister glow: much bigger and brighter than the other layers
         _inner.enabled = visible;
         _halo.enabled = visible;
+        _xray.enabled = strong;
+        _light.enabled = strong;
 
         if (!visible)
         {
+            _lastLayer = Layer.None;
             if (_sparks.isEmitting)
             {
                 _sparks.Stop(false, ParticleSystemStopBehavior.StopEmitting);
@@ -250,8 +273,27 @@ public class BookOutline : MonoBehaviour
             return;
         }
 
-        ApplyHull(_inner, InnerWidth, color, alpha);
-        ApplyHull(_halo, HaloWidth, color, alpha * 0.22f);
+        float boost = strong ? 3.4f : 1f;
+        ApplyHull(_inner, InnerWidth * boost, color, alpha);
+        ApplyHull(_halo, HaloWidth * boost, color, alpha * (strong ? 0.5f : 0.22f));
+
+        if (strong)
+        {
+            _xray.transform.localScale = Vector3.one * 1.03f;
+            _xray.GetPropertyBlock(_block);
+            _block.SetColor(ColorId, new Color(color.r, color.g, color.b, alpha * 0.75f));
+            _xray.SetPropertyBlock(_block);
+
+            _light.transform.position = transform.position + Vector3.up * (transform.lossyScale.y * 0.5f + 0.1f);
+            _light.color = color;
+            _light.intensity = 4f * alpha;
+        }
+
+        if (layer != _lastLayer)
+        {
+            ConfigureSparkStyle(strong);
+            _lastLayer = layer;
+        }
 
         FollowBook();
         var main = _sparks.main;
@@ -260,6 +302,16 @@ public class BookOutline : MonoBehaviour
         {
             _sparks.Play();
         }
+    }
+
+    private void ConfigureSparkStyle(bool strong)
+    {
+        var main = _sparks.main;
+        main.startSize = strong ? new ParticleSystem.MinMaxCurve(0.016f, 0.04f) : new ParticleSystem.MinMaxCurve(0.007f, 0.014f);
+        main.startSpeed = strong ? new ParticleSystem.MinMaxCurve(0.08f, 0.35f) : new ParticleSystem.MinMaxCurve(0.02f, 0.08f);
+        main.maxParticles = strong ? 120 : 40;
+        var emission = _sparks.emission;
+        emission.rateOverTime = strong ? 80f : 16f;
     }
 
     private void ApplyHull(MeshRenderer hull, float width, Color color, float alpha)
@@ -285,6 +337,11 @@ public class BookOutline : MonoBehaviour
         if (_sparks != null)
         {
             Destroy(_sparks.gameObject);
+        }
+
+        if (_light != null)
+        {
+            Destroy(_light.gameObject);
         }
     }
 }
