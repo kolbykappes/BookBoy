@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Book_History_Sample
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_history_01
-  displayName: Sample Forbidden History Tome
+  displayName: Crimson Tome Vol. 1
   category: 3
+  series: 0
+  volume: 1
   spineColor: {r: 0.45, g: 0.05, b: 0.12, a: 1}

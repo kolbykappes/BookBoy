@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Book_History_Sample_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_history_02
-  displayName: Sample History Tome II
+  displayName: Crimson Tome Vol. 2
   category: 3
+  series: 0
+  volume: 2
   spineColor: {r: 0.45, g: 0.05, b: 0.12, a: 1}

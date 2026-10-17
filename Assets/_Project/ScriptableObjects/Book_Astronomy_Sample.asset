@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Book_Astronomy_Sample
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_astronomy_01
-  displayName: Sample Astronomy Tome
+  displayName: Indigo Tome Vol. 1
   category: 1
+  series: 0
+  volume: 1
   spineColor: {r: 0.2, g: 0.14, b: 0.55, a: 1}

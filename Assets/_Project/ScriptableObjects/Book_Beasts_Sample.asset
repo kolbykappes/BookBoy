@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Book_Beasts_Sample
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_beasts_01
-  displayName: Sample Beast Lore Tome
+  displayName: Green Tome Vol. 1
   category: 2
+  series: 0
+  volume: 1
   spineColor: {r: 0.13, g: 0.4, b: 0.18, a: 1}

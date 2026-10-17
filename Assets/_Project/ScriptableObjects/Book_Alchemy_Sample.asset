@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Book_Alchemy_Sample
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_alchemy_01
-  displayName: Sample Alchemy Tome
+  displayName: Amber Tome Vol. 1
   category: 0
+  series: 0
+  volume: 1
   spineColor: {r: 0.85, g: 0.62, b: 0.13, a: 1}
