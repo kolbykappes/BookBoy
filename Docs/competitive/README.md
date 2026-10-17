@@ -5,6 +5,10 @@ Tracking every Steam game in the "sort thousands of items onto shelves" microgen
 release date below. See [review-tracker.md](review-tracker.md) for a dated log of review
 counts/scores to watch over time.
 
+> **Latest refresh: 2026-10-17** — see [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md) for current
+> scores, patch notes, review pushback, and a shortlist of newly found games. The table below is the
+> 2026-09-06 baseline; games #9–14 have since launched (updated scores are in the tracker).
+
 **Methodology note:** review counts/scores below are pulled from Steam's public review API
 (`store.steampowered.com/appreviews/<appid>`) using **all languages, all time** — this is the
 total review volume, which can run higher than what the storefront page shows by default for an
@@ -32,6 +36,17 @@ here. Percent-positive tracks closely between the two either way.
 | 12 | [Paver: Tidy Up Together](12-paver-tidy-up-together.md) | ~Sep 18, 2026 | Not yet released | 4,064 pavers | Non-shelf variant — outdoor plaza/pattern-matching instead of shelving. |
 | 13 | [Wand & Order: Tidy up the magic shop!](13-wand-and-order.md) | ~Sep 18, 2026 | Not yet released | 3 zones, scope TBD | Second magic-shop entrant after Shelves and Sorcery; co-op. |
 | 14 | [DinoBones: Tidy Up the Museum](14-dinobones-tidy-up-the-museum.md) | ~Sep 22, 2026 | Not yet released | 2,500+ bones / 6+ skeletons | Assembly-based rather than pure shelving — closer to a fitting/matching puzzle. |
+
+### Added in the 2026-10-17 refresh (book / library / magic neighbors)
+
+| # | Game | Released | Reviews (2026-10-17) | Notes |
+|---|---|---|---|---|
+| 16 | [Witch Cabin Cleanup](16-witch-cabin-cleanup.md) | Oct 12, 2026 | Very Positive — 196 (98.0%) | Owned & played (first room). 5,313 curios per store / 6,920 per in-game Records; 6 rooms incl. a library. Re-themed abilities, two-currency economy, the "Enchanted Ledger" upgrade UI, slot ghost and shelf badges. **The main source of borrowable UI/UX ideas** (see its table). |
+| 17 | [Still Sorting](17-still-sorting.md) | Sep 23, 2026 | Positive — 22 (100%) | 2D retro bookshop sorter, 4,344 books in A–Z rows, bookends, a date-sorted row; no upgrades. Closest to a real ordering rule. |
+| 18 | [Sort of Magic](18-sort-of-magic.md) | Oct 8, 2026 | Mixed — 70 (45.7%) | Cat in a magic school, 4,500 items, 1–4 co-op. Low score is a launch-quality failure (saves, missing items, indistinguishable books); patched Oct 14. |
+| 19 | [Magic Mess](19-magic-mess.md) | Aug 24, 2026 | Mixed — 36 (63.9%) | Wizard's tower, 3,040 items, one map. XP per item and passive item-sense praised; 1→5 carry limit and nagging dragon criticized; one patch ever. |
+
+(The refresh write-up is [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md).)
 
 *Dates for #9–14 are Steam's "plans to unlock in X days" countdown as of Sep 6, 2026 — treat as
 approximate until each actually ships.*
