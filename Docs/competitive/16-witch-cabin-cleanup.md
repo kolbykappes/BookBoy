@@ -231,6 +231,41 @@ Cautions from the research:
   reviewers rave about ("my absolute favorite was sorting the library"; "I want to read each one"). The hook
   is **funny book titles and publisher names**, which is cheap for us to do well.
 
+## Screenshot index
+
+Kolby's screenshots, 2026-10-17, saved in [img/witch-cabin/](img/witch-cabin/) (27 files, about 7 MB). They
+show the first room only.
+
+| # | File | Shows |
+|---|---|---|
+| 1 | [01-settings-display](img/witch-cabin/01-settings-display.png) | Settings, Display tab |
+| 2 | [02-settings-audio](img/witch-cabin/02-settings-audio.png) | Settings, Audio tab (Cat Meows toggle) |
+| 3 | [03-settings-image](img/witch-cabin/03-settings-image.png) | Settings, Image tab (blur, bloom, FOV 90) |
+| 4 | [04-settings-input](img/witch-cabin/04-settings-input.webp) | Settings, Input tab (rebinding) |
+| 5 | [05-settings-game](img/witch-cabin/05-settings-game.webp) | Settings, Game tab (Low Feedback Mode, Glimmer Colour) |
+| 6 | [06-first-frame-bedroom-mess](img/witch-cabin/06-first-frame-bedroom-mess.webp) | First frame after the intro: HUD, tutorial goal, the pile, carry 0/4 |
+| 7 | [07-witch-hat-shelf-badge-holding-broom](img/witch-cabin/07-witch-hat-shelf-badge-holding-broom.webp) | Shelf badge with icon and name; carry card; key hints |
+| 8 | [08-ember-wand-focus-highlight-tutorial-4](img/witch-cabin/08-ember-wand-focus-highlight-tutorial-4.webp) | Focus highlight (outline plus purple tint), potion wall plaque, tutorial goal #4 |
+| 9 | [09-wand-box-cabinet-carrying-4of4](img/witch-cabin/09-wand-box-cabinet-carrying-4of4.webp) | Carry list of four, 4 / 4, cabinet with cubbies and plaques |
+| 10 | [10-wand-boxes-placed-5of140](img/witch-cabin/10-wand-boxes-placed-5of140.webp) | Four boxes placed, 5/140, gold 20 |
+| 11 | [11-shelf-9of9-hover-count-gems](img/witch-cabin/11-shelf-9of9-hover-count-gems.webp) | Full 3x3 half, hover count "9/9", first gem |
+| 12 | [12-slot-ghost-trinket-box-carry-card](img/witch-cabin/12-slot-ghost-trinket-box-carry-card.webp) | Purple slot ghost, TRINKET BOX tag, bell price tag |
+| 13 | [13-summoning-bell-10-gold](img/witch-cabin/13-summoning-bell-10-gold.webp) | "Ring the bell and summon this room's loose items: 10 gold" |
+| 14 | [14-locked-door-unlock-apothecary-20-gems](img/witch-cabin/14-locked-door-unlock-apothecary-20-gems.webp) | Locked portal door, "Unlock the Apothecary for 20 gems" |
+| 15 | [15-enchanted-ledger-lectern](img/witch-cabin/15-enchanted-ledger-lectern.webp) | The glowing ledger on its lectern, "Open Enchanted Ledger" |
+| 16 | [16-ledger-charms-swiftness](img/witch-cabin/16-ledger-charms-swiftness.webp) | Charms page, Swiftness |
+| 17 | [17-ledger-spells-beckon](img/witch-cabin/17-ledger-spells-beckon.webp) | Spells page, Beckon |
+| 18 | [18-ledger-charms-reach](img/witch-cabin/18-ledger-charms-reach.webp) | Charms page, Reach (300 cm → 350 cm) |
+| 19 | [19-ledger-records-achievements](img/witch-cabin/19-ledger-records-achievements.webp) | Records tab: per-room bars, tallies, achievements |
+| 20 | [20-ledger-charms-fleet-foot-need-32](img/witch-cabin/20-ledger-charms-fleet-foot-need-32.webp) | Fleet Foot, greyed Acquire with "Need 32" |
+| 21 | [21-ledger-charms-ordered-inventory](img/witch-cabin/21-ledger-charms-ordered-inventory.webp) | Ordered Inventory |
+| 22 | [22-ledger-charms-neat-stacks-needs-stackweaver](img/witch-cabin/22-ledger-charms-neat-stacks-needs-stackweaver.webp) | Neat Stacks, "Needs Stackweaver" |
+| 23 | [23-ledger-charms-tether-needs-glimmer](img/witch-cabin/23-ledger-charms-tether-needs-glimmer.webp) | Tether, "Needs Glimmer" |
+| 24 | [24-ledger-spells-glimmer](img/witch-cabin/24-ledger-spells-glimmer.webp) | Spells page, Glimmer |
+| 25 | [25-ledger-spells-homeward](img/witch-cabin/25-ledger-spells-homeward.webp) | Spells page, Homeward |
+| 26 | [26-ledger-spells-stackweaver](img/witch-cabin/26-ledger-spells-stackweaver.webp) | Spells page, Stackweaver |
+| 27 | [27-ledger-spells-amplify-familiar](img/witch-cabin/27-ledger-spells-amplify-familiar.webp) | Spells page, Amplify Familiar |
+
 ## Open questions (not yet seen)
 
 - How spell levels reduce the 45 to 180 s cooldowns, and what Bigger Satchel's levels give.
