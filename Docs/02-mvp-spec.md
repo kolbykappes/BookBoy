@@ -21,8 +21,10 @@ twelve books and exact-slot placement until 2026-10-17; see [04-build-status.md]
 - The player carries several books at once (starts at 4; upgrades raise it up to 10), can cycle which one is current
   (R or mouse wheel), and can toss the current one (Q): it tumbles with real physics and settles where it lands.
 - Player can place a carried book on any shelf; the slot under the crosshair is used.
-- Bookcases and shelves start unlabeled. The first book shelved claims the bookcase's color and the
-  shelf's series (the earlier claim wins a conflict); all other books on them must match.
+- Every bookcase has a fixed magical theme (Healing Magic, Fire Magic, Forbidden Lore, ...) named on a plaque on the
+  wall above it; the player is told the theme, never the color ("Healing" books are the white ones). Book titles use
+  the theme word ("Healing Tome Vol. 2"). Shelves are unlabeled: the first book shelved on a shelf claims it for that
+  book's series (the earlier claim wins a conflict); the other books on it must match.
 - Volume N goes in slot N, left to right. Slots are barely wider than a book.
 - Feedback is a flash on the book: red = wrong bookcase (color), yellow = right bookcase but wrong shelf
   (series) or wrong slot, green = right bookcase, shelf and slot.
