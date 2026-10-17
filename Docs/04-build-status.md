@@ -74,11 +74,11 @@ Reported: sweeping the mouse across the shelves (worst while holding a book) fel
   (`Handheld_normal_mild`, gain 0.5) made the camera wander on its own (~+/-0.1 deg yaw, ~0.45 deg pitch with no
   input), which hurts aiming at 7 cm slots. It is off via a prefab override on the scene's follow camera (component
   kept; re-enable or lower its amplitude for a gentler shake). It was not the cause of the drag.
-- **Open - player eye height is 0.79 m, not 1.7 m.** The Player starts at y = 1.0 but gravity drops it to rest at
-  y = 0.09 (CharacterController center 0.93, height 2), so the camera (local y 0.7) sits at 0.79 m. The 1.7 m in
-  `09-scale-reference.md` was computed from the starting transform, not the rest height. Raising
-  `PlayerCameraRoot`'s local Y to ~1.61 would give 1.7 m; not changed yet because it alters the whole feel and
-  aim geometry.
+- **Fixed - player eye height was 0.79 m, not 1.7 m.** The Player starts at y = 1.0 but gravity drops it to rest at
+  y = 0.09 (CharacterController center 0.93, height 2), so the camera (local y 0.7) sat at 0.79 m; the 1.7 m in
+  `09-scale-reference.md` was computed from the starting transform. `PlayerCameraRoot` local Y is now 1.61 (a one-line
+  prefab override on the scene's Player), and the camera settles at exactly 1.700 m. Re-verified: 26/26 shelf checks;
+  from 1.7 m you look down into both compartments of each bookcase.
 
 ## Dev workflow (2026-10-17)
 

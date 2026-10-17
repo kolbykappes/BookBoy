@@ -16,7 +16,7 @@ that haven't been checked against this reference — errors compound.
 | Measurement | Value | Reasoning |
 |---|---:|---|
 | Eye height above floor | **1.7m** | Standard estimate for a 6'0" (1.83m) person — eyes sit roughly 4-5 inches (~0.12m) below the top of the head. |
-| `PlayerCameraRoot` local Y | `0.7` | `Player` transform's own baseline Y offset is `1.0` (a pre-existing rig quirk, not touched) — `0.7 + 1.0 = 1.7` measured eye height. If `Player`'s baseline ever changes, recompute this. |
+| `PlayerCameraRoot` local Y | `1.61` | The `Player` transform starts at Y `1.0` but the `CharacterController` (center `0.93`, height `2.0`) settles on the floor at Y `0.09`, so eye height = `0.09 + 1.61 = 1.70`. Verified live: camera Y reads `1.700` after settling. (It was `0.7`, which gave a real eye height of only `0.79` m - the earlier `0.7 + 1.0` arithmetic used the starting Y, not the resting Y. If the controller's center/height/skin change, recompute.) |
 | `CharacterController` height/center | `2.0` / `(0, 0.93, 0)` | Left as-is (pre-existing rig) — not touched during the eye-height fix. Worth revisiting for full consistency (closer to `1.83`) if it ever matters for gameplay, but no reported issue with it specifically. |
 
 ## Books ("tomes")
