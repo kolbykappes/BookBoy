@@ -1,4 +1,3 @@
-using System.Collections;
 using BookBoy.Rules;
 using UnityEngine;
 
@@ -32,9 +31,10 @@ public class Book : MonoBehaviour
     [HideInInspector]
     public bool hasPhysicsDrop;
 
+    public static readonly Color FocusColor = new Color(1f, 0.93f, 0.55f);
+
     private MaterialPropertyBlock _propertyBlock;
-    private Coroutine _flash;
-    private bool _focused;
+    private BookOutline _outline;
 
     private void OnEnable()
     {
@@ -55,12 +55,6 @@ public class Book : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        // Disabling stops the flash coroutine without letting it finish; forget it so later recoloring works.
-        _flash = null;
-    }
-
     private void OnValidate()
     {
         ApplyColor();
@@ -79,21 +73,35 @@ public class Book : MonoBehaviour
             return;
         }
 
-        SetColor(RestingColor());
+        SetColor(definition.spineColor);
     }
 
-    /// <summary>Brightens the book while the crosshair is on it so the player can see what is targeted.</summary>
+    /// <summary>The glow around this book (created on first use, in Play Mode only).</summary>
+    public BookOutline Outline
+    {
+        get
+        {
+            if (_outline == null && Application.isPlaying)
+            {
+                _outline = GetComponent<BookOutline>();
+                if (_outline == null)
+                {
+                    _outline = gameObject.AddComponent<BookOutline>();
+                }
+            }
+
+            return _outline;
+        }
+    }
+
+    /// <summary>Outlines the book while the crosshair is on it so the player can see what is targeted. The book's own color
+    /// never changes.</summary>
     public void SetFocused(bool focused)
     {
-        if (_focused == focused)
+        BookOutline outline = Outline;
+        if (outline != null)
         {
-            return;
-        }
-
-        _focused = focused;
-        if (_flash == null)
-        {
-            ApplyColor();
+            outline.SetSteady(focused, FocusColor);
         }
     }
 
@@ -142,8 +150,8 @@ public class Book : MonoBehaviour
 
     public bool IsCorrectlyShelved => currentSlot != null && Grade() == PlacementResult.Correct;
 
-    /// <summary>Flashes red (wrong bookcase), yellow (right bookcase, wrong shelf or slot) or green (all right),
-    /// then eases back to the resting color.</summary>
+    /// <summary>Flashes the outline red (wrong bookcase), yellow (right bookcase, wrong shelf or slot) or green (all right), with a
+    /// sparkle burst on green. The book's own color does not change.</summary>
     public void PlayFeedback(PlacementResult result)
     {
         if (definition == null || !Application.isPlaying)
@@ -151,12 +159,11 @@ public class Book : MonoBehaviour
             return;
         }
 
-        if (_flash != null)
+        BookOutline outline = Outline;
+        if (outline != null)
         {
-            StopCoroutine(_flash);
+            outline.Flash(ColorFor(result), result == PlacementResult.Correct);
         }
-
-        _flash = StartCoroutine(FlashRoutine(ColorFor(result)));
     }
 
     public static Color ColorFor(PlacementResult result)
@@ -167,41 +174,6 @@ public class Book : MonoBehaviour
             case PlacementResult.RightBookcaseWrongSpot: return YellowColor;
             default: return WrongColor;
         }
-    }
-
-    private Color RestingColor()
-    {
-        return _focused ? Color.Lerp(definition.spineColor, Color.white, 0.45f) : definition.spineColor;
-    }
-
-    private IEnumerator FlashRoutine(Color flash)
-    {
-        const float rise = 0.1f;
-        const float hold = 0.35f;
-        const float fall = 0.45f;
-
-        Color from = RestingColor();
-        float t = 0f;
-        while (t < rise)
-        {
-            t += Time.deltaTime;
-            SetColor(Color.Lerp(from, flash, t / rise));
-            yield return null;
-        }
-
-        SetColor(flash);
-        yield return new WaitForSeconds(hold);
-
-        t = 0f;
-        while (t < fall)
-        {
-            t += Time.deltaTime;
-            SetColor(Color.Lerp(flash, RestingColor(), t / fall));
-            yield return null;
-        }
-
-        _flash = null;
-        SetColor(RestingColor());
     }
 
     private void SetColor(Color color)

@@ -139,17 +139,15 @@ Aim(new UnityEngine.Vector3(lp.x, 1.2f, lp.z - 6f), lp);
 Check("crosshair on a loose book out of reach (6m) shows 'far', not focused", DotSize() == 12f && (Book)fBook.GetValue(pi) == null, "dot=" + DotSize());
 Aim(new UnityEngine.Vector3(0f, 1.5f, 0f), new UnityEngine.Vector3(7f, 3f, 0.2f));
 Check("crosshair on empty space/wall is the small idle dot", DotSize() == 10f, "dot=" + DotSize());
-UnityEngine.Color BookColorNow(Book b) { var m = new UnityEngine.MaterialPropertyBlock(); b.GetComponent<UnityEngine.Renderer>().GetPropertyBlock(m); return m.GetColor("_BaseColor"); }
-// reset any stalled flash (an unfocused Editor freezes coroutines mid-flash); also exercises the OnDisable fix
-loose.gameObject.SetActive(false); loose.gameObject.SetActive(true);
+loose.gameObject.SetActive(false); loose.gameObject.SetActive(true);   // clear any stale glow state
 Aim(new UnityEngine.Vector3(lp.x, 1.2f, lp.z - 1.5f), lp);
-var lit = BookColorNow(loose);
+bool glowOn = loose.Outline != null && loose.Outline.IsSteady;
+UnityEngine.Color bodyWhileFocused; { var m = new UnityEngine.MaterialPropertyBlock(); loose.GetComponent<UnityEngine.Renderer>().GetPropertyBlock(m); bodyWhileFocused = m.GetColor("_BaseColor"); }
 Aim(new UnityEngine.Vector3(0f, 1.5f, 0f), new UnityEngine.Vector3(7f, 3f, 0.2f));
-var resting = BookColorNow(loose);
-Check("a focused book is brightened, and returns to its spine color when the crosshair leaves",
-    lit.r + lit.g + lit.b > loose.definition.spineColor.r + loose.definition.spineColor.g + loose.definition.spineColor.b + 0.3f
-    && UnityEngine.Mathf.Abs(resting.r - loose.definition.spineColor.r) < 0.01f && UnityEngine.Mathf.Abs(resting.g - loose.definition.spineColor.g) < 0.01f,
-    "lit=" + lit + " resting=" + resting + " spine=" + loose.definition.spineColor);
+bool glowOff = !loose.Outline.IsSteady;
+Check("a focused book gets an outline glow (its body color untouched), and it clears when the crosshair leaves",
+    glowOn && glowOff && UnityEngine.Mathf.Abs(bodyWhileFocused.g - loose.definition.spineColor.g) < 0.01f,
+    "on=" + glowOn + " off=" + glowOff + " body=" + bodyWhileFocused + " spine=" + loose.definition.spineColor);
 
 sb.Append("frame=" + UnityEngine.Time.frameCount + " isPlaying=" + UnityEditor.EditorApplication.isPlaying + "\n");
 sb.Append(fails == 0 ? "ALL PASSED" : (fails + " FAILED"));
