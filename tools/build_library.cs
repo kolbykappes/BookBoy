@@ -10,7 +10,6 @@ var cats = (BookCategory[])System.Enum.GetValues(typeof(BookCategory));
 const int seriesCount = 2;
 const int volumes = 4;
 
-var colorWords = new[] { "Amber", "Indigo", "Green", "Crimson", "Teal", "Violet", "Rose", "Rust", "Olive", "Azure", "Brown", "Slate", "Ivory", "Charcoal", "Lemon", "Mint" };
 var newColors = new[] {   // colors for categories 4..15 (0..3 keep the colors already in their definition assets)
     new UnityEngine.Color(0.05f, 0.50f, 0.52f), new UnityEngine.Color(0.50f, 0.22f, 0.68f), new UnityEngine.Color(0.82f, 0.36f, 0.56f), new UnityEngine.Color(0.78f, 0.34f, 0.10f),
     new UnityEngine.Color(0.55f, 0.65f, 0.12f), new UnityEngine.Color(0.25f, 0.55f, 0.88f), new UnityEngine.Color(0.38f, 0.22f, 0.10f), new UnityEngine.Color(0.42f, 0.45f, 0.52f),
@@ -95,7 +94,7 @@ for (int ci = 0; ci < cats.Length; ci++)
             }
             string lower = cats[ci].ToString().ToLower();
             d.bookId = ci < 4 && series == 0 ? "bk_" + lower + "_0" + vol : "bk_" + lower + (series == 0 ? "_a" : "_b") + vol;
-            d.displayName = colorWords[ci] + " " + seriesWord[series] + " Vol. " + vol;
+            d.displayName = BookThemes.TitleWord(cats[ci]) + " " + seriesWord[series] + " Vol. " + vol;   // the theme, never the color
             d.category = cats[ci];
             d.series = series;
             d.volume = vol;
@@ -264,7 +263,64 @@ for (int i = 0; i < cats.Length; i++)
     bookcase.shelves = shelfList.ToArray();
 }
 foreach (var bc in cases) bc.all = cases.ToArray();
+
+// each bookcase holds one fixed theme, shuffled (deterministically) so the wall is not in color order
+var perm = new int[cats.Length];
+for (int i = 0; i < perm.Length; i++) perm[i] = i;
+var rngTheme = new System.Random(11);
+for (int i = perm.Length - 1; i > 0; i--)
+{
+    int j = rngTheme.Next(i + 1);
+    var t = perm[i]; perm[i] = perm[j]; perm[j] = t;
+}
+for (int i = 0; i < cases.Count; i++) cases[i].theme = cats[perm[i]];
 log.Append("bookcases=" + cases.Count + "; ");
+
+// ---- 4b. A plaque on the wall above each bookcase naming its theme (never its color) ----
+foreach (var oldSign in UnityEngine.Object.FindObjectsByType<ThemeSign>(UnityEngine.FindObjectsInactive.Include))
+    if (oldSign != null) UnityEngine.Object.DestroyImmediate(oldSign.gameObject);
+var signFont = UnityEngine.Resources.GetBuiltinResource<UnityEngine.Font>("LegacyRuntime.ttf");
+void Stretch(UnityEngine.RectTransform r, float inset) { r.anchorMin = UnityEngine.Vector2.zero; r.anchorMax = UnityEngine.Vector2.one; r.offsetMin = new UnityEngine.Vector2(inset, inset); r.offsetMax = new UnityEngine.Vector2(-inset, -inset); }
+for (int i = 0; i < cases.Count; i++)
+{
+    var lines = BookThemes.SignLines(cases[i].theme);
+    var sign = new UnityEngine.GameObject("Sign_" + (i + 1), typeof(UnityEngine.RectTransform), typeof(UnityEngine.Canvas));
+    sign.transform.position = new UnityEngine.Vector3(cases[i].transform.position.x, 2.25f, 5.83f);
+    sign.GetComponent<UnityEngine.Canvas>().renderMode = UnityEngine.RenderMode.WorldSpace;
+    var signRect = (UnityEngine.RectTransform)sign.transform;
+    signRect.sizeDelta = new UnityEngine.Vector2(460f, 330f);
+    signRect.localScale = UnityEngine.Vector3.one * 0.001f;   // 1 UI pixel = 1 mm: a 0.46 x 0.33 m plaque, the bookcase pitch being 0.5 m
+
+    var frame = new UnityEngine.GameObject("Frame", typeof(UnityEngine.RectTransform), typeof(CanvasRenderer), typeof(UnityEngine.UI.Image));
+    frame.transform.SetParent(sign.transform, false);
+    Stretch((UnityEngine.RectTransform)frame.transform, 0f);
+    frame.GetComponent<UnityEngine.UI.Image>().color = new UnityEngine.Color(0.30f, 0.18f, 0.07f);
+    var face = new UnityEngine.GameObject("Face", typeof(UnityEngine.RectTransform), typeof(CanvasRenderer), typeof(UnityEngine.UI.Image));
+    face.transform.SetParent(sign.transform, false);
+    Stretch((UnityEngine.RectTransform)face.transform, 14f);
+    face.GetComponent<UnityEngine.UI.Image>().color = new UnityEngine.Color(0.84f, 0.70f, 0.40f);
+
+    var label = new UnityEngine.GameObject("Label", typeof(UnityEngine.RectTransform), typeof(CanvasRenderer), typeof(UnityEngine.UI.Text));
+    label.transform.SetParent(sign.transform, false);
+    Stretch((UnityEngine.RectTransform)label.transform, 20f);
+    var text = label.GetComponent<UnityEngine.UI.Text>();
+    text.font = signFont;
+    text.fontSize = 90;
+    text.resizeTextForBestFit = true;
+    text.resizeTextMinSize = 30;
+    text.resizeTextMaxSize = 80;
+    text.fontStyle = UnityEngine.FontStyle.Bold;
+    text.alignment = UnityEngine.TextAnchor.MiddleCenter;
+    text.color = new UnityEngine.Color(0.16f, 0.09f, 0.03f);
+    text.horizontalOverflow = HorizontalWrapMode.Wrap;
+    text.verticalOverflow = VerticalWrapMode.Overflow;
+    text.text = lines[0] + "\n" + lines[1];
+
+    var themeSign = sign.AddComponent<ThemeSign>();
+    themeSign.theme = cases[i].theme;
+    themeSign.bookcase = cases[i];
+}
+log.Append("signs=" + cases.Count + "; ");
 
 // ---- 5. Crosshair dot in the middle of the screen ----
 var canvas = UnityEngine.GameObject.Find("HUD_Canvas");

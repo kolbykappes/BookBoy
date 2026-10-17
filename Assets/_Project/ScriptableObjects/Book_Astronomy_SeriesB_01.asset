@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Astronomy_SeriesB_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_astronomy_b1
-  displayName: Indigo Codex Vol. 1
+  displayName: Astral Codex Vol. 1
   category: 1
   series: 1
   volume: 1

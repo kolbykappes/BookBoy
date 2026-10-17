@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Sunshine_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_sunshine_a1
-  displayName: Lemon Tome Vol. 1
+  displayName: Radiant Tome Vol. 1
   category: 14
   series: 0
   volume: 1

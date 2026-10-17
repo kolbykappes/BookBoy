@@ -30,13 +30,14 @@ Check("held books are parented to the carry point and their colliders are off", 
 carry.SetCapacity(5); Check("capacity can grow and a 5th book then fits", pi.PickUp(B(names[4])) && carry.Count == 5, "count=" + carry.Count);
 carry.SetCapacity(4);   // 5 carried, capacity 4: nothing is dropped, but nothing more can be picked up
 
+Bookcase CaseOfTheme(BookCategory t) { foreach (var bc in UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include)) if (bc.theme == t) return bc; return null; }
 // place the current book on a shelf slot
-var slot = UnityEngine.GameObject.Find("Bookcase_1").GetComponent<Bookcase>().shelves[0].slots[0];
+var slot = CaseOfTheme(BookCategory.Alchemy).shelves[0].slots[0];
 while (carry.Current != B("Book_Alchemy_A1")) carry.Cycle(1);
 bool placed = pi.PlaceCurrent(slot);
 Check("placing the current book puts it on the slot and out of the hands", placed && slot.occupant == B("Book_Alchemy_A1") && carry.Count == 4 && !carry.Items.Contains(B("Book_Alchemy_A1")));
 Check("a placed book gets its real size back (not the carried size)", (B("Book_Alchemy_A1").transform.localScale - scales[0]).magnitude < 0.0005f, B("Book_Alchemy_A1").transform.localScale + " vs " + scales[0]);
-Check("a placed book is graded (first book in an empty case, vol 1, slot 1 = Correct)", B("Book_Alchemy_A1").Grade() == BookBoy.Rules.PlacementResult.Correct);
+Check("a placed book is graded (Alchemy vol 1 in the Alchemy bookcase, slot 1 = Correct)", B("Book_Alchemy_A1").Grade() == BookBoy.Rules.PlacementResult.Correct);
 Check("cannot place into a taken slot", !pi.PlaceCurrent(slot));
 
 // pickup while carrying: full hands first, then with room
@@ -50,7 +51,7 @@ Check("picking a shelved book up while carrying frees its slot", pi.PickUp(B("Bo
 carry.SetCapacity(4);
 
 // aiming at an empty slot while carrying -> place target
-var empty = UnityEngine.GameObject.Find("Bookcase_2").GetComponent<Bookcase>().shelves[0].slots[2];
+var empty = CaseOfTheme(BookCategory.Astronomy).shelves[0].slots[2];
 AimAt(empty.transform.position + new UnityEngine.Vector3(0f, 0.05f, 0f));
 Check("carrying + aiming at an empty slot: 'Press (E) to place' for the CURRENT book", pi.promptHintText.text.Contains("place") && pi.promptTitleText.text == carry.Current.definition.displayName, pi.promptTitleText.text + " / " + pi.promptHintText.text);
 

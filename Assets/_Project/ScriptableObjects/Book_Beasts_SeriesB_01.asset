@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Beasts_SeriesB_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_beasts_b1
-  displayName: Green Codex Vol. 1
+  displayName: Beast Codex Vol. 1
   category: 2
   series: 1
   volume: 1

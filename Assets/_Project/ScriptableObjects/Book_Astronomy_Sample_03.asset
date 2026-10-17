@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Astronomy_Sample_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_astronomy_03
-  displayName: Indigo Tome Vol. 3
+  displayName: Astral Tome Vol. 3
   category: 1
   series: 0
   volume: 3

@@ -10,11 +10,30 @@ void Check(string name, bool ok, string detail = "") { if (!ok) fails++; sb.Appe
 var R = BookBoy.Rules.PlacementResult.Correct;
 var cats = new[] { BookCategory.Alchemy, BookCategory.Astronomy, BookCategory.Beasts, BookCategory.History };
 Book B(BookCategory c, int series, int vol) { return UnityEngine.GameObject.Find("Book_" + c + "_" + (series == 0 ? "A" : "B") + vol).GetComponent<Book>(); }
-Bookcase Case(int i) { return UnityEngine.GameObject.Find("Bookcase_" + (i + 1)).GetComponent<Bookcase>(); }
+Bookcase Case(int i) { foreach (var bc in UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include)) if ((int)bc.theme == i) return bc; return null; }   // the bookcase whose fixed theme is category i
 ShelfSlot Slot(int bc, int shelf, int k) { return Case(bc).shelves[shelf].slots[k]; }
 BookBoy.Rules.PlacementResult Put(Book b, ShelfSlot s) { if (b.currentSlot != null) b.currentSlot.Release(); return s.Accept(b, b.transform.localScale); }
 void ClearAll() { foreach (var b in UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.FindObjectsInactive.Include)) if (b.currentSlot != null) b.currentSlot.Release(); }
 string G(Book b) { return b.Grade().ToString(); }
+
+// ---- fixed themes and wall signs ----
+var allCases = UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include);
+var allSigns = UnityEngine.Object.FindObjectsByType<ThemeSign>(UnityEngine.FindObjectsInactive.Include);
+var themeSet = new System.Collections.Generic.HashSet<int>(); foreach (var bc in allCases) themeSet.Add((int)bc.theme);
+Check("16 bookcases hold 16 distinct themes and there is one sign per bookcase", allCases.Length == 16 && themeSet.Count == 16 && allSigns.Length == 16, allCases.Length + " cases, " + themeSet.Count + " themes, " + allSigns.Length + " signs");
+bool signsOk = true; string signBad = "";
+foreach (var sg in allSigns) {
+  var txt = sg.GetComponentInChildren<UnityEngine.UI.Text>().text; var lines = BookThemes.SignLines(sg.bookcase.theme);
+  if (sg.theme != sg.bookcase.theme || txt != lines[0] + "\n" + lines[1]) { signsOk = false; signBad += " " + sg.name; }
+  if (System.Math.Abs(sg.transform.position.x - sg.bookcase.transform.position.x) > 0.01f || sg.transform.position.y <= 2.0f) { signsOk = false; signBad += " " + sg.name + "(pos)"; }
+}
+Check("every sign is above its own bookcase and names that bookcase's theme", signsOk, signBad);
+var colorWords = new[] { "amber", "indigo", "green", "crimson", "teal", "violet", "rose", "rust", "olive", "azure", "brown", "slate", "ivory", "charcoal", "lemon", "mint", "white", "red", "blue", "yellow", "orange", "purple", "pink", "grey", "gray", "black" };
+bool noColor = true; string leaked = "";
+foreach (var sg in allSigns) foreach (var cw in colorWords) if (sg.GetComponentInChildren<UnityEngine.UI.Text>().text.ToLowerInvariant().Contains(cw)) { noColor = false; leaked += " " + sg.name + ":" + cw; }
+foreach (var bk in UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.FindObjectsInactive.Include)) foreach (var cw in colorWords) if (bk.definition.displayName.ToLowerInvariant().Contains(cw)) { noColor = false; leaked += " " + bk.name + ":" + cw; }
+Check("signs and book titles name the theme, never a color", noColor, leaked);
+Check("the white books are 'Healing' (title) and their bookcase says HEALING MAGIC", B(BookCategory.Light, 0, 1).definition.displayName.StartsWith("Healing") && BookThemes.ThemeName(BookCategory.Light) == "Healing Magic" && Case((int)BookCategory.Light).theme == BookCategory.Light);
 
 // ---- claims and the three grades ----
 var first = Put(B(BookCategory.Alchemy, 0, 1), Slot(0, 0, 0));
@@ -31,11 +50,11 @@ var dupShelf = Put(B(BookCategory.Alchemy, 0, 4), Slot(0, 1, 3));
 Check("amber A4 on the shelf claimed by series B: yellow", dupShelf == BookBoy.Rules.PlacementResult.RightBookcaseWrongSpot, dupShelf.ToString());
 
 var idigo = Put(B(BookCategory.Astronomy, 0, 1), Slot(1, 0, 0));
-Check("indigo A1 in empty case 2: Correct (claims it)", idigo == R, idigo.ToString());
+Check("indigo A1 in the (empty) Astral bookcase: Correct", idigo == R, idigo.ToString());
 var dupCase = Put(B(BookCategory.Astronomy, 0, 2), Slot(2, 0, 1));
-Check("a second case claiming indigo later: its books are red (earlier claim wins)", dupCase == BookBoy.Rules.PlacementResult.WrongBookcase, dupCase.ToString());
+Check("an indigo book in the (empty) Beast bookcase: red - bookcase themes are fixed, no claiming", dupCase == BookBoy.Rules.PlacementResult.WrongBookcase, dupCase.ToString());
 var otherBookInCase2 = Put(B(BookCategory.Astronomy, 0, 3), Slot(1, 0, 2));
-Check("indigo A3 in slot 3 of case 2: Correct", otherBookInCase2 == R, otherBookInCase2.ToString());
+Check("indigo A3 in slot 3 of the Astral bookcase: Correct", otherBookInCase2 == R, otherBookInCase2.ToString());
 
 // regrade is live: removing the earliest book moves the claim
 var a1 = B(BookCategory.Alchemy, 0, 1); var a3 = B(BookCategory.Alchemy, 0, 3);
@@ -72,8 +91,8 @@ try {
     System.IO.File.WriteAllBytes(System.Environment.GetEnvironmentVariable("TEMP") + "/solved.png", tex.EncodeToPNG()); UnityEngine.Object.DestroyImmediate(tex); UnityEngine.RenderTexture.active = null;
 } finally { if (camGo) UnityEngine.Object.DestroyImmediate(camGo); if (rtex) { rtex.Release(); UnityEngine.Object.DestroyImmediate(rtex); } }
 
-int c2 = Solve(ci => 3 - ci, s => 1 - s);
-Check("32 of 32 correct for a different arrangement (cases reversed, series swapped)", c2 == 32, c2 + "/32");
+int c2 = Solve(ci => ci, s => 1 - s);
+Check("32 of 32 correct with the two series swapped between the shelves (the first book on a shelf decides its series)", c2 == 32, c2 + "/32");
 
 // one swap breaks it
 var bkSwap1 = B(BookCategory.Alchemy, 0, 2); var bkSwap2 = B(BookCategory.Alchemy, 0, 3);
@@ -110,7 +129,7 @@ foreach (var side in new[] { 0f, 0.4f, -0.4f })
     Check("aiming at each of 32 slots from " + (side == 0f ? "straight on" : "the side (" + side + "m)") + " picks the aimed slot", ok == total, ok + "/" + total + bad);
 }
 
-var tgt = Slot(2, 1, 2); var tp = tgt.transform.position;
+/* a bookcase no earlier step filled (released books stay where they were) */ var tgt = Slot(5, 1, 2); var tp = tgt.transform.position;
 Aim(new UnityEngine.Vector3(tp.x, 1.55f, 3.2f), tp + new UnityEngine.Vector3(0f, 0.05f, 0f));
 mPrompt.Invoke(pi, null);
 Check("holding + aiming at an empty slot: place prompt, highlight bar on that slot only, active crosshair",

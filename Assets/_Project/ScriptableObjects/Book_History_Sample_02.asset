@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_History_Sample_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_history_02
-  displayName: Crimson Tome Vol. 2
+  displayName: Forbidden Tome Vol. 2
   category: 3
   series: 0
   volume: 2

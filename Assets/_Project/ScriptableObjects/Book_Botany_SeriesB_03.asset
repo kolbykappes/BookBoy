@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Botany_SeriesB_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_botany_b3
-  displayName: Olive Codex Vol. 3
+  displayName: Herbal Codex Vol. 3
   category: 8
   series: 1
   volume: 3

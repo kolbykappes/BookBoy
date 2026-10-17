@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Alchemy_SeriesB_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_alchemy_b2
-  displayName: Amber Codex Vol. 2
+  displayName: Alchemy Codex Vol. 2
   category: 0
   series: 1
   volume: 2

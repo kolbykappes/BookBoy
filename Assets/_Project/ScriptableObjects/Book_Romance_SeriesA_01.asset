@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Romance_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_romance_a1
-  displayName: Rose Tome Vol. 1
+  displayName: Charm Tome Vol. 1
   category: 6
   series: 0
   volume: 1

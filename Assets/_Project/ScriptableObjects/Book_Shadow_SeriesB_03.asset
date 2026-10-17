@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Shadow_SeriesB_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_shadow_b3
-  displayName: Charcoal Codex Vol. 3
+  displayName: Shadow Codex Vol. 3
   category: 13
   series: 1
   volume: 3

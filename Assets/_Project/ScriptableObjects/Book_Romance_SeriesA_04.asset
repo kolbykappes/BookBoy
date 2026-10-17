@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Romance_SeriesA_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_romance_a4
-  displayName: Rose Tome Vol. 4
+  displayName: Charm Tome Vol. 4
   category: 6
   series: 0
   volume: 4

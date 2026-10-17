@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Earth_SeriesB_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_earth_b3
-  displayName: Brown Codex Vol. 3
+  displayName: Earth Codex Vol. 3
   category: 10
   series: 1
   volume: 3

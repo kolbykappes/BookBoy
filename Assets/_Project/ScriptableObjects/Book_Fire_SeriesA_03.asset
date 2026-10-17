@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Fire_SeriesA_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_fire_a3
-  displayName: Rust Tome Vol. 3
+  displayName: Fire Tome Vol. 3
   category: 7
   series: 0
   volume: 3

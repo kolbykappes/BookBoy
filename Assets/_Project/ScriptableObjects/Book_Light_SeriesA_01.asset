@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Light_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_light_a1
-  displayName: Ivory Tome Vol. 1
+  displayName: Healing Tome Vol. 1
   category: 12
   series: 0
   volume: 1

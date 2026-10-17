@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Spring_SeriesB_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_spring_b1
-  displayName: Mint Codex Vol. 1
+  displayName: Renewal Codex Vol. 1
   category: 15
   series: 1
   volume: 1

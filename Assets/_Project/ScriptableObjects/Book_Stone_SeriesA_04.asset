@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Stone_SeriesA_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_stone_a4
-  displayName: Slate Tome Vol. 4
+  displayName: Rune Tome Vol. 4
   category: 11
   series: 0
   volume: 4

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Illusion_SeriesA_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_illusion_a2
-  displayName: Violet Tome Vol. 2
+  displayName: Illusion Tome Vol. 2
   category: 5
   series: 0
   volume: 2

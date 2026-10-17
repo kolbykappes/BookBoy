@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Light_SeriesB_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_light_b2
-  displayName: Ivory Codex Vol. 2
+  displayName: Healing Codex Vol. 2
   category: 12
   series: 1
   volume: 2

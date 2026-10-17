@@ -4,7 +4,7 @@ if (!UnityEditor.EditorApplication.isPlaying) return "REFUSED: enter Play Mode f
 var sb = new System.Text.StringBuilder(); int fails = 0;
 void Check(string name, bool ok, string detail = "") { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + name + (ok ? "" : "  <-- " + detail) + "\n"); }
 Book B(string n) { return UnityEngine.GameObject.Find(n).GetComponent<Book>(); }
-Bookcase Case(int i) { return UnityEngine.GameObject.Find("Bookcase_" + (i + 1)).GetComponent<Bookcase>(); }
+Bookcase Case(int i) { foreach (var bc in UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include)) if ((int)bc.theme == i) return bc; return null; }   // the bookcase whose fixed theme is category i
 var cats = new[] { "Alchemy", "Astronomy", "Beasts", "History" };
 string BN(int c, int series, int vol) { return "Book_" + cats[c] + "_" + (series == 0 ? "A" : "B") + vol; }
 

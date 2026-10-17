@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Spring_SeriesA_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_spring_a3
-  displayName: Mint Tome Vol. 3
+  displayName: Renewal Tome Vol. 3
   category: 15
   series: 0
   volume: 3

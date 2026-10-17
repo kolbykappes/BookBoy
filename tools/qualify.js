@@ -6,7 +6,7 @@ const path = require("path");
 const map = {
   "UnityEngine": ["GameObject", "MeshRenderer", "TextMesh", "TextAnchor", "TextAlignment", "Resources", "Font", "Material",
     "Vector2", "Vector3", "Quaternion", "Color", "Transform", "PrimitiveType", "BoxCollider", "Collider", "ScriptableObject",
-    "FindObjectsInactive", "Sprite", "RectTransform"],
+    "FindObjectsInactive", "Sprite", "RectTransform", "Canvas", "RenderMode", "FontStyle"],
   "UnityEditor": ["EditorApplication", "AssetDatabase", "EditorUtility"],
   "UnityEngine.Rendering": ["ShadowCastingMode"],
   "System.Collections.Generic": ["List", "Dictionary"],

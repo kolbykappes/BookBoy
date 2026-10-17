@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Astronomy_Sample_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_astronomy_04
-  displayName: Indigo Tome Vol. 4
+  displayName: Astral Tome Vol. 4
   category: 1
   series: 0
   volume: 4

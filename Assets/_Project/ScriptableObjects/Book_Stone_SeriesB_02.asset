@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Stone_SeriesB_02
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_stone_b2
-  displayName: Slate Codex Vol. 2
+  displayName: Rune Codex Vol. 2
   category: 11
   series: 1
   volume: 2

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_History_SeriesB_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_history_b3
-  displayName: Crimson Codex Vol. 3
+  displayName: Forbidden Codex Vol. 3
   category: 3
   series: 1
   volume: 3

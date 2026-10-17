@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_History_Sample_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_history_04
-  displayName: Crimson Tome Vol. 4
+  displayName: Forbidden Tome Vol. 4
   category: 3
   series: 0
   volume: 4

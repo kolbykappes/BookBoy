@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Botany_SeriesA_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_botany_a4
-  displayName: Olive Tome Vol. 4
+  displayName: Herbal Tome Vol. 4
   category: 8
   series: 0
   volume: 4

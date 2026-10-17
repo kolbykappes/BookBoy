@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Sky_SeriesB_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_sky_b3
-  displayName: Azure Codex Vol. 3
+  displayName: Storm Codex Vol. 3
   category: 9
   series: 1
   volume: 3

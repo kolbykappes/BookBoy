@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Sunshine_SeriesA_03
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_sunshine_a3
-  displayName: Lemon Tome Vol. 3
+  displayName: Radiant Tome Vol. 3
   category: 14
   series: 0
   volume: 3

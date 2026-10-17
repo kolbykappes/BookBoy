@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Sky_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_sky_a1
-  displayName: Azure Tome Vol. 1
+  displayName: Storm Tome Vol. 1
   category: 9
   series: 0
   volume: 1

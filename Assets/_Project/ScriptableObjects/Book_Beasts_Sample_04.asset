@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Beasts_Sample_04
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_beasts_04
-  displayName: Green Tome Vol. 4
+  displayName: Beast Tome Vol. 4
   category: 2
   series: 0
   volume: 4

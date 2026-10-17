@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Earth_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_earth_a1
-  displayName: Brown Tome Vol. 1
+  displayName: Earth Tome Vol. 1
   category: 10
   series: 0
   volume: 1

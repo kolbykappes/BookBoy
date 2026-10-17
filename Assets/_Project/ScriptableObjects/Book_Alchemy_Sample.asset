@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Alchemy_Sample
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_alchemy_01
-  displayName: Amber Tome Vol. 1
+  displayName: Alchemy Tome Vol. 1
   category: 0
   series: 0
   volume: 1

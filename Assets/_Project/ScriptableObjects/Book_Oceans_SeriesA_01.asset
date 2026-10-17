@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Oceans_SeriesA_01
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: bk_oceans_a1
-  displayName: Teal Tome Vol. 1
+  displayName: Tidal Tome Vol. 1
   category: 4
   series: 0
   volume: 1
