@@ -189,10 +189,10 @@ items of the campaign, and it is the wrong shape for save/load.
 - **Acceptance:** a shelved item costs one mesh renderer and nothing else; per-frame script cost does not grow with the number of shelved items.
 
 ### L-019 Piles at rest are frozen and cheap; picking from a pile
-**Status:** Todo · **Priority:** P2 · **Depends on:** L-016 · **Needs a decision (below)** · **Added:** 2026-10-18
+**Status:** Todo · **Priority:** P2 · **Depends on:** L-016 · **Added:** 2026-10-18 · **Decided 2026-10-18:** any item you can see is pickable; pulling one out makes the neighbours settle
 - A pile at rest is a **frozen arrangement**: positions and rotations stored as data, no rigidbodies, no running physics. It never jitters and
   costs nothing while you walk past; the player's walking never pushes it (decided: no kicking piles).
-- Picking an item from a pile must still feel right. Options to try: (a) each item keeps a cheap static trigger collider and the aim ray picks the
+- **Any item you can see can be picked up** (decided): if the crosshair is on it and it is in reach, E or click takes it, even when it lies under or between others. Options to try for finding it: (a) each item keeps a cheap static trigger collider and the aim ray picks the
   one it hits (today's behaviour); (b) one compound collider per pile and a per-pile list that returns the item under the crosshair; (c) a
   per-pile spatial grid with a look-at test.
 - **Taking an item out of a pile makes the pile react**: the neighbours around the gap wake, settle (they may slump or slide into the gap) and
@@ -210,6 +210,8 @@ items of the campaign, and it is the wrong shape for save/load.
   seconds), everything in it is frozen again and the new positions are stored as data. If the book lands on empty floor nothing else wakes.
 - The same bubble is used when an item is taken out of a pile (L-019) and by "pile up the books" (`RoomZone.PileUp`), which keeps its short real
   drop and then freezes the result.
+- **Keep it small (decided):** one local bubble, no chained or cascading physics: bodies outside the sphere never wake because a body inside hit them, and the
+  bubble freezes again as soon as it is calm. The aim is only that a throw or a pulled book feels a bit more natural than nothing moving at all.
 - An engine-free part (rules assembly) holds the flight prediction math and the "which items are inside the sphere, and the cap" choice, with tests.
 - **Acceptance:** with no book in flight and no bubble active there are no active rigidbodies in the scene; a thrown book into a pile moves only
   items near the landing spot and they all freeze again; a throw that misses every pile wakes nothing; the bubble never exceeds its cap.
@@ -272,6 +274,6 @@ style for commissioned patron portraits, and check the rights of any public-doma
 3. Which of the starter achievements do you actually want, and should there be one per bookcase theme?
 4. ~~L-017: unload a room when the player leaves it?~~ **Answered 2026-10-18:** keep it loaded once opened, but store its state as data so unloading is an easy switch later.
 5. ~~L-019 / L-020: is it fine that a thrown book does not move a pile?~~ **Answered 2026-10-18:** no, physics should work on piles; wake the items in a sphere around the predicted landing spot, let them settle, freeze them again (L-020).
-6. L-019: picking from a pile: any item you can aim at, or only the top ones? And when one is taken out, should the neighbours settle into the gap (current plan: yes, with the local bubble)?
+6. ~~L-019: picking from a pile, and what happens to the rest?~~ **Answered 2026-10-18:** you can pick up any item you can see (aim at), not just the top ones; when one is pulled out, the neighbours settle.
 7. ~~L-016: item definition asset files?~~ **Answered 2026-10-18:** items live only in data files; rooms stay static scene content.
-8. L-020: starting values for the bubble: radius about 0.6 m, at most about 40 bodies woken, frozen again after the pile has been still for a moment (time limit a few seconds). OK as a start, to tune by feel?
+8. ~~L-020: bubble starting values (about 0.6 m, about 40 bodies)?~~ **Answered 2026-10-18:** good enough. The goal is only that it feels a bit natural: no chained or cascading physics, no always-on physics; most games in the genre move nothing but the active item, which feels odd, so a small local reaction is the target.
