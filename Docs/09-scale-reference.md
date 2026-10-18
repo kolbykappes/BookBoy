@@ -84,8 +84,10 @@ about twice as much of the screen, and a pile is a few chunky, readable books). 
 - **Player:** eye height **1.15 m** (was 1.7), walk 3.2 and sprint 4.8 m/s, reach 2.8 m (aim 12 m), held books drawn at 0.55. A smaller player
   makes the whole world feel big and close.
 - **Everything the player handles is 1.6 times life size** (`LamplitBuilder.WorldScale`): containers, items, finds and the desk props. A book is about
-  0.38 x 0.26 x 0.07 m. A container is 0.74 m wide, 2.4 m tall, with a 0.96 m base cabinet, boards at 0.96 m and 1.68 m (0.72 m apart) and a slot pitch
-  of 0.10 m (2026-10-18: boards lowered so the eye line at 1.15 m is inside the shelf band, slots packed to just clear the thickest item). Rooms, doors and the hub are sized to hold them: rooms 12 m wide, 11.4 to
+  0.38 x 0.26 x 0.07 m. A container is 1.0 m wide, 2.34 m tall, with a 0.96 m base cabinet, boards at 0.96 m and 1.68 m (0.72 m apart) and a slot pitch
+  of 0.152 m. Book spines are 0.09 to 0.14 m thick (2026-10-18: boards lowered so the eye line at 1.15 m is inside the shelf band; then thicker spines, wider slots).
+  **Rooms (2026-10-18):** ceiling 3.0 m (2.6 x the eye height; it was 4.2 m with no ceiling at all, which read as a giants' hall), doors 1.5 m x 2.2 m (were 2.0 x 3.0),
+  magelights at 2.55 m, family signs at 2.65 m. Rooms, doors and the hub are sized to hold them: rooms 12 m wide, 11.4 to
   13.4 m deep, walls 4.2 m, doors 2.0 x 3.0 m, hub 4.8 x 24.8 m.
 - **One number:** change `WorldScale` (and the player values in `ApplyPlayerScale`) and rebuild the hub and rooms with `LamplitBuilder`.
 - The prototype scene (`LibraryPrototype.unity`) keeps the life-size values.

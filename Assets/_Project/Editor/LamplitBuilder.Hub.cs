@@ -39,6 +39,7 @@ public static partial class LamplitBuilder
 
         float edge = HubHalf + 0.1f;
         Floor(hub, "Floor", -edge, edge, 0f, HubLength, FloorMat("Hub", edge * 2f, HubLength));
+        Ceiling(hub, "Ceiling", -edge, edge, 0f, HubLength);
         Wall(hub, "WallLeft", true, -HubHalf, 0f, HubLength, new[] { DoorZ[0], DoorZ[2] }, wallMat);
         Wall(hub, "WallRight", true, HubHalf, 0f, HubLength, new[] { DoorZ[1] }, wallMat);
         Wall(hub, "WallEnd0", false, 0f, -edge, edge, null, wallMat);
@@ -69,9 +70,9 @@ public static partial class LamplitBuilder
         }
 
         // lights: warm orbs down the hallway
-        Orb(hub, "MageLight_Hub_1", new Vector3(0f, 3.5f, HubLength * 0.17f), 4.6f, false, 10f);
-        Orb(hub, "MageLight_Hub_2", new Vector3(0f, 3.5f, HubLength * 0.5f), 4.4f, false, 10f);
-        Orb(hub, "MageLight_Hub_3", new Vector3(0f, 3.5f, HubLength * 0.83f), 4.4f, false, 10f);
+        Orb(hub, "MageLight_Hub_1", new Vector3(0f, OrbHeight, HubLength * 0.17f), 4.6f, false, 10f);
+        Orb(hub, "MageLight_Hub_2", new Vector3(0f, OrbHeight, HubLength * 0.5f), 4.4f, false, 10f);
+        Orb(hub, "MageLight_Hub_3", new Vector3(0f, OrbHeight, HubLength * 0.83f), 4.4f, false, 10f);
 
         // player start: at the desk, looking at it
         var spawn = new GameObject("HubSpawn").transform;
@@ -98,7 +99,7 @@ public static partial class LamplitBuilder
         float deskWidth = HubHalf * 2f - 0.1f;
         Cube("Top", desk, new Vector3(0f, 0.875f, 0.6f), new Vector3(deskWidth, 0.05f, 1.0f), wood);
         Cube("Body", desk, new Vector3(0f, 0.425f, 0.6f), new Vector3(deskWidth - 0.1f, 0.85f, 0.9f), wood);
-        Sign(desk, "DeskSign", new Vector3(0f, 3.1f, 0.14f), Vector3.forward, new Vector2(2.8f, 0.8f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 80);
+        Sign(desk, "DeskSign", new Vector3(0f, 2.55f, 0.14f), Vector3.forward, new Vector2(2.8f, 0.8f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 80);
 
         // six spots in a row on the desk top; each accepts one find. The last is locked for now.
         var spotRoot = FreshChild(desk, "Spots");
@@ -189,6 +190,9 @@ public static partial class LamplitBuilder
     public const float SprintSpeed = 4.8f;
     public const float InteractionRange = 2.8f;
     public const float MaxAimRange = 12f;
+    public const float HandLightIntensity = 0.6f;
+    public const float HandLightRange = 2.8f;
+    public static readonly Vector3 HandLightPosition = new Vector3(0f, 0.25f, -0.25f);
     public const float CarryScale = 0.55f;   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
@@ -215,6 +219,19 @@ public static partial class LamplitBuilder
         interactor.interactionRange = InteractionRange;
         interactor.maxAimRange = MaxAimRange;
         EditorUtility.SetDirty(interactor);
+
+        // a soft light on the camera so carried books stay readable; weak and set back from the eyes, because a bright one near the
+        // lens blows out whatever the player stands close to (shelves are half a metre away at this scale)
+        var camRoot = Camera.main;   // the Cinemachine brain camera, not a child of the player
+        var hand = camRoot != null ? camRoot.transform.Find("HandLight") : null;
+        if (hand != null)
+        {
+            hand.localPosition = HandLightPosition;
+            var hl = hand.GetComponent<Light>();
+            hl.intensity = HandLightIntensity;
+            hl.range = HandLightRange;
+            EditorUtility.SetDirty(hl);
+        }
 
         var carry = player.GetComponent<CarryInventory>();
         carry.carryScale = CarryScale;

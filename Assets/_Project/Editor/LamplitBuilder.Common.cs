@@ -21,18 +21,20 @@ public static partial class LamplitBuilder
     /// readable at a glance; rooms, doors and the hub are sized to hold them. Change this one number and rebuild the hub and the three rooms.</summary>
     public const float WorldScale = 1.6f;
 
-    public const float WallHeight = 4.2f;
+    public const float WallHeight = 3.0f;      // ceiling: about 2.6x the eye height (was 4.2, which read as a giants' hall)
     public const float WallThickness = 0.2f;
-    public const float DoorWidth = 2.0f;
-    public const float DoorHeight = 3.0f;
+    public const float DoorWidth = 1.5f;
+    public const float DoorHeight = 2.2f;
+    public const float OrbHeight = 2.55f;       // magelights float just under the ceiling
+    public const float SignHeight = 2.65f;      // family signs: above the containers (2.34 m), below the ceiling
     public const float HubHalf = 2.4f;          // hub wall centres are at x = +-HubHalf
     public const float HubLength = 24.8f;
     // Slots are packed: the thickest item is 0.06 m (local, before WorldScale), so the pitch only just clears it (was 0.072, which left
     // visible gaps). Shelves sit low so the eye line is inside the shelf band: base cabinet 0.6 m, the two boards 0.45 m apart (local).
-    public const float SlotPitch = 0.0625f;
+    public const float SlotPitch = 0.095f;
     public const float BaseHeight = 0.6f;
     public const float ShelfSpacing = 0.45f;
-    public const float ContainerHeight = 1.54f;
+    public const float ContainerHeight = 1.46f;
     public const float FrontLine = -0.14f;
     private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing };
 
@@ -136,6 +138,13 @@ public static partial class LamplitBuilder
     public static void Floor(Transform parent, string name, float x0, float x1, float z0, float z1, Material mat)
     {
         Cube(name, parent, new Vector3((x0 + x1) / 2f, -0.1f, (z0 + z1) / 2f), new Vector3(x1 - x0, 0.2f, z1 - z0), mat, true, false);
+    }
+
+    /// <summary>A flat ceiling slab whose underside is at y = WallHeight (the rooms were open to a black sky, which made them feel enormous).</summary>
+    public static void Ceiling(Transform parent, string name, float x0, float x1, float z0, float z1)
+    {
+        var mat = EnsureMat("Mat_Ceiling", new Color(0.34f, 0.25f, 0.18f), 0.1f);
+        Cube(name, parent, new Vector3((x0 + x1) / 2f, WallHeight + 0.1f, (z0 + z1) / 2f), new Vector3(x1 - x0, 0.2f, z1 - z0), mat, true, false);
     }
 
     /// <summary>A straight wall with doorways. For alongZ the wall runs along Z at x = fixedCoord, otherwise along X at z = fixedCoord.

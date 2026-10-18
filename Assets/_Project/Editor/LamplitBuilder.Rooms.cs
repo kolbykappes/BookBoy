@@ -7,7 +7,7 @@ public static partial class LamplitBuilder
 {
     // Rooms sit beside the hub. Left of the hub: Room 1 (z 0..11.4) and Room 3 (z 11.4..24.8). Right of the hub: Room 2 (z 5.7..19.1).
     // Each is RoomWidth wide with the containers (at world scale) along the far wall and the piles of loose items in the middle.
-    private static float ContainerPitch => 0.52f * WorldScale;   // container width 0.46 m (local) plus a small gap
+    private static float ContainerPitch => 0.68f * WorldScale;   // container width 0.46 m (local) plus a small gap
     private const float RoomWidth = 12f;
 
     public struct RoomSpec
@@ -47,6 +47,7 @@ public static partial class LamplitBuilder
         float x0 = Mathf.Min(xHub, xFar), x1 = Mathf.Max(xHub, xFar);
 
         Floor(shell, "Floor", x0, x1, s.Z0, s.Z1, FloorMat("R" + s.Number, x1 - x0, s.Z1 - s.Z0));
+        Ceiling(shell, "Ceiling", x0, x1, s.Z0, s.Z1);
         Wall(shell, "FarWall", true, s.FarWallX, s.Z0, s.Z1, null, wallMat);
         if (s.BuildLowWall) Wall(shell, "WallLow", false, s.Z0, x0, x1, null, wallMat);
         if (s.BuildHighWall) Wall(shell, "WallHigh", false, s.Z1, x0, x1, null, wallMat);
@@ -73,9 +74,9 @@ public static partial class LamplitBuilder
         zone.pileSpread = WorldScale;
 
         // lights: two near the middle, one near the containers casting soft shadows
-        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 3.6f, s.Z0 + 2.8f), 4.6f, false, 10f);
-        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 3.6f, s.Z1 - 2.8f), 4.6f, false, 10f);
-        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 4.0f, 3.6f, cz), 5.0f, true, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f), OrbHeight, s.Z0 + 2.8f), 4.6f, false, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f), OrbHeight, s.Z1 - 2.8f), 4.6f, false, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 4.0f, OrbHeight, cz), 5.0f, true, 10f);
         return root;
     }
 
@@ -146,7 +147,7 @@ public static partial class LamplitBuilder
 
     private static readonly Vector3[] ReadingScales =
     {
-        new Vector3(0.045f, 0.24f, 0.16f), new Vector3(0.040f, 0.28f, 0.18f), new Vector3(0.050f, 0.32f, 0.15f), new Vector3(0.055f, 0.22f, 0.19f)
+        new Vector3(0.065f, 0.24f, 0.16f), new Vector3(0.060f, 0.28f, 0.18f), new Vector3(0.072f, 0.32f, 0.15f), new Vector3(0.078f, 0.22f, 0.19f)
     };
 
     /// <summary>Room 1: 100 books in 20 groups of 5 on 20 five-slot shelves (10 containers). Rule: Group (the first book on a shelf claims it).</summary>
@@ -218,10 +219,10 @@ public static partial class LamplitBuilder
     private static readonly string[] MailPlural = { "BOOKS", "MAGAZINES", "LETTERS", "PARCELS" };
     private static readonly Vector3[] MailSizes =
     {
-        new Vector3(0.045f, 0.26f, 0.17f),   // book
-        new Vector3(0.040f, 0.30f, 0.22f),   // magazine: tall and wide, thin
-        new Vector3(0.040f, 0.16f, 0.12f),   // letter: small
-        new Vector3(0.060f, 0.14f, 0.14f),   // parcel: squat
+        new Vector3(0.065f, 0.26f, 0.17f),   // book
+        new Vector3(0.058f, 0.30f, 0.22f),   // magazine: tall and wide, thin
+        new Vector3(0.055f, 0.16f, 0.12f),   // letter: small
+        new Vector3(0.085f, 0.14f, 0.14f),   // parcel: squat
     };
 
     /// <summary>Room 2: 120 items (books, magazines, letters, parcels; 6 groups of 5 each) on 24 shelves in 12 containers, three per family.
@@ -247,7 +248,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 4; f++)
         {
             float z = zc + ((f * 3 + 1) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 3.0f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(2.5f, 0.6f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
+            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), SignHeight, z), s.Left ? Vector3.right : Vector3.left, new Vector2(2.5f, 0.6f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");
@@ -309,9 +310,9 @@ public static partial class LamplitBuilder
     private static readonly string[] MapInitial = { "A", "R", "S" };
     private static readonly Vector3[] MapSizes =
     {
-        new Vector3(0.060f, 0.34f, 0.26f),   // atlas: big and thick
-        new Vector3(0.050f, 0.30f, 0.050f),  // rolled map: a thin tube
-        new Vector3(0.040f, 0.30f, 0.22f),   // flat sheet: wide and thin
+        new Vector3(0.085f, 0.34f, 0.26f),   // atlas: big and thick
+        new Vector3(0.070f, 0.30f, 0.070f),  // rolled map: a tube
+        new Vector3(0.058f, 0.30f, 0.22f),   // flat sheet: wide and thin
     };
 
     /// <summary>Room 3: 120 items (atlases, rolled maps, flat sheets; 8 numbered sets of 5 each) on 24 shelves in 12 containers, four per family.
@@ -335,7 +336,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 3; f++)
         {
             float z = zc + ((f * 4 + 1.5f) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 3.0f, z), Vector3.right, new Vector2(3.2f, 0.6f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
+            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, SignHeight, z), Vector3.right, new Vector2(3.2f, 0.6f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");

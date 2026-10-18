@@ -492,3 +492,21 @@ board top 1.36 m, upper 2.08 m), where Librarian, Shelves and Sorcery and Witch 
   earlier the same day and this change does not touch the pile code.
 - **Deferred (backlog L-021 to L-023):** palette and contrast (purple and navy groups are darker than the wood), a ghost of the held item in the aimed slot, and
   visible claims (a nameplate on the board).
+
+### Lamplit: head light, room scale and chunkier books (2026-10-18)
+
+Kolby's playtest of the lowered-board build: the books do not look wider, the game washes out close to a shelf ("a light on my forehead"), and the rooms look sized for giants.
+
+- **Head light (found by listing every Light in the scene):** `MainCamera/HandLight` (point, intensity 2, range 2.6, 0.2 m ahead of the lens) was added so carried books stay readable in
+  the dim rooms. At the new scale the shelves are about 0.9 m from the eyes, where inverse-square falloff makes it 4 to 8 times brighter than the room lights, so the
+  aimed books bleached to white. Now intensity `0.6`, range 2.8, set back 0.25 m behind and 0.25 m above the lens (`LamplitBuilder.HandLight*`, applied by `ApplyPlayerScale`, which
+  now finds the light through `Camera.main`, because the brain camera is not a child of the player). Old and new settings rendered side by side from 0.9 m: the old one reproduces the washed-out
+  screenshot, the new one keeps the colours and the spine letters.
+- **Rooms scaled to the player:** ceiling slabs added (the rooms were open to a black sky), wall height 4.2 to 3.0 m, doors 2.0 x 3.0 to 1.5 x 2.2 m, magelights 3.5 to 2.55 m, desk and
+  family signs lowered, containers 2.46 to 2.34 m (`OrbHeight`, `SignHeight`, `ContainerHeight`).
+- **Chunkier books:** spine thickness up about 1.45 times (Room 1 0.065 to 0.078 local, atlases 0.085), slot pitch 0.0625 to 0.095 local (0.152 m), container pitch 0.68 local; ten containers still
+  fit Room 1 (10.8 m of 11.4) and twelve fit Rooms 2 and 3 (13.0 of 13.4).
+- **Verified:** 109 unit tests, the eight Lamplit suites and both pile suites pass (the live pile drop ran with advancing frames this time, answering last entry's open question).
+  `tools/verify_lamplit_piles.cs` no longer requires at most 10 clusters (flat sheets slide into singles); it requires at least 3 real piles and at most 12% strays.
+  Renders: hub, Room 1 wall and close-up with all books shelved.
+- **Not verified:** how it feels live in the Game view (no new Game-view capture was possible from here; the renders use the same lighting and camera settings).

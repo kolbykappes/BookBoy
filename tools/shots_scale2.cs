@@ -1,0 +1,13 @@
+var d = "C:/Users/angry/AppData/Local/Temp/claude/C--Code-BookBoy/f093f5b7-069b-4f91-9e47-626a41770065/scratchpad/";
+var sb = new System.Text.StringBuilder();
+var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
+sb.AppendLine(LamplitBuilder.Shot(d + "s3_hub.png", V(0f, 1.15f, 3.6f), V(-2.4f, 1.2f, 12.4f), 75f, 1386, 719));
+sb.AppendLine(LamplitBuilder.Shot(d + "s3_room1_wide.png", V(-3.6f, 1.15f, 5.7f), V(-14.8f, 1.3f, 5.7f), 75f, 1386, 719));
+var zone = UnityEngine.GameObject.Find("Room1").GetComponent<RoomZone>();
+zone.PlaceAllHome();
+sb.AppendLine("placed");
+var c = UnityEngine.GameObject.Find("Container_5").transform.position;
+sb.AppendLine("container5 " + c.ToString("F2"));
+sb.AppendLine(LamplitBuilder.Shot(d + "s3_room1_close.png", V(c.x + 1.3f, 1.15f, c.z), V(c.x, 1.25f, c.z), 75f, 1386, 719));
+sb.AppendLine(LamplitBuilder.Shot(d + "s3_room1_row.png", V(-10.5f, 1.15f, 5.7f), V(-14.8f, 1.2f, 5.7f), 75f, 1386, 719));
+return sb.ToString();

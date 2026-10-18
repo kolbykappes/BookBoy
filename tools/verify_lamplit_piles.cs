@@ -19,8 +19,8 @@ int[] Clusters(Book[] items) {
 foreach (var z in cc.rooms)
 {
     var sizes = Clusters(z.items);
-    int big = 0; foreach (var s in sizes) if (s >= 5) big++;
-    Check("room " + z.roomNumber + " starts as 3-8 random piles in the middle (not a grid of single books)", big >= 3 && sizes.Length <= 10 && sizes[0] >= 15, string.Join(",", sizes));
+    int big = 0, strays = 0; foreach (var s in sizes) { if (s >= 5) big++; else if (s <= 2) strays += s; }
+    Check("room " + z.roomNumber + " starts as 3-8 random piles in the middle (not a grid of single books)", big >= 3 && strays <= 0.12f * z.items.Length && sizes[0] >= 15, string.Join(",", sizes));
     bool floor = true, solid = true, loose = true; float maxY = 0;
     foreach (var b in z.items) { maxY = System.Math.Max(maxY, b.transform.position.y); if (b.currentSlot != null) loose = false; if (b.GetComponent<UnityEngine.Rigidbody>() != null || !b.GetComponent<UnityEngine.Collider>().isTrigger) solid = false; if (!z.Contains(b.transform.position) || b.transform.position.y > 1.4f) floor = false; }
     Check("room " + z.roomNumber + ": every item is loose, on the floor inside the room, a normal pick-up-able trigger (highest " + maxY.ToString("F2") + " m)", floor && solid && loose);
