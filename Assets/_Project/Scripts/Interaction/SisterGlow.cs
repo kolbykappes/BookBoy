@@ -68,7 +68,7 @@ public class SisterGlow : MonoBehaviour
                 continue;
             }
 
-            if (book.definition.category == current.definition.category && book.definition.series == current.definition.series)
+            if (current.SameGroupAs(book))
             {
                 book.Outline?.Pulse(GlowColor, seconds);
                 count++;

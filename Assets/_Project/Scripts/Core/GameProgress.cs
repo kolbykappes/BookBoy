@@ -26,6 +26,7 @@ public class GameProgress : MonoBehaviour
     private Shelf[] _shelves;
     private bool[] _finished;
     private CarryInventory _carry;
+    private CampaignController _campaign;
     private FirstPersonController _fpc;
     private float _baseMove;
     private float _baseSprint;
@@ -45,6 +46,15 @@ public class GameProgress : MonoBehaviour
     public int ShelvesTotal => _shelves != null ? _shelves.Length : 0;
     public CarryInventory Carry => _carry;
 
+    /// <summary>The Lamplit campaign, if this scene has one. In a campaign scene shelves do not earn points and finds (not the tech
+    /// tree) switch abilities on.</summary>
+    public CampaignController Campaign => _campaign;
+
+    public void RaiseChanged()
+    {
+        Changed?.Invoke();
+    }
+
     private void Start()
     {
         // Re-initialize everything: the Editor may keep component state between Play sessions (scene reload is off).
@@ -53,6 +63,7 @@ public class GameProgress : MonoBehaviour
         Array.Sort(_shelves, (a, b) => string.CompareOrdinal(ShelfKey(a), ShelfKey(b)));
         _finished = new bool[_shelves.Length];
         _carry = FindFirstObjectByType<CarryInventory>();
+        _campaign = FindFirstObjectByType<CampaignController>();
         _fpc = FindFirstObjectByType<FirstPersonController>();
         if (_fpc != null)
         {
@@ -124,7 +135,7 @@ public class GameProgress : MonoBehaviour
             }
         }
 
-        int newly = _tracker.Update(_finished);
+        int newly = _campaign == null ? _tracker.Update(_finished) : 0;
         if (newly > 0)
         {
             Upgrades.AddPoints(newly);
@@ -135,7 +146,7 @@ public class GameProgress : MonoBehaviour
         BooksCorrect = correct;
         ShelvesFinished = finishedCount;
 
-        if (!_complete && PlacementRules.IsCleanupComplete(_books.Length, correct))
+        if (!_complete && _campaign == null && PlacementRules.IsCleanupComplete(_books.Length, correct))
         {
             _complete = true;
             _finalTime = _elapsed;

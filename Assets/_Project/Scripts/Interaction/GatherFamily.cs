@@ -81,7 +81,7 @@ public class GatherFamily : MonoBehaviour
                 continue;
             }
 
-            if (book.definition.category == current.definition.category && book.definition.series == current.definition.series)
+            if (current.SameGroupAs(book))
             {
                 sisters.Add(book);
             }

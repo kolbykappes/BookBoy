@@ -25,7 +25,7 @@ public class Shelf : MonoBehaviour
             if (book != null && book.definition != null && book.placedTime < time)
             {
                 time = book.placedTime;
-                series = book.definition.series;
+                series = book.GroupKey;
             }
         }
 

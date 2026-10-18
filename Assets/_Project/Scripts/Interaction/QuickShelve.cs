@@ -52,6 +52,12 @@ public class QuickShelve : MonoBehaviour
             return 0;
         }
 
+        if (_progress.Campaign != null)
+        {
+            _ui?.Toast("The dumbwaiter hatch is locked for now.");
+            return 0;
+        }
+
         CarryInventory carry = _interactor.Carry;
         if (carry.IsEmpty)
         {

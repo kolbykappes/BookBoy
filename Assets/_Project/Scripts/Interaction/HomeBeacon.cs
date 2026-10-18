@@ -121,15 +121,7 @@ public class HomeBeacon : MonoBehaviour
             return false;
         }
 
-        Bookcase target = null;
-        foreach (Bookcase bookcase in FindObjectsByType<Bookcase>(FindObjectsInactive.Exclude))
-        {
-            if (bookcase.theme == current.definition.category)
-            {
-                target = bookcase;
-                break;
-            }
-        }
+        Bookcase target = FindTarget(current);
 
         if (target == null)
         {
@@ -139,8 +131,61 @@ public class HomeBeacon : MonoBehaviour
 
         Show(target, _progress.Upgrades.BeaconSeconds);
         _progress.StartCooldown(AbilityId.HomeBeacon);
-        _ui?.Toast("Home Beacon: " + BookThemes.ThemeName(target.theme) + " belongs in the glowing bookcase.");
+        _ui?.Toast(target.rules == ContainerRules.Prototype
+            ? "Home Beacon: " + BookThemes.ThemeName(target.theme) + " belongs in the glowing bookcase."
+            : "Home Beacon: this one belongs in the glowing shelf unit.");
         return true;
+    }
+
+    /// <summary>Which bookcase the held book belongs in. Library bookcases: the one whose theme matches. Lamplit containers: one that
+    /// accepts its family and room and either already holds its group (best) or has a shelf nobody has claimed; nearest wins.</summary>
+    private Bookcase FindTarget(Book current)
+    {
+        Bookcase best = null;
+        int bestScore = 0;
+        float bestDistance = float.MaxValue;
+        Vector3 from = _interactor.transform.position;
+        foreach (Bookcase bookcase in FindObjectsByType<Bookcase>(FindObjectsInactive.Exclude))
+        {
+            if (bookcase.rules == ContainerRules.Prototype)
+            {
+                if (bookcase.theme == current.definition.category)
+                {
+                    return bookcase;
+                }
+
+                continue;
+            }
+
+            if (current.IsFind || (current.definition.room != 0 && bookcase.room != null && bookcase.room.roomNumber != current.definition.room)
+                || !PlacementRules.FamilyAccepted(bookcase.containerFamily, current.FamilyKey))
+            {
+                continue;
+            }
+
+            int score = 0;
+            foreach (Shelf shelf in bookcase.shelves)
+            {
+                if (!shelf.TryGetSeriesClaim(out int claim, out _))
+                {
+                    score = Mathf.Max(score, 1);
+                }
+                else if (claim == current.GroupKey)
+                {
+                    score = Mathf.Max(score, 2);
+                }
+            }
+
+            float distance = (bookcase.transform.position - from).sqrMagnitude;
+            if (score > bestScore || (score == bestScore && score > 0 && distance < bestDistance))
+            {
+                best = bookcase;
+                bestScore = score;
+                bestDistance = distance;
+            }
+        }
+
+        return best;
     }
 
     private void Show(Bookcase target, float seconds)

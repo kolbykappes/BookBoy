@@ -19,7 +19,8 @@ public class GameUI : MonoBehaviour
     {
         None,
         Upgrades,
-        Admin
+        Admin,
+        Finds
     }
 
     private sealed class Row
@@ -96,6 +97,7 @@ public class GameUI : MonoBehaviour
 
     public bool MenuOpen => _menu != Menu.None;
     public bool UpgradesOpen => _menu == Menu.Upgrades;
+    public bool FindsOpen => _menu == Menu.Finds;
     public bool AdminOpen => _menu == Menu.Admin;
 
     /// <summary>Where the menu pointer is, in screen pixels (origin bottom-left). The real cursor stays locked and hidden.</summary>
@@ -361,7 +363,9 @@ public class GameUI : MonoBehaviour
             return;
         }
 
-        string text = "<b>TIME</b>  " + TimeFormat.Format(_progress.ElapsedSeconds) + (_progress.LevelComplete ? "  (done!)" : "")
+        string text = _progress.Campaign != null
+            ? _progress.Campaign.StatsText()
+            : "<b>TIME</b>  " + TimeFormat.Format(_progress.ElapsedSeconds) + (_progress.LevelComplete ? "  (done!)" : "")
             + "\n<b>BOOKS</b>  " + _progress.BooksCorrect + " / " + _progress.BooksTotal
             + "\n<b>SHELVES</b>  " + _progress.ShelvesFinished + " / " + _progress.ShelvesTotal
             + "\n<b>UPGRADE POINTS</b>  <color=#FFE680>" + _progress.Upgrades.Points + "</color>";
@@ -482,7 +486,8 @@ public class GameUI : MonoBehaviour
 
     public void OpenUpgrades()
     {
-        OpenMenu(Menu.Upgrades);
+        // in a Lamplit scene abilities come from finds, not points: Tab shows the finds instead of the tech tree
+        OpenMenu(_progress != null && _progress.Campaign != null ? Menu.Finds : Menu.Upgrades);
     }
 
     public void OpenAdmin()
@@ -566,7 +571,7 @@ public class GameUI : MonoBehaviour
         Time.timeScale = active ? 1f : 0f;
     }
 
-    private int RowCount => _menu == Menu.Upgrades ? UpgradeCatalog.All.Count : _menu == Menu.Admin ? AdminRows.Length : 0;
+    private int RowCount => _menu == Menu.Upgrades ? UpgradeCatalog.All.Count : _menu == Menu.Admin ? AdminRows.Length : _menu == Menu.Finds ? CampaignCatalog.Finds.Count + 1 : 0;
 
     private void RefreshMenu()
     {
@@ -580,6 +585,11 @@ public class GameUI : MonoBehaviour
         {
             _menuTitle.text = "UPGRADES        <color=#FFE680>" + u.Points + " point" + (u.Points == 1 ? "" : "s") + " to spend</color>";
             _menuHelp.text = "Finish a shelf to earn a point (the whole tree costs 32).   Up/Down + Enter, 1-9 (first nine), or click to buy.   Tab or Esc to close.";
+        }
+        else if (_menu == Menu.Finds)
+        {
+            _menuTitle.text = "FINDS        <color=#FFE680>" + _progress.Campaign.State.InstalledCount + " / " + CampaignCatalog.Finds.Count + " installed</color>";
+            _menuHelp.text = "Find each item in its room, carry it to the desk and put it in its spot.   Tab or Esc to close.";
         }
         else
         {
@@ -607,6 +617,11 @@ public class GameUI : MonoBehaviour
         if (_menu == Menu.Admin)
         {
             return index >= 0 && index < AdminRows.Length ? AdminRows[index] : "";
+        }
+
+        if (_menu == Menu.Finds)
+        {
+            return FindRowText(index);
         }
 
         UpgradeState u = _progress.Upgrades;
@@ -637,6 +652,36 @@ public class GameUI : MonoBehaviour
         return "<color=" + color + "><b>" + (index + 1) + ".  " + n.Name + "</b>  (" + n.Cost + " pt)   " + n.Description + "   [" + state + "]</color>";
     }
 
+    private string FindRowText(int index)
+    {
+        CampaignState state = _progress.Campaign.State;
+        if (index >= CampaignCatalog.Finds.Count)
+        {
+            return "<color=#777b8c><b>" + (index + 1) + ".  Dumbwaiter hatch</b>   Quick Shelve   [locked for now]</color>";
+        }
+
+        FindDef f = CampaignCatalog.Finds[index];
+        string status;
+        string color;
+        if (state.IsInstalled(f.Id))
+        {
+            status = "INSTALLED";
+            color = "#7CE08A";
+        }
+        else if (state.IsFound(f.Id))
+        {
+            status = "found: carry it to the desk";
+            color = "#FFE680";
+        }
+        else
+        {
+            status = "hidden in " + _progress.Campaign.Room(f.Room).displayName;
+            color = "#a8a8b8";
+        }
+
+        return "<color=" + color + "><b>" + (index + 1) + ".  " + f.Name + "</b>   " + f.Effect + "   [" + status + "]</color>";
+    }
+
     /// <summary>Chooses a menu row (Enter, a number key, or a click). Returns true if something happened.</summary>
     public bool Activate(int row)
     {
@@ -646,6 +691,11 @@ public class GameUI : MonoBehaviour
         }
 
         bool done = false;
+        if (_menu == Menu.Finds)
+        {
+            return false;
+        }
+
         if (_menu == Menu.Upgrades)
         {
             UpgradeNode n = UpgradeCatalog.All[row];
@@ -699,7 +749,7 @@ public class GameUI : MonoBehaviour
 
         if (kb.tabKey.wasPressedThisFrame)
         {
-            if (UpgradesOpen) CloseMenu(); else OpenUpgrades();
+            if (UpgradesOpen || FindsOpen) CloseMenu(); else OpenUpgrades();
         }
         else if (kb.f10Key.wasPressedThisFrame)
         {

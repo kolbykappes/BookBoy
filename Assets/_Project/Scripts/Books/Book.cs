@@ -25,6 +25,25 @@ public class Book : MonoBehaviour
 
     public bool isPlaced => currentSlot != null;
 
+    /// <summary>Item family: the Lamplit family if set, else the library colour category.</summary>
+    public int FamilyKey => definition == null ? -1 : definition.family >= 0 ? definition.family : (int)definition.category;
+
+    /// <summary>Group: the Lamplit group if set, else the library series.</summary>
+    public int GroupKey => definition == null ? -1 : definition.group >= 0 ? definition.group : definition.series;
+
+    /// <summary>Number in the set: the Lamplit number if set, else the library volume.</summary>
+    public int NumberKey => definition == null ? 0 : definition.number > 0 ? definition.number : definition.volume;
+
+    /// <summary>A find (apron, shoes...) is carried to the desk and is never shelved.</summary>
+    public bool IsFind => definition != null && !string.IsNullOrEmpty(definition.findId);
+
+    /// <summary>True if the other book is of the same family and group (its "sisters"). Finds never match.</summary>
+    public bool SameGroupAs(Book other)
+    {
+        return other != null && !IsFind && !other.IsFind && definition != null && other.definition != null
+            && FamilyKey == other.FamilyKey && GroupKey == other.GroupKey && definition.room == other.definition.room;
+    }
+
     /// <summary>True once the player has dropped this book with real physics (Rigidbody,
     /// tumbling). Keeps OnEnable from forcing the collider back to a trigger after a dropped
     /// book has deliberately been made solid — otherwise a future Editor domain reload would
@@ -125,6 +144,10 @@ public class Book : MonoBehaviour
 
         Shelf shelf = currentSlot.shelf;
         Bookcase bookcase = shelf.bookcase;
+        if (bookcase.rules != ContainerRules.Prototype)
+        {
+            return GradeCampaign(shelf, bookcase);
+        }
 
         Bookcase[] cases = bookcase.all;
         int myCase = -1;
@@ -156,6 +179,37 @@ public class Book : MonoBehaviour
 
         bool shelfOk = PlacementRules.ClaimHolds(myShelf, shelfValues, shelfTimes, definition.series);
         return PlacementRules.Evaluate(bookcaseOk, shelfOk, definition.volume, currentSlot.slotIndex);
+    }
+
+    /// <summary>The Lamplit grading: red if the container's family (or room) does not accept the item, yellow if another group owns
+    /// the shelf (or, in an Ordered container, the number is not in its own slot), green otherwise. Group claims are compared across
+    /// every shelf in the room, so a group cannot be split over two shelves and still look right.</summary>
+    private PlacementResult GradeCampaign(Shelf shelf, Bookcase bookcase)
+    {
+        if (IsFind)
+        {
+            return PlacementResult.WrongBookcase;
+        }
+
+        bool roomOk = definition.room == 0 || bookcase.room == null || bookcase.room.roomNumber == definition.room;
+        bool familyOk = roomOk && PlacementRules.FamilyAccepted(bookcase.containerFamily, FamilyKey);
+
+        Shelf[] shelves = bookcase.room != null && bookcase.room.shelves != null && bookcase.room.shelves.Length > 0 ? bookcase.room.shelves : bookcase.shelves;
+        int mine = -1;
+        var values = new int[shelves.Length];
+        var times = new double[shelves.Length];
+        for (int i = 0; i < shelves.Length; i++)
+        {
+            shelves[i].TryGetSeriesClaim(out values[i], out times[i]);
+            if (shelves[i] == shelf)
+            {
+                mine = i;
+            }
+        }
+
+        bool groupOk = PlacementRules.ClaimHolds(mine, values, times, GroupKey);
+        PlacementMode mode = bookcase.rules == ContainerRules.Ordered ? PlacementMode.Ordered : PlacementMode.Group;
+        return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, currentSlot.slotIndex);
     }
 
     public bool IsCorrectlyShelved => currentSlot != null && Grade() == PlacementResult.Correct;

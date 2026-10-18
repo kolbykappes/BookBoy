@@ -31,11 +31,29 @@ public class PlayerInteractor : MonoBehaviour
     private ShelfSlot _focusedSlot;
     private bool _targetOutOfRange;
     private bool _aimingAtFinishedBook;
+    private FindSpot _focusedSpot;
+    private CampaignController _campaign;
+    private bool _campaignSearched;
     private Book _litBook;
     private ShelfSlot _litSlot;
     private static readonly System.Comparison<RaycastHit> ByDistance = (a, b) => a.distance.CompareTo(b.distance);
 
     public CarryInventory Carry => _carry != null ? _carry : (_carry = GetComponent<CarryInventory>());
+
+    /// <summary>The Lamplit campaign in this scene, if any (found once).</summary>
+    private CampaignController Campaign
+    {
+        get
+        {
+            if (!_campaignSearched)
+            {
+                _campaignSearched = true;
+                _campaign = FindFirstObjectByType<CampaignController>();
+            }
+
+            return _campaign;
+        }
+    }
 
     private void Update()
     {
@@ -51,6 +69,7 @@ public class PlayerInteractor : MonoBehaviour
         _focusedSlot = null;
         _targetOutOfRange = false;
         _aimingAtFinishedBook = false;
+        _focusedSpot = null;
 
         if (interactionCamera == null)
         {
@@ -64,6 +83,22 @@ public class PlayerInteractor : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
+            FindSpot spot = hit.collider.GetComponentInParent<FindSpot>();
+            if (spot != null)
+            {
+                // a desk spot (apron hook, shoe rack...): aim here with a find in hand to install it
+                if (hit.distance <= interactionRange)
+                {
+                    _focusedSpot = spot;
+                }
+                else
+                {
+                    _targetOutOfRange = true;
+                }
+
+                return;
+            }
+
             Shelf shelf = hit.collider.GetComponentInParent<Shelf>();
             Book book = hit.collider.GetComponentInParent<Book>();
             bool inRange = hit.distance <= interactionRange;
@@ -180,7 +215,7 @@ public class PlayerInteractor : MonoBehaviour
         {
             crosshair.SetState(Crosshair.State.Blocked);
         }
-        else if (_focusedBook != null || _focusedSlot != null)
+        else if (_focusedBook != null || _focusedSlot != null || _focusedSpot != null)
         {
             crosshair.SetState(Crosshair.State.Active);
         }
@@ -217,7 +252,11 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_focusedBook != null)
+        if (_focusedSpot != null)
+        {
+            SetPrompt(_focusedSpot.label, SpotHint(_focusedSpot));
+        }
+        else if (_focusedBook != null)
         {
             SetPrompt(DisplayName(_focusedBook), Carry.IsFull
                 ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")"
@@ -235,6 +274,28 @@ public class PlayerInteractor : MonoBehaviour
         {
             SetPromptVisible(false);
         }
+    }
+
+    private string SpotHint(FindSpot spot)
+    {
+        if (spot.locked)
+        {
+            return "Locked for now";
+        }
+
+        BookBoy.Rules.FindDef wanted = BookBoy.Rules.CampaignCatalog.FindForSpot(spot.spotId);
+        if (spot.installed != null)
+        {
+            return "Installed: " + DisplayName(spot.installed);
+        }
+
+        Book held = Carry.Current;
+        if (held != null && held.IsFind && wanted != null && held.definition.findId == wanted.Id)
+        {
+            return "Press (E) or click to install the " + wanted.Name.ToLowerInvariant();
+        }
+
+        return wanted != null ? "Needs the " + wanted.Name.ToLowerInvariant() : "";
     }
 
     private void SetPrompt(string title, string hint)
@@ -288,7 +349,11 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_focusedBook != null && !Carry.IsFull)
+        if (_focusedSpot != null)
+        {
+            Campaign?.InstallHeld(_focusedSpot, Carry);
+        }
+        else if (_focusedBook != null && !Carry.IsFull)
         {
             PickUp(_focusedBook);
         }
@@ -300,7 +365,13 @@ public class PlayerInteractor : MonoBehaviour
 
     public bool PickUp(Book book)
     {
-        return Carry.TryPickUp(book);
+        bool picked = Carry.TryPickUp(book);
+        if (picked)
+        {
+            Campaign?.NotifyPickedUp(book);
+        }
+
+        return picked;
     }
 
     /// <summary>Places the current book in an empty slot. Returns false if there is nothing to place or the slot is taken.</summary>
@@ -309,6 +380,12 @@ public class PlayerInteractor : MonoBehaviour
         Book book = Carry.Current;
         if (book == null || slot == null || slot.occupied)
         {
+            return false;
+        }
+
+        if (book.IsFind)
+        {
+            Campaign?.Say("That belongs at the desk, not on a shelf.");
             return false;
         }
 
