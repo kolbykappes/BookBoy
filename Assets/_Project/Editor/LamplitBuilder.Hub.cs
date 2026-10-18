@@ -86,6 +86,7 @@ public static partial class LamplitBuilder
         }
 
         RegisterCampaign();
+        ApplyPlayerScale();
         MarkDirty();
         return "hub built: desk with 6 spots, 3 doors, 3 orbs";
     }
@@ -172,5 +173,51 @@ public static partial class LamplitBuilder
         controller.hubSpawn = spawn != null ? spawn.transform : null;
         EditorUtility.SetDirty(controller);
         return controller;
+    }
+}
+
+public static partial class LamplitBuilder
+{
+    // The "storybook" view: a wider lens and a smaller player, so books, shelves and rooms feel big and close (see Docs/09-scale-reference.md).
+    // Eye height 1.7 m -> 1.15 m is a player about two thirds the size; speed and reach shrink with it.
+    public const float FieldOfView = 75f;
+    public const float EyeHeight = 1.15f;
+    public const float MoveSpeed = 3.2f;
+    public const float SprintSpeed = 4.8f;
+    public const float InteractionRange = 2.4f;
+    public const float MaxAimRange = 10f;
+    public const float CarryScale = 0.9f;
+
+    /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
+    public static string ApplyPlayerScale()
+    {
+        RequireLamplitScene();
+        var player = GameObject.Find("Player");
+        var vcam = GameObject.Find("PlayerFollowCamera").GetComponent<Unity.Cinemachine.CinemachineCamera>();
+        var lens = vcam.Lens;
+        lens.FieldOfView = FieldOfView;
+        vcam.Lens = lens;
+        EditorUtility.SetDirty(vcam);
+
+        var root = player.transform.Find("PlayerCameraRoot");
+        root.localPosition = new Vector3(0f, EyeHeight - 0.09f, 0f);   // the capsule settles 0.09 m above the floor
+        EditorUtility.SetDirty(root);
+
+        var fpc = player.GetComponent<StarterAssets.FirstPersonController>();
+        fpc.MoveSpeed = MoveSpeed;
+        fpc.SprintSpeed = SprintSpeed;
+        EditorUtility.SetDirty(fpc);
+
+        var interactor = player.GetComponent<PlayerInteractor>();
+        interactor.interactionRange = InteractionRange;
+        interactor.maxAimRange = MaxAimRange;
+        EditorUtility.SetDirty(interactor);
+
+        var carry = player.GetComponent<CarryInventory>();
+        carry.carryScale = CarryScale;
+        EditorUtility.SetDirty(carry);
+
+        MarkDirty();
+        return "fov " + FieldOfView + ", eye " + EyeHeight + " m, speed " + MoveSpeed + "/" + SprintSpeed + ", reach " + InteractionRange + " m, held books x" + CarryScale;
     }
 }
