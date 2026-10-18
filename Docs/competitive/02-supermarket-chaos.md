@@ -17,6 +17,26 @@ product positions are temporary and dumps everything. No time limit, no game ove
 - Two major post-launch content additions (see below) rather than a puzzle layer: more maps, then
   multiplayer.
 
+## Abilities & unlocks
+
+Purchased with in-game money earned per correctly-shelved item, via a skill tree accessible any
+time (Esc → lightbulb tab) — not gated by story/section progress the way Librarian's are.
+
+| Ability | Effect |
+|---|---|
+| Extra Carry | Increases how many items you can hold at once |
+| Quick Step | Movement speed |
+| Match Finder (+upgrade) | Highlights dropped products matching the one in your hand |
+| Shelf Finder | Shows the nearest correct shelf for the held product |
+| Dunk Shot | Stocks a thrown product on hit, no need to walk it to the shelf |
+| Request More | Pulls in more products matching the one currently held |
+
+Community-recommended order is Extra Carry first, then movement speed, then the two Finder
+abilities — i.e. players converge on maximizing throughput before maximizing search-assistance,
+which tracks with the personal-impressions finding that the base pick-out-of-a-pile interaction
+is weak enough that most players lean on Finder abilities rather than developing their own eye
+for the pile.
+
 ## Update history (selected, chronological)
 
 | Date | Update | What changed |
@@ -35,6 +55,24 @@ product positions are temporary and dumps everything. No time limit, no game ove
 (more maps, more items) and social features (co-op, costumes) rather than mechanical depth — each
 major update is "more of the same, bigger," which tracks with the "object count as differentiator"
 trend flagged in [01-vision-and-design.md](../01-vision-and-design.md).
+
+## Common complaints (ALL 58 English-language negative reviews, read in full, 2026-09-07)
+
+- **"Lacks soul" / low-effort feel compared to Librarian is the more central theme here** —
+  reviewers repeatedly frame this game as mechanically competent but atmospherically empty
+  ("obviously lacks cozy atmosphere and WHIMSY... practically soulless," "the game struggles to
+  show any sort of soul or passion"), often as a direct comparison against the genre's originator.
+- **Generative AI use is a real but secondary complaint (16 of 58 negative reviews, 28% — smaller
+  than it first looked from a partial sample)**, compounded here by AI-generated *content errors*
+  more than the disclosure issue itself: "Pills clearly labeled as 'laxative' by texture are
+  called 'A Vitamins'," a Pringles-style can labeled "Banana Thick-cut Chips," product labels not
+  matching their shelf tags. One reviewer called the 9,999-item map specifically "AI-generated
+  slop... full of obvious errors a human would never make."
+- Items clipping through/spawning under the floor is the single most-repeated concrete bug across
+  the full set (matches the personal-impressions finding above and the 1.2.4 patch notes), not
+  enough shelf space for all items on the largest map, one late-game progression softlock (robot
+  dialogue loop blocking a fresh playthrough), and several reviews calling the third/largest map
+  specifically a much weaker experience than the first two.
 
 ## Relevance to BookBoy
 

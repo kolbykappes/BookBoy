@@ -20,6 +20,25 @@ spend on ability upgrades. Steam controller input supported.
 - Currency-for-abilities loop (sort → earn → upgrade) is the systemic layer, same shape as most
   of this genre.
 
+## Abilities & unlocks
+
+Bought at an in-world ATM near the shelves with money earned per correctly-sorted duck — no
+story-progress gating, purely a currency sink, each with multiple purchasable levels.
+
+| Ability | Effect |
+|---|---|
+| Bigger Inventory | Raises carry limit (up to 15 at max level) — the community-recommended first purchase |
+| Longer Reach | Pick up ducks from farther away |
+| Crouch | Makes it easier to inspect ducks/labels on lower shelves |
+| Highlight Matching Ducks | Highlights other ducks matching the one in hand |
+| Highlight Correct Shelf | Shows which shelf accepts the held duck |
+| Stronger Throw | Increases throw distance |
+| Auto-Collect | Automatically gathers ducks matching the one currently held |
+
+Maxing every ability to its top level unlocks a dedicated "Maxed Out" achievement — a concrete
+example of the game explicitly rewarding full completionism of the ability tree, not just the
+sort itself.
+
 ## Update history (selected, chronological)
 
 | Date | Update | What changed |
@@ -36,6 +55,27 @@ one, followed by a five-day scramble (jitter, motion sickness, corrupted saves a
 public tester call) before things stabilized around Patch 4. Reviews stayed Very Positive through
 this, suggesting the core hook (duck variety) was strong enough to survive a bad first week — but
 also that they got lucky.
+
+## Common complaints (ALL 73 English-language negative reviews, read in full, 2026-09-07)
+
+- **Motion sickness (10 of 73, 14%) and offensive/stereotypical duck designs (14 of 73, 19%) are
+  the two largest and most serious themes**, ahead of AI (7 of 73, 10%, the smallest AI share of
+  any title with a real AI complaint pattern at all).
+- **Motion sickness**: numerous reviewers report the game is "unplayable" for them specifically,
+  several noting they don't normally get motion sickness in other games ("friends of mine watching
+  my game who never get motion sickness are getting motion sickness"). Tied to a camera-bob/
+  settling effect when moving and stopping, and no way to reduce or disable it. Compounded for
+  some by very high default mouse sensitivity independent of OS/in-game settings.
+- **Offensive cultural caricatures — the most serious complaint category in this entire
+  competitive set**, and worse than a typical AI-disclosure objection: specific, substantive
+  complaints about duck designs stereotyping Indigenous and African cultures (generic "Native"/
+  "African" naming rather than specific nations, a "Chief Feather" design, a whole "cowboys"
+  section built around the same tropes). Several reviewers who otherwise liked the game explicitly
+  refunded over this alone. Worth being deliberately careful about if BookBoy ever adds
+  culturally-themed content or costuming.
+- Undisclosed AI-generated 3D models (specific visual tells cited: "warped/melted geometry,
+  strange texturing"), save-data loss (confirmed independently in the update history above), and
+  performance/frame-rate issues with many ducks visible at once.
 
 ## Relevance to BookBoy
 
@@ -70,4 +110,7 @@ a clear approach path to the shelf itself, not just be readable. The strong visu
 systems combo (fun ducks, weak lottery mechanic) also reinforces: get the core identify-carry-place
 loop excellent first, and be cautious about bolting on secondary economy systems (risk/reward,
 currency sinks) before they're really needed — echoes the MVP non-goals list in
-[02-mvp-spec.md](../02-mvp-spec.md) (no economy/currency systems yet).
+[02-mvp-spec.md](../02-mvp-spec.md) (no economy/currency systems yet). The motion-sickness
+complaints are also a direct, concrete argument for BookBoy's existing camera setup choices: keep
+head-bob/camera-settle effects minimal or opt-in, and playtest camera feel specifically for this
+before shipping any camera polish.

@@ -42,7 +42,7 @@ Build four test books first, one in each category:
 - Play-test whether books are readable and appealing from first-person view.
 - Only after the size and visual language feel right, expand to 12 total books.
 
-Initial book physical profile:
+Initial book physical profile (original spec — **superseded, see below**):
 
 ```text
 Approximate scale:
@@ -52,6 +52,14 @@ Z = 0.12 to 0.20
 ```
 
 Books should vary in width and height, but not so much that visual clarity gets worse.
+
+> **Corrected 2026-09-06.** The numbers above are roughly 2-3x real-world book size (a 0.55-0.95m
+> tall book is 55-95cm — a comically oversized prop, not a "tome"), and combined with an
+> unrealistic player eye height (2.38m, measured), made the whole room feel gigantic — "the shelf
+> is 10 feet tall, I can't see the lip of it" was direct playtest feedback. Corrected against real
+> human/book/furniture proportions: see [09-scale-reference.md](09-scale-reference.md) for the
+> numbers now actually in use (player eye height, book dimensions, shelf spacing) and the
+> reasoning behind them. Use that file, not the numbers above, for anything scale-related.
 
 ## Phase 3: Book data
 

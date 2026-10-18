@@ -14,10 +14,28 @@ for the entire sorting-genre wave that followed it.
 ## Mechanics
 
 - Pure visual/color + category sorting, no puzzle-deduction layer.
-- Completing shelf rows unlocks abilities: `Assemble` (summons other volumes of the same series
-  to you), `Insight` (highlights series volumes), `Auto-Shelving` (instantly places books).
-- The ability progression is the main systemic differentiator from a flat sort — it rewards
-  completing sections with tools that speed up later sections.
+- Completing shelf rows unlocks abilities that progressively speed up the loop — the main
+  systemic differentiator from a flat sort.
+
+## Abilities & unlocks
+
+Unlocked purely by volume of rows completed — no currency, no purchase choices, a straight
+progression gate. Each has a 5-20s cooldown (reduced by nothing; no upgrade tiers on cooldown
+itself, unlike Shelve the Potions).
+
+| Ability | Unlocks at | Effect |
+|---|---|---|
+| Sort | First few shelves | Sorts the books currently in your hands by series |
+| Shelf Guide | Solid progress on floor 1 | Highlights the shelf matching the book in your hand |
+| Insight | 50 rows completed | Highlights scattered books belonging to the same series |
+| Assemble | 100 rows completed | Pulls other volumes of the same series into your hands (does not pull from shelves) |
+| Auto-Shelving | 200 rows completed | Automatically shelves the books currently in your hands |
+
+This is a straight-line escalation, not a choice tree — every player gets the same 5 abilities in
+the same order at the same thresholds. That's directly what the negative-review complaint about
+progression trivializing (see below) is describing: by ability #5 at row 200 of ~3,072, the
+system is functionally playing most of the rest of the game for you, and there's no way to opt
+out short of self-restraint.
 
 ## Update history (selected, chronological)
 
@@ -38,6 +56,22 @@ and stability, with at least two rollback incidents from regressions — a remin
 system and any "instant complete" ability (Auto-Shelving, Recall Stone) are exactly the kind of
 feature that's easy to destabilize.
 
+## Common complaints (ALL 110 English-language negative reviews, read in full, 2026-09-07)
+
+- **72 of 110 negative reviews (65%) mention generative AI — by far the largest complaint theme
+  of any game in this set.** Many reviewers explicitly say they loved the game, played for hours,
+  then discovered
+  the AI disclosure (reportedly added to the store page only after launch, per several reviews)
+  and either refunded or wrote a negative review out of principle — e.g. "I absolutely loved
+  playing this game... I did not notice this game uses Gen AI... I'm really disappointed," "sad
+  they used generative ai, genuinely liked the game and will no longer be playing it now that I
+  know." This is a reputational issue layered entirely on top of gameplay satisfaction, not caused
+  by it.
+- **Progression trivializes itself.** Multiple reviewers say the ability unlocks (the same
+  `Auto-Shelving`/`Assemble` system praised elsewhere) make the game "do everything for you after
+  one bookcase," leaving nothing but repetitive motion for the remaining ~2/3 of the book count.
+- Minor: performance/heat complaints on some systems; one Steam Deck launch-compatibility report.
+
 ## Relevance to BookBoy
 
 - Confirms the core loop (find → identify → carry → shelve) sustains a large, sustained
@@ -45,10 +79,17 @@ feature that's easy to destabilize.
   MVP is a reasonable bar to clear.
 - The ability-unlock structure (`Assemble`, `Insight`, `Auto-Shelving`) is the natural next layer
   after BookBoy's MVP proves fun — see the "Potential future mechanics" list in
-  [01-vision-and-design.md](../01-vision-and-design.md).
+  [01-vision-and-design.md](../01-vision-and-design.md). But temper it against the complaint
+  above: an ability that fully automates the core action removes the game, it doesn't enhance it.
+  Any future automation/assist ability should speed up execution, not remove the
+  identify-and-place decision entirely.
 - Its rocky patch history around save/rollback is a caution for BookBoy's own eventual save/load
   system (explicitly a non-goal for the MVP per [02-mvp-spec.md](../02-mvp-spec.md), for good
   reason).
+- **The AI-disclosure backlash is the single most important cross-cutting finding in this whole
+  competitive set** (see [README.md](README.md)) — worth reading that synthesis regardless of
+  whether BookBoy's own pipeline uses AI tools anywhere, since the market reaction is about
+  transparency and trust, not the tooling itself.
 
 ## Personal impressions (Kolby, 2026-09-06)
 

@@ -5,6 +5,10 @@ Tracking every Steam game in the "sort thousands of items onto shelves" microgen
 release date below. See [review-tracker.md](review-tracker.md) for a dated log of review
 counts/scores to watch over time.
 
+> **Latest refresh: 2026-10-17** — see [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md) for current
+> scores, patch notes, review pushback, and a shortlist of newly found games. The table below is the
+> 2026-09-06 baseline; games #9–14 have since launched (updated scores are in the tracker).
+
 **Methodology note:** review counts/scores below are pulled from Steam's public review API
 (`store.steampowered.com/appreviews/<appid>`) using **all languages, all time** — this is the
 total review volume, which can run higher than what the storefront page shows by default for an
@@ -33,8 +37,81 @@ here. Percent-positive tracks closely between the two either way.
 | 13 | [Wand & Order: Tidy up the magic shop!](13-wand-and-order.md) | ~Sep 18, 2026 | Not yet released | 3 zones, scope TBD | Second magic-shop entrant after Shelves and Sorcery; co-op. |
 | 14 | [DinoBones: Tidy Up the Museum](14-dinobones-tidy-up-the-museum.md) | ~Sep 22, 2026 | Not yet released | 2,500+ bones / 6+ skeletons | Assembly-based rather than pure shelving — closer to a fitting/matching puzzle. |
 
+### Added in the 2026-10-17 refresh (book / library / magic neighbors)
+
+| # | Game | Released | Reviews (2026-10-17) | Notes |
+|---|---|---|---|---|
+| 16 | [Witch Cabin Cleanup](16-witch-cabin-cleanup.md) | Oct 12, 2026 | Very Positive — 196 (98.0%) | Owned & played (first room). 5,313 curios per store / 6,920 per in-game Records; 6 rooms incl. a library. Re-themed abilities, two-currency economy, the "Enchanted Ledger" upgrade UI, slot ghost and shelf badges. **The main source of borrowable UI/UX ideas** (see its table). |
+| 17 | [Still Sorting](17-still-sorting.md) | Sep 23, 2026 | Positive — 22 (100%) | 2D retro bookshop sorter, 4,344 books in A–Z rows, bookends, a date-sorted row; no upgrades. Closest to a real ordering rule. |
+| 18 | [Sort of Magic](18-sort-of-magic.md) | Oct 8, 2026 | Mixed — 70 (45.7%) | Cat in a magic school, 4,500 items, 1–4 co-op. Low score is a launch-quality failure (saves, missing items, indistinguishable books); patched Oct 14. |
+| 19 | [Magic Mess](19-magic-mess.md) | Aug 24, 2026 | Mixed — 36 (63.9%) | Wizard's tower, 3,040 items, one map. XP per item and passive item-sense praised; 1→5 carry limit and nagging dragon criticized; one patch ever. |
+
+(The refresh write-up is [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md).)
+
 *Dates for #9–14 are Steam's "plans to unlock in X days" countdown as of Sep 6, 2026 — treat as
 approximate until each actually ships.*
+
+## What negative Steam reviews reveal (ALL English-language negative reviews for all 8 released
+titles, read in full — 356 reviews total, 2026-09-07)
+
+Pulled directly from Steam's public review API, paginated through completely rather than sampled
+— every one of these titles has few enough reviews right now (13 to 110 negative, English-only)
+that a full read was cheap and worth doing exactly, not estimating. Full complaint lists with
+verbatim quotes are in each game's own file; this is the cross-cutting pattern, corrected from an
+earlier, smaller-sample pass that overstated how central AI complaints were for two titles
+(`Supermarket Chaos`, `Shelves and Sorcery`) where fuller data shows it's a real but secondary
+theme, not the dominant one.
+
+- **Undisclosed or disclosed generative-AI use is a real and often-dominant complaint theme, but
+  its intensity varies enormously by title — it is not evenly present across the genre.**
+  Exact share of negative reviews mentioning AI, all 8 titles:
+
+  | Game | AI-mentioning / negative | Share |
+  |---|---:|---:|
+  | Librarian | 72 / 110 | 65% |
+  | Mall: Tidy Up Together | 21 / 38 | 55% |
+  | Supermarket Chaos | 16 / 58 | 28% |
+  | Plushy Store Tidy Up | 2 / 13 | 15% |
+  | Shelves and Sorcery | 3 / 27 | 11% |
+  | Sort Them Ducks | 7 / 73 | 10% |
+  | Megastore | 1 / 12 | 8% |
+  | Shelve the Potions! | 1 / 25 | 4% |
+
+  `Librarian` and `Mall` are where it's genuinely the dominant driver of negative sentiment — the
+  pattern there repeats almost word-for-word: a reviewer says they genuinely enjoyed the game,
+  sank real hours into it, then discovered an AI disclosure or identified AI-generated assets
+  themselves (visual artifacting, mismatched labels, unreadable text), and reviews negatively **on
+  principle**, separate from whether the gameplay worked. `Shelve the Potions!` is the clean
+  counter-example at the other end: only 1 of 25 negative reviews even mentions AI, and that one
+  is a reviewer volunteering "zero AI influence" as a specific positive. This is a
+  trust/transparency issue, not a quality one — a game can be mechanically sound and still take
+  real review damage over it, but the damage is concentrated in specific titles, not ambient
+  across the genre. Worth keeping in mind for BookBoy regardless of what tools are used in
+  development, since the market signal here is about audience-facing disclosure, not the presence
+  of any particular tool in a pipeline.
+- **"No feedback on whether I did it right" is a devastating, not minor, complaint** —
+  `Plushy Store Tidy Up`'s negative reviews are almost unanimous on this single point, and it's
+  the plain-language version of the MVP spec's "visible slot" requirement. Directly validates a
+  bug this project already caught and fixed (an early shelf-slot version was invisible).
+- **"The item I'm carrying blocks my own view" shows up as a named complaint in `Mall`**,
+  independently confirming a bug BookBoy hit and fixed the same week, from direct playtesting
+  rather than review research.
+- **Physical/pile-clipping bugs recur constantly**: items floating mid-air, sinking into floors,
+  clipping into unreachable spots (`Supermarket Chaos`, `Shelves and Sorcery`, `Mall`). Reinforces
+  "tactile reliability over physical realism" as a principle worth defending, not a nice-to-have.
+- **Content/mechanic depth running out before the object count does** is a real, named failure
+  mode — `Librarian`'s abilities trivialize the game two-thirds of the way through; `Shelve the
+  Potions!`'s puzzle variety is exhausted after roughly the first sixth of its content. A
+  deduction/ability layer needs to be budgeted for the whole experience, not just the opening
+  hours.
+- **One serious reputational category, distinct from the rest**: 14 of `Sort Them Ducks`' 73
+  negative reviews (19% — a larger share than its AI complaints) raised specific, substantive
+  objections to culturally insensitive character designs, several from reviewers who otherwise
+  liked the game. Worth deliberate care if BookBoy ever adds culturally-themed content, well
+  before it becomes a live issue.
+- **Recycled assets across a developer's own back-catalog read as lazy to players** —
+  `Megastore`'s reuse of `Supermarket Chaos` assets (same developer) is called out directly, not
+  forgiven for being a sequel.
 
 ## What this confirms about the market
 

@@ -4,7 +4,7 @@
 
 | Component | Current choice | Why |
 |---|---|---|
-| Engine | Unity 6.6.0f1 (`6000.6.0f1`) | Current Unity 6 generation, suitable for rapid PC prototype work |
+| Engine | Unity 6.6.6f1 (`6000.6.6f1`; upgraded from 6000.6.0f1 on 2026-10-17) | Current Unity 6 generation, suitable for rapid PC prototype work |
 | Rendering | Universal Render Pipeline (URP) Empty Template | Correct default for a stylized, cozy, room-scale 3D game; avoids HDRP complexity |
 | Target platform | Windows PC | Fastest test/build iteration; Steam-friendly eventual target |
 | Language | C# | Unity-native gameplay scripting |
@@ -38,21 +38,13 @@ Recommended AI roles:
 | External coding agent, such as Claude Code or Cursor | Plan multi-file C# changes, create focused scripts, review diffs, explain Inspector wiring, help debug compile/runtime errors |
 | Human developer/designer | Own game feel, feature scope, visual readability, architectural constraints, test gameplay, and approve every change |
 
-## Unity AI/MCP status
+## Unity Editor driving status
 
-Unity MCP is **not yet configured** in this project.
-
-The expected eventual configuration:
-
-1. Install Unity AI Assistant package if needed (already present in `Packages/manifest.json` as
-   `com.unity.ai.assistant`).
-2. Confirm Unity 6 project is connected to Unity Cloud as required by the current Unity AI/MCP
-   setup.
-3. Open `Edit → Project Settings → AI → Unity MCP`.
-4. Confirm Unity Bridge runs.
-5. Connect an MCP-capable client, ideally Claude Code or Cursor.
-6. Start with a read-only project-inspection prompt.
-7. Grant write actions only in small reviewed increments.
+**Changed 2026-10-17:** the Unity MCP bridge (used from 2026-09-06) is superseded by the official
+Unity CLI (`unity`, beta) plus the `com.unity.pipeline` package. Both are installed and verified
+(Pipeline `0.8.0-exp.1`, added to `Packages/manifest.json` via `unity pipeline install`). Rules and traps: root [CLAUDE.md](../CLAUDE.md) (hot tier) and
+`.claude/memory/unity-*.md` (cold tier). The old MCP setup is kept for history in
+[07-unity-mcp-tools.md](07-unity-mcp-tools.md).
 
 ## AI guardrails
 

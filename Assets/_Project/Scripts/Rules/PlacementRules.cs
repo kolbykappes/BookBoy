@@ -1,0 +1,90 @@
+using System.Collections.Generic;
+
+namespace BookBoy.Rules
+{
+    public enum PlacementResult
+    {
+        /// <summary>Red: the book is in a bookcase that belongs to a different color.</summary>
+        WrongBookcase,
+
+        /// <summary>Yellow: right bookcase, but the wrong shelf (another series) or the wrong slot.</summary>
+        RightBookcaseWrongSpot,
+
+        /// <summary>Green: right bookcase, right shelf (its series), right slot (volume N in slot N).</summary>
+        Correct
+    }
+
+    public static class PlacementRules
+    {
+        public const int NoClaim = -1;
+
+        /// <summary>Grades a placed book. Bookcases and shelves start unlabeled and are claimed by the first book
+        /// placed on them, so the two claim flags come from <see cref="ClaimHolds"/>. Volume N belongs in slot N
+        /// (0-based index N - 1); a volume below 1 can never be Correct.</summary>
+        public static PlacementResult Evaluate(bool bookcaseClaimHolds, bool shelfClaimHolds, int bookVolume, int slotIndex)
+        {
+            if (!bookcaseClaimHolds)
+            {
+                return PlacementResult.WrongBookcase;
+            }
+
+            if (!shelfClaimHolds || bookVolume < 1 || slotIndex != bookVolume - 1)
+            {
+                return PlacementResult.RightBookcaseWrongSpot;
+            }
+
+            return PlacementResult.Correct;
+        }
+
+        /// <summary>True if the container at <paramref name="index"/> legitimately owns <paramref name="bookValue"/>:
+        /// its claim equals the value and no other container holding the same value claimed it earlier
+        /// (ties go to the lower index). Values/times are per container; NoClaim means nothing placed yet.</summary>
+        public static bool ClaimHolds(int index, IReadOnlyList<int> claimValues, IReadOnlyList<double> claimTimes, int bookValue)
+        {
+            if (index < 0 || index >= claimValues.Count || claimValues[index] != bookValue)
+            {
+                return false;
+            }
+
+            for (int other = 0; other < claimValues.Count; other++)
+            {
+                if (other == index || claimValues[other] != bookValue)
+                {
+                    continue;
+                }
+
+                if (claimTimes[other] < claimTimes[index] || (claimTimes[other] == claimTimes[index] && other < index))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Index of the slot whose position along the shelf is closest to x, or -1 if there are none.
+        /// Ties go to the lower index.</summary>
+        public static int NearestSlot(IReadOnlyList<float> slotPositions, float x)
+        {
+            int best = -1;
+            float bestDistance = float.MaxValue;
+            for (int i = 0; i < slotPositions.Count; i++)
+            {
+                float distance = slotPositions[i] > x ? slotPositions[i] - x : x - slotPositions[i];
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = i;
+                }
+            }
+
+            return best;
+        }
+
+        /// <summary>Cleanup is complete only when there is at least one book and every book is Correct.</summary>
+        public static bool IsCleanupComplete(int totalBooks, int correctBooks)
+        {
+            return totalBooks > 0 && correctBooks == totalBooks;
+        }
+    }
+}

@@ -24,10 +24,27 @@ completion times.
 
 - Gather matching items, use magic to "reveal" objects you're struggling to find, or send items
   flying toward their correct shelves — a direct QoL/magic-ability layer on top of plain sorting.
-- Enchantments unlock permanently: carry more at once, more reach, move faster, jump higher,
-  eventually flight.
 - Four modes: Casual, Timed, Archmage, No Magic — the same content replayed under different
   constraint sets (a cheap way to add replay value without new content).
+
+## Abilities & unlocks
+
+Splits into two unlock categories rather than one flat list — active spells (Sorceries) and
+passive movement upgrades (Enchantments), both earned permanently, presumably per-shop-progress
+(exact thresholds not published).
+
+| Type | Ability | Effect |
+|---|---|---|
+| Sorcery | Arcane Sight | Reveals/highlights objects you're struggling to locate — the ability that received the most post-launch tuning (see update history) |
+| Sorcery | (item-fling spell) | Sends held or nearby items flying toward their correct shelves |
+| Enchantment | Carry capacity | Hold more items at once |
+| Enchantment | Reach | Grab from farther away |
+| Enchantment | Speed | Move faster |
+| Enchantment | Jump | Jump higher |
+| Enchantment | Flight | Eventually fly |
+
+The Sorcery/Enchantment split (active magic vs. passive movement stats) is a genuinely distinct
+structure from every other title in this set, which mostly bundle everything into one skill list.
 
 ## Update history (selected, chronological)
 
@@ -43,6 +60,24 @@ completion times.
 **Pattern:** almost every post-launch patch targets the same pain point — helping players locate
 the last few remaining misplaced items in a large shop — which is the single most-repeated
 player-feedback theme across this whole title.
+
+## Common complaints (ALL 27 English-language negative reviews, read in full, 2026-09-07)
+
+- **"Asset test game" / recycled-assets feel is the dominant theme, ahead of AI specifically**:
+  "assets were taken from their shop-keeping game," inconsistent item scale across objects makes
+  sorting visually harder, several reviewers directly call it a cheaper, lower-effort copy of
+  Librarian ("cheap copy of Librarian... way less fun and satisfaction," "money grab after the
+  popularity of Arcane Library"), and vegetables in a *magic shop* feel thematically incoherent
+  to several reviewers ("Game called Shelves and Sorcery about a magic shop... more than half the
+  stuff I'm picking up is... vegetables?").
+- **Generative AI use is present but a minority complaint here (3 of 27, 11%)** — smaller than it
+  looked from a partial sample. Where it does come up, it's blamed for hurting readability
+  directly, not just objected to on principle: "The books... it's tedious that a bunch are
+  identical, all are low res and the font is unreadable. The lighting messes with all the
+  colours."
+- Performance/optimization complaints (struggles even on a "mid to high end PC"), Steam Deck
+  crashes and control drops, a few pile-physics bugs (items floating mid-air), and one comparison
+  naming Librarian directly as the higher bar this game doesn't clear on readability.
 
 ## Relevance to BookBoy
 
