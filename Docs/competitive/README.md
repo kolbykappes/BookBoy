@@ -9,6 +9,9 @@ counts/scores to watch over time.
 > scores, patch notes, review pushback, and a shortlist of newly found games. The table below is the
 > 2026-09-06 baseline; games #9–14 have since launched (updated scores are in the tracker).
 
+> **Scale and camera study (running):** [scale-and-camera-comparison.md](scale-and-camera-comparison.md) compares eye height, book and
+> bookcase proportions and legibility across games, starting with Librarian.
+
 **Methodology note:** review counts/scores below are pulled from Steam's public review API
 (`store.steampowered.com/appreviews/<appid>`) using **all languages, all time** — this is the
 total review volume, which can run higher than what the storefront page shows by default for an

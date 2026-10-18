@@ -110,3 +110,12 @@ a natural next step post-MVP is a second layer (e.g., series/title) within an al
 shelf section, matching this game's actual proven structure rather than inventing one from
 scratch. Also: atmosphere and lighting are pulling real weight in why this is the standout — not
 just mechanics.
+
+## Scale, camera and legibility (screenshots, 2026-10-18)
+
+Six screenshots from Kolby (a counter pile, the green slot ghost, spine views with missing-volume gaps, a bookcase and a floor
+corner) are saved in [img/librarian/](img/librarian/), with the full analysis and a side-by-side against Lamplit in
+[scale-and-camera-comparison.md](scale-and-camera-comparison.md). Headlines: books fill about three quarters of the board spacing
+and sit packed; the eye line is inside the bookcase's working band; a green ghost shows the exact slot; the series icon is large but
+the volume digit is tiny; the aimed and held book titles are printed on screen as a legibility fallback.
+

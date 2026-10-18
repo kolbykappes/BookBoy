@@ -109,3 +109,13 @@ the first place, which is exactly why
 where a book belongs without reading lots of text?" and "are books visually large enough to read"
 *before* adding more content. The varied-shop-size structure is also a good future-scope idea:
 BookBoy's eventual multi-room library could vary room/shelf-wall size the same way, for pacing.
+
+## Scale, camera and legibility (screenshots, 2026-10-18)
+
+Three screenshots from Kolby are in [img/shelves-and-sorcery/](img/shelves-and-sorcery/), analysed in
+[scale-and-camera-comparison.md](scale-and-camera-comparison.md). Kolby's read: the books are too dark, not visually distinct
+enough and too muddy, and the UI is worse than Librarian's. A rough measurement agrees: the shelved books are only about 1.1 to 1.3
+times as bright as the wood behind them (Librarian about 2.2 to 2.4, Witch Cabin about 3.4). Spines carry no readable title, so
+the game leans on a held-title list at the bottom right and on paper nameplates that appear on a board when its first book is
+placed. The eye line is around the middle board, as in Librarian.
+
