@@ -79,10 +79,29 @@ public class RoomZone : MonoBehaviour
         return finished;
     }
 
-    /// <summary>Takes every item off the shelves (and out of anyone's hands is the caller's job) and drops them on a jittered grid on the floor.</summary>
-    public void Scatter(int seed)
+    /// <summary>One item to drop: where it starts, how it is thrown, and in which round (a pile gets one item per round).</summary>
+    public struct PileDrop
     {
-        var list = new List<Book>();
+        public Book Book;
+        public Vector3 Origin;
+        public Quaternion Rotation;
+        public Vector3 Velocity;
+        public Vector3 Spin;
+        public int Round;
+        public int Pile;
+    }
+
+    /// <summary>True while a pile-up is still dropping and settling.</summary>
+    public bool IsPiling { get; private set; }
+
+    /// <summary>The plan of the last pile-up (centres and sizes), for tests and tools.</summary>
+    public PilePlan LastPlan { get; private set; }
+
+    /// <summary>Takes every item off its shelf (or the floor) ready for a pile-up and plans where each drops: several random, uneven piles
+    /// inside the scatter rectangle. Items must not be in anyone's hands. Returns the drops in order; nothing has been thrown yet.</summary>
+    public System.Collections.Generic.List<PileDrop> PlanDrops(int seed)
+    {
+        var list = new System.Collections.Generic.List<Book>();
         foreach (Book b in items)
         {
             if (b != null)
@@ -100,44 +119,92 @@ public class RoomZone : MonoBehaviour
 
             b.StopPhysicsTumble();
             b.transform.SetParent(null, true);
-            Collider c = b.GetComponent<Collider>();
-            if (c != null)
-            {
-                c.enabled = true;
-                c.isTrigger = true;
-            }
-
-            b.Outline?.StopAll();
         }
 
-        float w = Mathf.Max(0.5f, scatterMax.x - scatterMin.x);
-        float h = Mathf.Max(0.5f, scatterMax.y - scatterMin.y);
-        int cols = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(list.Count * w / h)));
-        int rows = Mathf.Max(1, Mathf.CeilToInt(list.Count / (float)cols));
-        var cells = new List<Vector2>();
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                cells.Add(new Vector2(scatterMin.x + (c + 0.5f) * w / cols, scatterMin.y + (r + 0.5f) * h / rows));
-            }
-        }
-
-        var rng = new System.Random(seed);
-        for (int i = cells.Count - 1; i > 0; i--)
-        {
-            int j = rng.Next(i + 1);
-            (cells[i], cells[j]) = (cells[j], cells[i]);
-        }
-
-        float jitterX = w / cols * 0.3f, jitterZ = h / rows * 0.3f;
+        LastPlan = PilePlanner.Plan(list.Count, scatterMin.x, scatterMin.y, scatterMax.x, scatterMax.y, seed);
+        var rng = new System.Random(seed * 31 + 7);
+        var rounds = new int[LastPlan.PileCount];
+        var drops = new System.Collections.Generic.List<PileDrop>();
         for (int i = 0; i < list.Count; i++)
         {
-            Book b = list[i];
-            float jx = (float)(rng.NextDouble() - 0.5) * 2f * jitterX;
-            float jz = (float)(rng.NextDouble() - 0.5) * 2f * jitterZ;
-            b.transform.SetPositionAndRotation(new Vector3(cells[i].x + jx, b.transform.localScale.y * 0.5f, cells[i].y + jz), Quaternion.Euler(0f, rng.Next(0, 360), 0f));
+            int pile = LastPlan.PileOf[i];
+            int round = rounds[pile]++;
+            double angle = rng.NextDouble() * System.Math.PI * 2.0;
+            float radius = (0.12f + 0.05f * Mathf.Sqrt(LastPlan.ItemsIn(pile))) * (float)rng.NextDouble();
+            float height = 0.9f + 0.15f * (float)rng.NextDouble();
+            var origin = new Vector3(LastPlan.CenterX[pile] + Mathf.Cos((float)angle) * radius, height, LastPlan.CenterZ[pile] + Mathf.Sin((float)angle) * radius);
+            double toss = rng.NextDouble() * System.Math.PI * 2.0;
+            float speed = 0.3f + 0.6f * (float)rng.NextDouble();
+            var velocity = new Vector3(Mathf.Cos((float)toss) * speed, -0.5f, Mathf.Sin((float)toss) * speed);
+            var spin = new Vector3((float)(rng.NextDouble() - 0.5) * 8f, (float)(rng.NextDouble() - 0.5) * 8f, (float)(rng.NextDouble() - 0.5) * 8f);
+            var rotation = Quaternion.Euler((float)rng.NextDouble() * 360f, (float)rng.NextDouble() * 360f, (float)rng.NextDouble() * 360f);
+            drops.Add(new PileDrop { Book = list[i], Origin = origin, Rotation = rotation, Velocity = velocity, Spin = spin, Round = round, Pile = pile });
         }
+
+        drops.Sort((a, c) => a.Round != c.Round ? a.Round.CompareTo(c.Round) : a.Pile.CompareTo(c.Pile));
+        return drops;
+    }
+
+    /// <summary>"Pile up the books": every item of the room is picked up off its shelf or the floor and tossed down in several random
+    /// piles in the middle of the room. They really fall (a burst of one item per pile every 0.1 s) and stay solid until the whole
+    /// room has landed, then become normal pick-up-able items again.</summary>
+    public void PileUp(int seed)
+    {
+        if (items == null || items.Length == 0)
+        {
+            return;
+        }
+
+        if (IsPiling)
+        {
+            StopAllCoroutines();
+            foreach (Book b in items)
+            {
+                if (b != null)
+                {
+                    b.EndSolid();
+                }
+            }
+
+            IsPiling = false;
+        }
+
+        var drops = PlanDrops(seed);
+        StartCoroutine(PileRoutine(drops));
+    }
+
+    private const float BurstGap = 0.1f;
+
+    private System.Collections.IEnumerator PileRoutine(System.Collections.Generic.List<PileDrop> drops)
+    {
+        IsPiling = true;
+        int rounds = 0;
+        foreach (PileDrop d in drops)
+        {
+            rounds = Mathf.Max(rounds, d.Round + 1);
+        }
+
+        float stayHard = rounds * BurstGap + 2.5f;   // everything stays solid until the last item has had time to land
+        int next = 0;
+        for (int round = 0; round < rounds; round++)
+        {
+            while (next < drops.Count && drops[next].Round == round)
+            {
+                PileDrop d = drops[next++];
+                if (d.Book == null)
+                {
+                    continue;
+                }
+
+                d.Book.transform.rotation = d.Rotation;
+                d.Book.Toss(d.Origin, d.Velocity, d.Spin, stayHard - round * BurstGap);
+            }
+
+            yield return new WaitForSeconds(BurstGap);
+        }
+
+        yield return new WaitForSeconds(2.6f);
+        IsPiling = false;
     }
 
     /// <summary>Puts every item in its home slot (admin / tests). Items in anyone's hands should be released first.</summary>

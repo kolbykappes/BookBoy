@@ -230,6 +230,9 @@ public class Book : MonoBehaviour
         }
     }
 
+    /// <summary>The physics material every dropped book uses (low bounce, high friction).</summary>
+    public static PhysicsMaterial SolidMaterial => TossMaterial();
+
     private static PhysicsMaterial TossMaterial()
     {
         if (_tossMaterial == null)
@@ -253,6 +256,22 @@ public class Book : MonoBehaviour
     /// <param name="minSolidSeconds">Stay a solid physics body at least this long before settling (a pile being built needs the
     /// books underneath to still be solid while the next ones land on them).</param>
     public void Toss(Vector3 origin, Vector3 velocity, Vector3 spin, float minSolidSeconds = 0f)
+    {
+        Rigidbody rb = BeginSolid(origin, velocity, spin);
+        Collider bookCollider = GetComponent<Collider>();
+
+        if (_settle != null)
+        {
+            StopCoroutine(_settle);
+        }
+
+        _settle = StartCoroutine(SettleRoutine(rb, bookCollider, minSolidSeconds));
+    }
+
+    /// <summary>Turns the book into a real physics body at <paramref name="origin"/> with the given velocity and spin (a solid collider
+    /// and a rigidbody), without starting the settle routine. Works in Edit Mode too (used to bake the room piles with Physics.Simulate).
+    /// Pair with <see cref="EndSolid"/>.</summary>
+    public Rigidbody BeginSolid(Vector3 origin, Vector3 velocity, Vector3 spin)
     {
         if (currentSlot != null)
         {
@@ -283,13 +302,34 @@ public class Book : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.linearVelocity = velocity;
         rb.angularVelocity = spin;
+        return rb;
+    }
 
+    /// <summary>Ends a physics drop at once: the rigidbody goes, the collider is a trigger again and the book is a normal
+    /// pick-up-able book where it lies.</summary>
+    public void EndSolid()
+    {
         if (_settle != null)
         {
             StopCoroutine(_settle);
+            _settle = null;
         }
 
-        _settle = StartCoroutine(SettleRoutine(rb, bookCollider, minSolidSeconds));
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            if (Application.isPlaying) Destroy(rb); else DestroyImmediate(rb);
+        }
+
+        Collider bookCollider = GetComponent<Collider>();
+        if (bookCollider != null)
+        {
+            bookCollider.sharedMaterial = null;
+            bookCollider.isTrigger = true;
+            bookCollider.enabled = true;
+        }
+
+        hasPhysicsDrop = false;
     }
 
     /// <summary>Cancels a tumble in progress (the book is being picked up mid-air or mid-roll).</summary>

@@ -320,7 +320,8 @@ public class CampaignController : MonoBehaviour
         }
     }
 
-    public void ScatterRoom(int room)
+    /// <summary>Piles a room's items up again: picks every item off the shelves and floor and tosses them into several random piles.</summary>
+    public void PileRoom(int room)
     {
         RoomZone zone = Room(room);
         if (zone == null)
@@ -329,7 +330,7 @@ public class CampaignController : MonoBehaviour
         }
 
         ReleaseCarriedItems(false);
-        zone.Scatter(1000 + room + Mathf.FloorToInt(Time.realtimeSinceStartup));
+        zone.PileUp(1000 + room + Mathf.FloorToInt(Time.realtimeSinceStartup));
         Recompute();
     }
 
@@ -342,7 +343,7 @@ public class CampaignController : MonoBehaviour
         }
 
         State.ResetRoom(room);
-        ScatterRoom(room);
+        PileRoom(room);
         ApplyDoors(false);
     }
 
@@ -405,7 +406,7 @@ public class CampaignController : MonoBehaviour
                 }
             }
 
-            room.Scatter(1000 + room.roomNumber);
+            room.PileUp(1000 + room.roomNumber);
         }
 
         _progress?.ResetUpgrades();

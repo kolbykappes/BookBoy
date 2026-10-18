@@ -53,7 +53,7 @@ Check("room 3 complete: 120 items green, 24 shelves finished", zone.CountCorrect
 Check("all three rooms are tidy and every door is open", cc.State.IsRoomFinished(1) && cc.State.IsRoomFinished(2) && cc.State.IsRoomFinished(3) && cc.State.IsDoorOpen(2) && cc.State.IsDoorOpen(3));
 cc.JumpTo(0); cc.Recompute();
 Check("in the hub the HUD counts 3 of 3 rooms tidy", cc.StatsText().Contains("3 / 3"), cc.StatsText());
-cc.ScatterRoom(1); cc.ScatterRoom(2); cc.ScatterRoom(3);
+cc.PileRoom(1); cc.PileRoom(2); cc.PileRoom(3);
 
 // ---- the pull list switches Gather Family on ----
 Check("the pull list is hidden here", zone.finds.Length == 1 && zone.finds[0].definition.findId == "pulllist" && zone.Contains(zone.finds[0].transform.position));

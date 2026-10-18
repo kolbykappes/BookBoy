@@ -24,6 +24,9 @@ grouped by commit date, not by hour.
 - S7: Room 3, the Map Room - ordered sets across three container types, the pull list (Stop E) (`4002833`).
 - S8: admin menu for Lamplit (Stop F) (`33596aa`).
 - S9: Play Mode check scripts for every step plus an end-to-end run of the whole test plan; docs updated.
+- Piles: each room starts as several random piles tossed around the middle (6, 7 and 8 piles), baked into the scene with a physics
+  settle in the Editor; a new "pile up the books" feature (`RoomZone.PileUp`, `CampaignController.PileRoom`, admin menu) tosses a room's
+  books into fresh random piles with real physics; engine-free `PilePlanner` with tests.
 - Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
   lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
 

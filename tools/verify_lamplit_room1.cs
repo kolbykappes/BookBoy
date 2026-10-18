@@ -15,12 +15,12 @@ BookBoy.Rules.PlacementResult Put(Book b, ShelfSlot s) { if (b.currentSlot != nu
 void ClearAll() { foreach (var b in zone.items) if (b.currentSlot != null) b.currentSlot.Release(); }
 
 // ---- the room as built ----
-Check("100 items in 20 groups of 5, 20 shelves of 5 slots, 10 containers", zone.items.Length == 100 && zone.shelves.Length == 20 && System.Linq.Enumerable.All(zone.shelves, s => s.slots.Length == 5) && UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include).Length == 10);
+Check("100 items in 20 groups of 5, 20 shelves of 5 slots, 10 containers", zone.items.Length == 100 && zone.shelves.Length == 20 && System.Linq.Enumerable.All(zone.shelves, s => s.slots.Length == 5) && System.Linq.Enumerable.Count(System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Select(zone.shelves, sh => sh.bookcase))) == 10);
 var perGroup = new System.Collections.Generic.Dictionary<int, int>(); foreach (var b in zone.items) { int g = b.GroupKey; perGroup[g] = perGroup.ContainsKey(g) ? perGroup[g] + 1 : 1; }
 Check("exactly 20 groups with 5 books each", perGroup.Count == 20 && System.Linq.Enumerable.All(perGroup.Values, c => c == 5));
 var symbols = new System.Collections.Generic.HashSet<string>(); foreach (var b in zone.items) symbols.Add(b.definition.symbol);
 Check("every group has its own letter (colour never decides alone)", symbols.Count == 20);
-Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 0.3f));
+Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 0.7f));
 Check("each container uses the Group rule and accepts any family", System.Linq.Enumerable.All(zone.shelves, s => s.bookcase.rules == ContainerRules.Group && s.bookcase.containerFamily == -1));
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
 
@@ -64,7 +64,7 @@ cc.CompleteRoom(1);
 Check("all 100 items in their homes are green", zone.CountCorrect() == 100 && zone.CountFinishedShelves() == 20, zone.CountCorrect() + " correct, " + zone.CountFinishedShelves() + " finished");
 cc.Recompute();
 Check("the room is tidy, and Room 2's door opens (when Room 2 exists)", cc.State.IsRoomFinished(1) && cc.State.IsDoorOpen(2));
-cc.ScatterRoom(1);
+cc.PileRoom(1);
 Check("Room 1 stays tidy even if it is messed up again", cc.State.IsRoomFinished(1));
 Check("scattering puts every item loose again", zone.CountCorrect() == 0 && System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null));
 

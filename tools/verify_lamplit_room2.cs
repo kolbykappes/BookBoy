@@ -54,7 +54,7 @@ Check("five parcels of one group on a parcel shelf is a finished shelf", zone.Co
 ClearAll(); cc.CompleteRoom(2); cc.Recompute();
 Check("all 120 items home: every one is green, 24 shelves finished", zone.CountCorrect() == 120 && zone.CountFinishedShelves() == 24, zone.CountCorrect() + " / " + zone.CountFinishedShelves());
 Check("Room 2 is tidy and opens Room 3's door", cc.State.IsRoomFinished(2) && cc.State.IsDoorOpen(3));
-cc.ScatterRoom(2);
+cc.PileRoom(2);
 Check("scattering puts them back on the floor", zone.CountCorrect() == 0 && System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null));
 
 // ---- the glasses switch Sister Glow on; it lights only the held item's group ----

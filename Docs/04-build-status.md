@@ -416,3 +416,25 @@ Built from [14-build-plan.md](14-build-plan.md): steps S0 to S9, all stops (A to
 - **Known limits:** item shapes are cubes (placeholders on purpose); finds have no glow; Quick Shelve (`ShelfPlanner`) still plans by
   the old colour/series rules, so it is locked in Lamplit; Home Beacon lights a whole container, not a shelf; no ceilings, sound or
   story text.
+
+### Lamplit: piles of books (2026-10-18)
+
+Every room now starts as **several random piles tossed around the middle of the room** instead of a grid of single books, and there
+is a "pile up the books" feature to do it again.
+
+- **Plan (engine-free, tested):** `PilePlanner.Plan` picks about one pile per 18 items (3 to 7), random centres inside the room's
+  scatter rectangle (at least 1.3 m apart), uneven pile sizes, and which item goes in which pile; seeded, so the same seed gives the
+  same layout.
+- **In game:** `RoomZone.PileUp(seed)` picks every item off its shelf or the floor and tosses them down with real physics, one item
+  per pile every 0.1 s, each with a random spin and a little sideways toss; they stay solid until the whole room has landed
+  (`Book.BeginSolid` / `Toss`), then become normal pick-up-able items (`Book.EndSolid`). `CampaignController.PileRoom(n)` does it for a
+  room; admin menu row 3 ("Pile this room's books up"), "Reset this room" and "Reset everything" all use it.
+- **Starting state (baked):** `LamplitBuilder.BakePiles` runs the same plan in the Editor on proxy cubes in a throwaway preview
+  scene (its own physics scene, just a floor) and copies where they land onto the real items, so the scene file already holds the
+  piles; `RebakeAllPiles()` redoes all three rooms. Setting `Physics.simulationMode` was tried and rejected: it makes the Editor
+  rewrite `ProjectSettings/DynamicsManager.asset` (a fenced file), and `Physics.Simulate` does nothing without it.
+- **Result:** Room 1 starts as 6 piles, Room 2 as 7, Room 3 as 8 (uneven sizes, highest point under 0.3 m).
+- **Verified:** 14 new Edit Mode tests (109 total). Play Mode: `tools/verify_lamplit_piles.cs` part 1 (14 checks: baked piles in all three
+  rooms, then the admin pile-up of a tidy room starts) passed, and all seven Lamplit suites still pass. **Not yet verified:** part 2
+  (`verify_lamplit_piles_part2.cs`: the live drop actually landing in piles) needs Play-mode frames to run, and the Editor window was in
+  the background (Unity throttles it), so that check is still to be run with the Editor in front.

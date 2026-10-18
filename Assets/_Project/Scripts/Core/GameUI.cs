@@ -580,7 +580,7 @@ public class GameUI : MonoBehaviour
     // ---- the admin menu of a Lamplit scene: reset / scatter / complete the current room, jump around, give or install finds, doors ----
     private static readonly string[] CampaignAdminHead =
     {
-        "Reset this room (scatter it and un-tidy it)", "Reset everything (rooms, finds, abilities, doors)", "Scatter this room's items again", "Complete this room (every item home)",
+        "Reset this room (pile it up again and un-tidy it)", "Reset everything (rooms, finds, abilities, doors)", "Pile this room's books up (random piles in the middle)", "Complete this room (every item home)",
         "Jump to the hub (the desk)", "Jump to Room 1 (Reading Room)", "Jump to Room 2 (Mailroom)", "Jump to Room 3 (Map Room)"
     };
 
@@ -635,8 +635,8 @@ public class GameUI : MonoBehaviour
                         return false;
                     }
 
-                    if (row == 0) c.ResetRoom(room); else if (row == 2) c.ScatterRoom(room); else c.CompleteRoom(room);
-                    Toast((row == 0 ? "Reset " : row == 2 ? "Scattered " : "Completed ") + CampaignCatalog.RoomName(room) + ".", 2f);
+                    if (row == 0) c.ResetRoom(room); else if (row == 2) c.PileRoom(room); else c.CompleteRoom(room);
+                    Toast((row == 0 ? "Reset " : row == 2 ? "Piled up " : "Completed ") + CampaignCatalog.RoomName(room) + ".", 2f);
                     return true;
                 case 1:
                     c.ResetAll();

@@ -199,7 +199,7 @@ public static partial class LamplitBuilder
         zone.finds = new[] { apron, shoes };
         zone.findHideSpots = hide;
 
-        zone.Scatter(1001);
+        BakePiles(zone, 1001);
         RegisterCampaign();
         MarkDirty();
         return "room 1 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
@@ -288,7 +288,7 @@ public static partial class LamplitBuilder
         zone.finds = new[] { glasses, shelfList };
         zone.findHideSpots = hide;
 
-        zone.Scatter(1002);
+        BakePiles(zone, 1002);
         RegisterCampaign();
         MarkDirty();
         return "room 2 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
@@ -374,7 +374,7 @@ public static partial class LamplitBuilder
         zone.finds = new[] { pullList };
         zone.findHideSpots = hide;
 
-        zone.Scatter(1003);
+        BakePiles(zone, 1003);
         RegisterCampaign();
         MarkDirty();
         return "room 3 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
