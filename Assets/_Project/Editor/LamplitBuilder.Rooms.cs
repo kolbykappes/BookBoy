@@ -294,3 +294,89 @@ public static partial class LamplitBuilder
         return "room 2 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
     }
 }
+
+public static partial class LamplitBuilder
+{
+    // ---------------------------------------------------------------- Room 3: the Map Room
+
+    private static readonly string[] MapFamilies = { "Atlas", "Rolled map", "Flat sheet" };
+    private static readonly string[] MapPlural = { "ATLASES", "ROLLED MAPS", "FLAT SHEETS" };
+    private static readonly string[] MapInitial = { "A", "R", "S" };
+    private static readonly Vector3[] MapSizes =
+    {
+        new Vector3(0.060f, 0.34f, 0.26f),   // atlas: big and thick
+        new Vector3(0.050f, 0.30f, 0.050f),  // rolled map: a thin tube
+        new Vector3(0.040f, 0.30f, 0.22f),   // flat sheet: wide and thin
+    };
+
+    /// <summary>Room 3: 120 items (atlases, rolled maps, flat sheets; 8 numbered sets of 5 each) on 24 shelves in 12 containers, four per family.
+    /// Rule: Ordered (number N in slot N), and the container's family must match.</summary>
+    public static string BuildRoom3()
+    {
+        RequireLamplitScene();
+        var s = Spec(3);
+        var root = BuildShell(s);
+        var zone = root.GetComponent<RoomZone>();
+
+        var woods = new[]
+        {
+            LoadMat("Mat_Wood"),
+            EnsureMat("Mat_Wood_Tube", new Color(0.30f, 0.34f, 0.50f), 0.25f),
+            EnsureMat("Mat_Wood_Drawer", new Color(0.45f, 0.48f, 0.50f), 0.35f, 0.3f),
+        };
+        var containers = PlaceContainers(root, s, zone, 12, ContainerRules.Ordered, i => i / 4, i => woods[i / 4]);
+
+        float zc = (s.Z0 + s.Z1) / 2f;
+        for (int f = 0; f < 3; f++)
+        {
+            float z = zc + ((f * 4 + 1.5f) - 5.5f) * ContainerPitch;
+            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 2.3f, z), Vector3.right, new Vector2(2.1f, 0.4f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 70);
+        }
+
+        var itemsRoot = FreshChild(root, "Items");
+        var items = new List<Book>();
+        var homes = new List<ShelfSlot>();
+        for (int f = 0; f < 3; f++)
+        {
+            for (int gi = 0; gi < 8; gi++)
+            {
+                char letter = (char)('A' + gi);
+                int group = f * 8 + gi;
+                Color color = GroupColor(group, 24);
+                var shelf = zone.shelves[f * 8 + gi];
+                for (int n = 1; n <= 5; n++)
+                {
+                    var def = Definition("Item_R3_" + MapInitial[f] + letter + n);
+                    def.bookId = "r3_" + MapInitial[f].ToLowerInvariant() + char.ToLowerInvariant(letter) + n;
+                    def.displayName = MapFamilies[f] + " " + letter + "-" + n;
+                    def.family = f;
+                    def.group = group;
+                    def.number = n;
+                    def.room = 3;
+                    def.symbol = letter.ToString();
+                    def.spineColor = color;
+                    def.category = BookCategory.Alchemy;
+                    def.series = 0;
+                    def.volume = n;
+                    EditorUtility.SetDirty(def);
+                    items.Add(Item(itemsRoot, "R3_" + MapInitial[f] + "_" + letter + n, def, MapSizes[f], true));
+                    homes.Add(shelf.slots[n - 1]);
+                }
+            }
+        }
+
+        zone.items = items.ToArray();
+        zone.homeSlots = homes.ToArray();
+
+        var findsRoot = FreshChild(root, "Finds");
+        var hide = BuildFindTable(root, s, 1);
+        var pullList = MakeFind(findsRoot, "pulllist", new Color(0.95f, 0.55f, 0.40f), new Vector3(0.12f, 0.22f, 0.02f), hide[0]);
+        zone.finds = new[] { pullList };
+        zone.findHideSpots = hide;
+
+        zone.Scatter(1003);
+        RegisterCampaign();
+        MarkDirty();
+        return "room 3 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
+    }
+}
