@@ -23,6 +23,7 @@ them as decisions change, don't re-import the original brief.
 | [12-narrative-reference-games.md](12-narrative-reference-games.md) | Research on successful games where a simple mechanic unlocks the story (Unpacking, Organized Inside, Obra Dinn, Outer Wilds, ...), the patterns they share, and ideas for BookBoy's narrative |
 | [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md) | **Draft concept for the real game, Lamplit** (an inherited library, Uncle Rufus's deliberate test, seven rooms, no magic), with the settled story decisions and open questions. Brainstorm status, not committed design |
 | [14-build-plan.md](14-build-plan.md) | **Build plan for Lamplit v2**: the hub (a hallway with a desk) and Rooms 1 to 3, steps S0 to S9 with stop lines, a reuse map and a test script |
+| [unity-practices/](unity-practices/README.md) | **Sourced Unity research (21 topics, 2026-10-18)**: scale, FOV, lighting, shadows, batching, data-driven items, room loading, physics and piles, picking and highlights, UI, palette, testing and Editor focus. Read the matching file before changing any of those in the scene (rule in the root `CLAUDE.md`) |
 | [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation
