@@ -205,3 +205,92 @@ public static partial class LamplitBuilder
         return "room 1 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
     }
 }
+
+public static partial class LamplitBuilder
+{
+    // ---------------------------------------------------------------- Room 2: the Mailroom
+
+    private static readonly string[] MailFamilies = { "Book", "Magazine", "Letter", "Parcel" };
+    private static readonly string[] MailPlural = { "BOOKS", "MAGAZINES", "LETTERS", "PARCELS" };
+    private static readonly Vector3[] MailSizes =
+    {
+        new Vector3(0.045f, 0.26f, 0.17f),   // book
+        new Vector3(0.040f, 0.30f, 0.22f),   // magazine: tall and wide, thin
+        new Vector3(0.040f, 0.16f, 0.12f),   // letter: small
+        new Vector3(0.060f, 0.14f, 0.14f),   // parcel: squat
+    };
+
+    /// <summary>Room 2: 120 items (books, magazines, letters, parcels; 6 groups of 5 each) on 24 shelves in 12 containers, three per family.
+    /// Rule: Group, and the container's family must match the item's.</summary>
+    public static string BuildRoom2()
+    {
+        RequireLamplitScene();
+        var s = Spec(2);
+        var root = BuildShell(s);
+        var zone = root.GetComponent<RoomZone>();
+
+        var woods = new[]
+        {
+            LoadMat("Mat_Wood"),
+            EnsureMat("Mat_Wood_Magazine", new Color(0.28f, 0.40f, 0.44f), 0.2f),
+            EnsureMat("Mat_Wood_Letter", new Color(0.55f, 0.45f, 0.30f), 0.2f),
+            EnsureMat("Mat_Wood_Parcel", new Color(0.50f, 0.30f, 0.22f), 0.2f),
+        };
+        var containers = PlaceContainers(root, s, zone, 12, ContainerRules.Group, i => i / 3, i => woods[i / 3]);
+
+        // a sign over each family's three containers
+        float zc = (s.Z0 + s.Z1) / 2f;
+        for (int f = 0; f < 4; f++)
+        {
+            float z = zc + ((f * 3 + 1) - 5.5f) * ContainerPitch;
+            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 2.3f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(1.7f, 0.4f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 70);
+        }
+
+        var itemsRoot = FreshChild(root, "Items");
+        var items = new List<Book>();
+        var homes = new List<ShelfSlot>();
+        for (int f = 0; f < 4; f++)
+        {
+            for (int gi = 0; gi < 6; gi++)
+            {
+                char letter = (char)('A' + gi);
+                int group = f * 6 + gi;
+                Color color = GroupColor(group, 24);
+                var shelf = zone.shelves[f * 6 + gi];
+                for (int n = 1; n <= 5; n++)
+                {
+                    var def = Definition("Item_R2_" + MailFamilies[f][0] + letter + n);
+                    def.bookId = "r2_" + char.ToLowerInvariant(MailFamilies[f][0]) + char.ToLowerInvariant(letter) + n;
+                    def.displayName = MailFamilies[f] + " " + letter;
+                    def.family = f;
+                    def.group = group;
+                    def.number = n;
+                    def.room = 2;
+                    def.symbol = letter.ToString();
+                    def.spineColor = color;
+                    def.category = BookCategory.Alchemy;
+                    def.series = 0;
+                    def.volume = n;
+                    EditorUtility.SetDirty(def);
+                    items.Add(Item(itemsRoot, "R2_" + MailFamilies[f][0] + "_" + letter + n, def, MailSizes[f], false));
+                    homes.Add(shelf.slots[n - 1]);
+                }
+            }
+        }
+
+        zone.items = items.ToArray();
+        zone.homeSlots = homes.ToArray();
+
+        var findsRoot = FreshChild(root, "Finds");
+        var hide = BuildFindTable(root, s, 2);
+        var glasses = MakeFind(findsRoot, "glasses", new Color(0.75f, 0.85f, 0.95f), new Vector3(0.18f, 0.07f, 0.06f), hide[0]);
+        var shelfList = MakeFind(findsRoot, "shelflist", new Color(0.95f, 0.88f, 0.50f), new Vector3(0.12f, 0.20f, 0.02f), hide[1]);
+        zone.finds = new[] { glasses, shelfList };
+        zone.findHideSpots = hide;
+
+        zone.Scatter(1002);
+        RegisterCampaign();
+        MarkDirty();
+        return "room 2 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
+    }
+}

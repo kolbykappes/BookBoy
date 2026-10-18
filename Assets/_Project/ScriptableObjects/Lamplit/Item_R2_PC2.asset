@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d8c2247cb15a049a3fadcf401a22e5, type: 3}
+  m_Name: Item_R2_PC2
+  m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
+  bookId: r2_pc2
+  displayName: Parcel C
+  category: 0
+  series: 0
+  volume: 2
+  spineColor: {r: 0.17, g: 0.85, b: 0.28157482, a: 1}
+  family: 3
+  group: 20
+  number: 2
+  room: 2
+  symbol: C
+  findId: 
