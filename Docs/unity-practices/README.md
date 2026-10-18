@@ -1,7 +1,7 @@
 # Unity practices: researched, sourced notes (2026-10-18)
 
 Why this exists: Kolby pointed out that Unity craft decisions (scale, FOV, lighting) had been made from memory and some were wrong. Per the rule in the root
-`CLAUDE.md`, craft decisions are researched and documented here **before** the scene is changed. Twenty-one topics were researched by five parallel web-research
+`CLAUDE.md`, craft decisions are researched and documented here **before** the scene is changed. Twenty-seven topics were researched by parallel web-research
 agents (no Unity involved). Every file has: question, sourced findings, numbers, confidence, and "Implication for BookBoy".
 
 **Status of this material:** written by research agents, not yet independently verified by a person. Claims are tagged in each file (fetched, search-only,
@@ -33,6 +33,12 @@ and several items need approval under the CLAUDE.md guardrails (`ProjectSettings
 | 19 | [19-unity-test-framework-and-batch-mode-workflow.md](19-unity-test-framework-and-batch-mode-workflow.md) | Batch mode cannot open a project the Editor has open; use `run_tests` via Pipeline, or a separate clone with its own Library |
 | 20 | [20-editor-background-play-and-focus.md](20-editor-background-play-and-focus.md) | Unfocused Editor freezes Play at frame 1; documented fix `set_autotick`; `capture_game_view --source camera` renders off-screen |
 | 21 | [21-unity-cli-and-pipeline-notes.md](21-unity-cli-and-pipeline-notes.md) | eval times out at 5 s and the docs never say it aborts; use `eval_file` with polling; avoid `editor_focus` |
+| 22 | [22-save-and-load-design.md](22-save-and-load-design.md) | persistentDataPath/saves, JsonUtility DTOs, schema + migrations, temp-then-replace with .bak, save room-local poses (not seeds), derive doors, Steam Auto-Cloud on LocalLow |
+| 23 | [23-aspect-ratio-fov-and-motion-blur.md](23-aspect-ratio-fov-and-motion-blur.md) | Hor+ so any window works; horizontal FOV slider 70-110 (default 90h = 58.7v) converted with HorizontalToVerticalFieldOfView; motion blur off by default and toggleable; no head bob |
+| 24 | [24-player-build-and-performance-testing.md](24-player-build-and-performance-testing.md) | Per-call BuildPlayerOptions (no ProjectSettings change), Mono only; self-driving -perf harness writes CSV/JSON/screenshots; Editor numbers mislead |
+| 25 | [25-steam-release-path-for-a-small-unity-game.md](25-steam-release-path-for-a-small-unity-game.md) | $100/app, 30-day wait, Coming Soon >= 14 days, June Next Fest, AI disclosure, Runtime Fee cancelled, Steamworks.NET behind an interface, genre price $4.99-$5.99 |
+| 26 | [26-ai-assisted-book-models-and-materials.md](26-ai-assisted-book-models-and-materials.md) | Generate the mesh in C#, not with AI; CC0/procedural covers first; keep spine letters game-drawn; Steam disclosure; books already use MaterialPropertyBlock (outside SRP Batcher); conflicts with backlog D-005 |
+| 27 | [27-adult-scale-cozy-rooms-and-readable-items.md](27-adult-scale-cozy-rooms-and-readable-items.md) | 1.6x + 1.15 m eye made ceiling 2.6x eye height; readability = screen fraction (16-23%), not world size; proposed 1.0x numbers (eye 1.65, ceiling 2.6, FOV 65v, door 1.1x2.2) |
 
 ## Where the research contradicts what the project does or what was said earlier
 
@@ -67,3 +73,8 @@ and several items need approval under the CLAUDE.md guardrails (`ProjectSettings
 ## Open questions the research could not settle
 
 Child eye height by age and reach norms (only Witch Cabin's 3.0 m reach found); Witch Cabin's FOV axis; GPU Resident Drawer requirements in 6.6; whether Instantiate / SetActive timings matter here (unmeasured); how tonemapping changes lit contrast ratios (measure screenshots); no developer write-up on pile handling in Unpacking, Goose-style or tidy-up games was found; Unity's manual disagrees with itself on whether CharacterController pushes Rigidbodies; Unity's two CCD pages disagree on Speculative accuracy.
+
+## Corrections to earlier files (found later)
+
+- File 10 assumed one shared material per colour; the code uses ONE shared `Mat_BookSpine` with a per-book `MaterialPropertyBlock` colour (`Book.cs`), so books are probably outside the SRP Batcher (unconfirmed in the Frame Debugger). Fix by baking colour into vertex colours or per-colour shared materials.
+- File 1 called the 1.6x scale defensible; file 27 shows it pushed the ceiling to 2.6x the eye height and the owner wants it undone (backlog T-002).
