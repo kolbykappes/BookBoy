@@ -29,6 +29,8 @@ grouped by commit date, not by hour.
   books into fresh random piles with real physics; engine-free `PilePlanner` with tests.
 - Rooms beyond a shut door are switched off until the door opens: live books 345 to 102, renderers 950 to 306, colliders 658 to 212, lights 14
   to 8 at the start of a run (`RoomZone.SetLive`, `CampaignController`).
+- Backlog: data-driven items, rooms loaded when unlocked, inert shelved items, frozen piles and physics only on special occasions written up as L-016 to
+  L-020 (Kolby's direction), with open decisions listed; not started.
 - Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
   lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
 
