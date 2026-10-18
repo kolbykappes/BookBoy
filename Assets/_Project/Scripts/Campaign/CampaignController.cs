@@ -126,8 +126,8 @@ public class CampaignController : MonoBehaviour
     private void OnRoomFinished(int room)
     {
         ApplyDoors(false);
-        string name = rooms[room - 1].displayName;
-        string next = room < RoomCount ? " The " + rooms[room].displayName + " door is open." : " The whole library is tidy!";
+        string name = CampaignCatalog.RoomName(room);
+        string next = room < CampaignCatalog.RoomCount ? " The " + CampaignCatalog.RoomName(room + 1) + " door is open." : " The whole library is tidy!";
         _ui?.Toast("Room tidied: " + name + "." + next, 5f);
         _progress?.RaiseChanged();
     }
@@ -143,7 +143,7 @@ public class CampaignController : MonoBehaviour
         {
             bool open = State.IsDoorOpen(door.roomNumber);
             door.SetOpen(open, instant);
-            string name = rooms[door.roomNumber - 1].displayName;
+            string name = CampaignCatalog.RoomName(door.roomNumber);
             door.SetLabel(open ? name.ToUpperInvariant() : name.ToUpperInvariant() + "\nLOCKED");
         }
     }
@@ -292,7 +292,7 @@ public class CampaignController : MonoBehaviour
         }
         else
         {
-            sb.Append("<b>").Append(rooms[room - 1].displayName.ToUpperInvariant()).Append("</b>")
+            sb.Append("<b>").Append(CampaignCatalog.RoomName(room).ToUpperInvariant()).Append("</b>")
               .Append(State.IsRoomFinished(room) ? "  (tidy!)" : "")
               .Append("\n<b>ITEMS</b>  ").Append(_correct[room]).Append(" / ").Append(_total[room])
               .Append("\n<b>SHELVES</b>  ").Append(_finishedShelves[room]).Append(" / ").Append(rooms[room - 1].shelves.Length);

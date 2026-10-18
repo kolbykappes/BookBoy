@@ -675,7 +675,7 @@ public class GameUI : MonoBehaviour
         }
         else
         {
-            status = "hidden in " + _progress.Campaign.Room(f.Room).displayName;
+            status = "hidden in " + CampaignCatalog.RoomName(f.Room);
             color = "#a8a8b8";
         }
 

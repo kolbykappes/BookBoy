@@ -1,0 +1,176 @@
+using System.Collections.Generic;
+using BookBoy.Rules;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
+
+public static partial class LamplitBuilder
+{
+    // Hub: a hallway 3 m wide and 16 m long (x -1.5..1.5, z 0..16). The desk is at the z = 0 end. Doors: Room 1 and Room 3 on the left
+    // wall (z = 4 and 12), Room 2 on the right wall (z = 8).
+    public static readonly float[] DoorZ = { 4f, 8f, 12f };
+
+    /// <summary>A copy of the floor tile material whose tiling fits a floor of w x d metres (0.8 m tiles).</summary>
+    public static Material FloorMat(string name, float w, float d)
+    {
+        string path = MatDir + "/Mat_Floor_" + name + ".mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (m == null)
+        {
+            m = new Material(LoadMat("Mat_FloorTile"));
+            AssetDatabase.CreateAsset(m, path);
+        }
+
+        m.shader = LoadMat("Mat_FloorTile").shader;
+        m.CopyPropertiesFromMaterial(LoadMat("Mat_FloorTile"));
+        m.mainTextureScale = new Vector2(w / 1.6f, d / 1.6f);
+        EditorUtility.SetDirty(m);
+        return m;
+    }
+
+    public static string BuildHub()
+    {
+        RequireLamplitScene();
+        var hub = FreshRoot("Hub");
+        var wallMat = EnsureMat("Mat_Wall_Hub", new Color(0.50f, 0.40f, 0.30f), 0.1f);
+        var wood = LoadMat("Mat_Wood");
+        var brass = EnsureMat("Mat_Brass", new Color(0.75f, 0.58f, 0.25f), 0.45f, 0.6f);
+        var doorMat = EnsureMat("Mat_Door", new Color(0.30f, 0.18f, 0.09f), 0.2f);
+
+        Floor(hub, "Floor", -1.6f, 1.6f, 0f, 16f, FloorMat("Hub", 3.2f, 16f));
+        Wall(hub, "WallLeft", true, -1.5f, 0f, 16f, new[] { DoorZ[0], DoorZ[2] }, wallMat);
+        Wall(hub, "WallRight", true, 1.5f, 0f, 16f, new[] { DoorZ[1] }, wallMat);
+        Wall(hub, "WallEnd0", false, 0f, -1.6f, 1.6f, null, wallMat);
+        Wall(hub, "WallEnd16", false, 16f, -1.6f, 1.6f, null, wallMat);
+
+        BuildDesk(hub, wood, brass);
+
+        // doors, each with a sign on the hub side
+        var doors = new List<RoomDoor>();
+        for (int i = 0; i < 3; i++)
+        {
+            int room = i + 1;
+            bool left = room != 2;
+            float x = left ? -1.5f : 1.5f;
+            var root = new GameObject("Door_" + room);
+            root.transform.SetParent(hub, false);
+            var door = root.AddComponent<RoomDoor>();
+            door.roomNumber = room;
+            var leaf = Cube("Leaf", root.transform, new Vector3(x, DoorHeight / 2f, DoorZ[i]), new Vector3(0.12f, DoorHeight, DoorWidth), doorMat);
+            door.leaf = leaf.transform;
+            door.blocker = leaf.GetComponent<Collider>();
+            door.openHeight = DoorHeight + 0.1f;
+            float signX = left ? -1.38f : 1.38f;
+            var text = Sign(root.transform, "DoorSign", new Vector3(signX, 2.8f, DoorZ[i]), left ? Vector3.right : Vector3.left, new Vector2(1.3f, 0.5f),
+                CampaignCatalog.RoomName(room).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 70);
+            door.label = text;
+            doors.Add(door);
+        }
+
+        // lights: warm orbs down the hallway
+        Orb(hub, "MageLight_Hub_1", new Vector3(0f, 2.7f, 3.0f), 3.4f, false, 8f);
+        Orb(hub, "MageLight_Hub_2", new Vector3(0f, 2.7f, 8.0f), 3.2f, false, 8f);
+        Orb(hub, "MageLight_Hub_3", new Vector3(0f, 2.7f, 13.0f), 3.2f, false, 8f);
+
+        // player start: at the desk, looking at it
+        var spawn = new GameObject("HubSpawn").transform;
+        spawn.SetParent(hub, false);
+        spawn.SetPositionAndRotation(new Vector3(0f, 1f, 2.6f), Quaternion.Euler(0f, 180f, 0f));
+        var player = GameObject.Find("Player");
+        if (player != null)
+        {
+            var cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            player.transform.SetPositionAndRotation(spawn.position, spawn.rotation);
+            if (cc != null) cc.enabled = true;
+        }
+
+        RegisterCampaign();
+        MarkDirty();
+        return "hub built: desk with 6 spots, 3 doors, 3 orbs";
+    }
+
+    private static void BuildDesk(Transform hub, Material wood, Material brass)
+    {
+        var desk = FreshChild(hub, "Desk");
+        Cube("Top", desk, new Vector3(0f, 0.875f, 0.45f), new Vector3(2.8f, 0.05f, 0.6f), wood);
+        Cube("Body", desk, new Vector3(0f, 0.425f, 0.45f), new Vector3(2.7f, 0.85f, 0.5f), wood);
+        Sign(desk, "DeskSign", new Vector3(0f, 2.35f, 0.14f), Vector3.forward, new Vector2(1.8f, 0.45f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 70);
+
+        // six spots in a row on the desk top; each accepts one find. The last is locked for now.
+        var spotRoot = FreshChild(desk, "Spots");
+        string[] ids = { "apron_hook", "shoe_rack", "glasses_stand", "shelf_list_board", "clipboard", CampaignCatalog.DumbwaiterSpot };
+        string[] labels = { "Apron hook", "Shoe rack", "Glasses stand", "Shelf-list board", "Clipboard", "Dumbwaiter hatch" };
+        string[] signs = { "APRON\nHOOK", "SHOE\nRACK", "GLASSES\nSTAND", "SHELF-LIST\nBOARD", "CLIP-\nBOARD", "DUMB-\nWAITER" };
+        float[] xs = { 1.1f, 0.66f, 0.22f, -0.22f, -0.66f, -1.1f };   // the player looks toward -Z, so +X is on the left
+        const float top = 0.9f;
+        for (int i = 0; i < ids.Length; i++)
+        {
+            var go = new GameObject("Spot_" + ids[i]);
+            go.transform.SetParent(spotRoot, false);
+            go.transform.position = new Vector3(xs[i], top, 0.55f);
+            var spot = go.AddComponent<FindSpot>();
+            spot.spotId = ids[i];
+            spot.label = labels[i];
+            spot.locked = ids[i] == CampaignCatalog.DumbwaiterSpot;
+            var box = go.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.center = new Vector3(0f, 0.25f, 0f);
+            box.size = new Vector3(0.38f, 0.5f, 0.42f);
+
+            Cube("Base", go.transform, new Vector3(0f, 0.03f, 0f), new Vector3(0.34f, 0.06f, 0.34f), brass, false);
+            var anchor = new GameObject("Anchor").transform;
+            anchor.SetParent(go.transform, false);
+            anchor.localPosition = new Vector3(0f, 0.22f, 0f);
+            spot.anchor = anchor;
+
+            switch (ids[i])
+            {
+                case "apron_hook":
+                    Cube("Post", go.transform, new Vector3(0f, 0.3f, 0.12f), new Vector3(0.03f, 0.5f, 0.03f), brass, false);
+                    Cube("Hook", go.transform, new Vector3(0f, 0.52f, 0.06f), new Vector3(0.03f, 0.03f, 0.14f), brass, false);
+                    break;
+                case "shoe_rack":
+                    Cube("Rack", go.transform, new Vector3(0f, 0.1f, 0f), new Vector3(0.3f, 0.04f, 0.3f), brass, false);
+                    break;
+                case "glasses_stand":
+                    Cube("Stand", go.transform, new Vector3(0f, 0.12f, 0.08f), new Vector3(0.03f, 0.2f, 0.03f), brass, false);
+                    break;
+                case "shelf_list_board":
+                    Cube("Board", go.transform, new Vector3(0f, 0.3f, 0.14f), new Vector3(0.3f, 0.4f, 0.02f), wood, false);
+                    break;
+                case "clipboard":
+                    Cube("Board", go.transform, new Vector3(0f, 0.28f, 0.14f), new Vector3(0.24f, 0.36f, 0.02f), wood, false);
+                    Cube("Clip", go.transform, new Vector3(0f, 0.46f, 0.125f), new Vector3(0.1f, 0.04f, 0.02f), brass, false);
+                    break;
+                default:
+                    Cube("Hatch", go.transform, new Vector3(0f, 0.22f, 0.1f), new Vector3(0.32f, 0.36f, 0.1f), wood, false);
+                    Cube("Padlock", go.transform, new Vector3(0f, 0.22f, 0.04f), new Vector3(0.06f, 0.08f, 0.03f), brass, false);
+                    break;
+            }
+
+            Sign(go.transform, "Label", new Vector3(xs[i], 1.58f, 0.6f), Vector3.forward, new Vector2(0.38f, 0.22f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
+        }
+    }
+
+    /// <summary>Finds the doors, rooms and desk spots in the scene and (re)creates the CampaignController that ties them together.</summary>
+    public static CampaignController RegisterCampaign()
+    {
+        var doors = new List<RoomDoor>(Object.FindObjectsByType<RoomDoor>(FindObjectsInactive.Include));
+        doors.Sort((a, b) => a.roomNumber.CompareTo(b.roomNumber));
+        var rooms = new List<RoomZone>(Object.FindObjectsByType<RoomZone>(FindObjectsInactive.Include));
+        rooms.Sort((a, b) => a.roomNumber.CompareTo(b.roomNumber));
+        var spots = new List<FindSpot>(Object.FindObjectsByType<FindSpot>(FindObjectsInactive.Include));
+        spots.Sort((a, b) => string.CompareOrdinal(a.spotId, b.spotId));
+
+        var go = FreshRoot("Campaign");
+        var controller = go.gameObject.AddComponent<CampaignController>();
+        controller.rooms = rooms.ToArray();
+        controller.doors = doors.ToArray();
+        controller.spots = spots.ToArray();
+        var spawn = GameObject.Find("HubSpawn");
+        controller.hubSpawn = spawn != null ? spawn.transform : null;
+        EditorUtility.SetDirty(controller);
+        return controller;
+    }
+}

@@ -44,6 +44,13 @@ namespace BookBoy.Rules
     {
         public const int RoomCount = 3;
 
+        public static readonly string[] RoomNames = { "Reading Room", "Mailroom", "Map Room" };
+
+        public static string RoomName(int room)
+        {
+            return room >= 1 && room <= RoomNames.Length ? RoomNames[room - 1] : "Room " + room;
+        }
+
         /// <summary>The desk spot that stays locked until a later build (Quick Shelve).</summary>
         public const string DumbwaiterSpot = "dumbwaiter_hatch";
 
