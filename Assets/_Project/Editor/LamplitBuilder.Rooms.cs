@@ -7,7 +7,7 @@ public static partial class LamplitBuilder
 {
     // Rooms sit beside the hub. Left of the hub: Room 1 (z 0..11.4) and Room 3 (z 11.4..24.8). Right of the hub: Room 2 (z 5.7..19.1).
     // Each is RoomWidth wide with the containers (at world scale) along the far wall and the piles of loose items in the middle.
-    private static float ContainerPitch => 0.62f * WorldScale;
+    private static float ContainerPitch => 0.52f * WorldScale;   // container width 0.46 m (local) plus a small gap
     private const float RoomWidth = 12f;
 
     public struct RoomSpec
@@ -247,7 +247,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 4; f++)
         {
             float z = zc + ((f * 3 + 1) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 3.5f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(2.5f, 0.6f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
+            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 3.0f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(2.5f, 0.6f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");
@@ -335,7 +335,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 3; f++)
         {
             float z = zc + ((f * 4 + 1.5f) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 3.5f, z), Vector3.right, new Vector2(3.2f, 0.6f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
+            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 3.0f, z), Vector3.right, new Vector2(3.2f, 0.6f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");

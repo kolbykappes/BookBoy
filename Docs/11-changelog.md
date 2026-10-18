@@ -34,6 +34,8 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Lamplit shelves: boards lowered so the eye line is inside the shelf band (lower board 0.96 m, upper 1.68 m), slots packed (pitch 0.10 m), containers closer together;
+  palette contrast, a held-item ghost and visible claims added to the backlog (L-021 to L-023).
 - Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
   lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
 

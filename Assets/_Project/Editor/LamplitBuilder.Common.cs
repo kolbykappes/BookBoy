@@ -27,9 +27,14 @@ public static partial class LamplitBuilder
     public const float DoorHeight = 3.0f;
     public const float HubHalf = 2.4f;          // hub wall centres are at x = +-HubHalf
     public const float HubLength = 24.8f;
-    public const float SlotPitch = 0.072f;
+    // Slots are packed: the thickest item is 0.06 m (local, before WorldScale), so the pitch only just clears it (was 0.072, which left
+    // visible gaps). Shelves sit low so the eye line is inside the shelf band: base cabinet 0.6 m, the two boards 0.45 m apart (local).
+    public const float SlotPitch = 0.0625f;
+    public const float BaseHeight = 0.6f;
+    public const float ShelfSpacing = 0.45f;
+    public const float ContainerHeight = 1.54f;
     public const float FrontLine = -0.14f;
-    private static readonly float[] ShelfTops = { 0.85f, 1.30f };
+    private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing };
 
     // ---------------------------------------------------------------- scene and materials
 
@@ -267,7 +272,7 @@ public static partial class LamplitBuilder
     /// <summary>One container: a wooden unit with two shelves of five slots. yaw rotates it about Y (0 = front faces -Z).</summary>
     public static Bookcase Container(Transform parent, string name, Vector3 pos, float yaw, ContainerRules rules, int family, RoomZone room, Material wood, int slots = 5)
     {
-        float w = slots * SlotPitch + 0.152f, d = 0.36f, h = 1.79f;
+        float w = slots * SlotPitch + 0.152f, d = 0.36f, h = ContainerHeight;
         var root = new GameObject(name);
         root.transform.SetParent(parent, false);
         root.transform.position = pos;
@@ -277,11 +282,11 @@ public static partial class LamplitBuilder
         bookcase.containerFamily = family;
         bookcase.room = room;
 
-        Cube("Base", root.transform, new Vector3(0f, 0.425f, 0f), new Vector3(w, 0.85f, d), wood);
-        float upper = h - 0.85f;
-        Cube("SideL", root.transform, new Vector3(-(w / 2f - 0.02f), 0.85f + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
-        Cube("SideR", root.transform, new Vector3(w / 2f - 0.02f, 0.85f + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
-        Cube("Back", root.transform, new Vector3(0f, 0.85f + upper / 2f, d / 2f - 0.01f), new Vector3(w - 0.08f, upper, 0.02f), wood);
+        Cube("Base", root.transform, new Vector3(0f, BaseHeight / 2f, 0f), new Vector3(w, BaseHeight, d), wood);
+        float upper = h - BaseHeight;
+        Cube("SideL", root.transform, new Vector3(-(w / 2f - 0.02f), BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
+        Cube("SideR", root.transform, new Vector3(w / 2f - 0.02f, BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
+        Cube("Back", root.transform, new Vector3(0f, BaseHeight + upper / 2f, d / 2f - 0.01f), new Vector3(w - 0.08f, upper, 0.02f), wood);
         Cube("ShelfBoard", root.transform, new Vector3(0f, ShelfTops[1] - 0.025f, 0f), new Vector3(w - 0.08f, 0.05f, d - 0.02f), wood);
         Cube("Top", root.transform, new Vector3(0f, h - 0.02f, 0f), new Vector3(w, 0.04f, d), wood);
 

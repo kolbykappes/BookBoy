@@ -476,3 +476,19 @@ on its own made things *smaller*, which the renders showed. What fixed it was ch
   books are bright with the group letter legible. Not judged: how it feels to walk around (pace, room size).
 - **Next if it still feels off:** a different multiplier is a one-number change; richer item art (cover colour, a real title, lying face up), smaller
   piles, and depth of field are the next levers.
+
+### Lamplit: lower boards and packed slots (2026-10-18)
+
+From the scale study ([competitive/scale-and-camera-comparison.md](competitive/scale-and-camera-comparison.md)): every board was above the player's eyes (eye 1.15 m, lower
+board top 1.36 m, upper 2.08 m), where Librarian, Shelves and Sorcery and Witch Cabin keep the eye line inside the shelf band, and slots left visible gaps.
+
+- **Boards:** base cabinet 0.6 m (local; 0.96 m in the world), boards 0.45 m apart (0.72 m), container height 1.54 m (2.4 m); family signs moved to 3.0 m
+  (`LamplitBuilder.BaseHeight`, `ShelfSpacing`, `ContainerHeight`). The lower board top is now at 0.96 m and the upper at 1.68 m, so at standing distance both rows of
+  books are in the frame.
+- **Slots packed:** pitch 0.0625 m local (0.10 m in the world) instead of 0.072 (0.115), just clearing the thickest item (0.06 local); container pitch 0.52
+  local so containers stand closer together.
+- **Verified:** all eight Lamplit suites pass on the rebuilt rooms, 109 unit tests pass, the pile check part 1 passes. Renders show a wall of 20 shelves with both
+  rows visible and packed books. **Not re-run:** the live pile drop (`verify_lamplit_piles_part2.cs`) needs running frames and Unity was in the background; it passed
+  earlier the same day and this change does not touch the pile code.
+- **Deferred (backlog L-021 to L-023):** palette and contrast (purple and navy groups are darker than the wood), a ghost of the held item in the aimed slot, and
+  visible claims (a nameplate on the board).

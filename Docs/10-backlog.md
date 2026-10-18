@@ -133,6 +133,17 @@ under "what to borrow". Split it into single items when picking one. Strongest c
 - **L-012** Make finds easy to spot: a soft glow on a find until it is picked up, and a hint when a room's finds are still missing. **P2**
 - **L-013** Home Beacon at shelf level (light the shelf, not the whole container) and an option to show which shelf already holds a group. **P3**
 - **L-014** Rooms 4 to 7, the story layer, save/load (F-003), sound and the feel pass, per [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md). **P2**
+- **L-021** Palette and contrast against the shelf (from the scale study, 2026-10-18): every group must stand out from the wood. Measured in Lamplit: ratio of
+  book to wood luminance averaged 2.0 but ranged from 4.8 (yellow) down to 0.7 (purple, navy), i.e. some groups are darker than the shelf. Give `GroupColor` a
+  lightness floor, avoid dark navy, purple and maroon, keep the wood dark and warm and the room lit enough, and re-measure (target: each group 2.0 or more, average
+  2.5 or more; method and numbers in [competitive/scale-and-camera-comparison.md](competitive/scale-and-camera-comparison.md)). Keep letters, not colour alone, as the
+  identifier. **P2, decided to do later**
+- **L-022** Ghost of the held item in the aimed slot (Librarian and Witch Cabin do this): a translucent silhouette of the carried book in the exact slot, tinted by
+  how it would grade (green, yellow, red), in place of today's thin highlight bar. Needs the slot to know the held item's size and the grade preview from the rules
+  (engine-free, tested). **P2, decided to do later (before L-023)**
+- **L-023** Make claims visible: when the first group is placed on a shelf, a nameplate or small label appears on the board edge with the group's letter and name
+  (Shelves and Sorcery does this); cleared when the shelf empties. Today the first-book-claims rule is invisible. Try after L-022 and decide whether both are needed.
+  **P3, decided to do later**
 - **L-015** Placeholder cubes to real shapes and models (see D-005); ceilings and per-room lighting. **P3**
 - **L-016 to L-020** Data-driven items, rooms loaded on demand, cheap shelved items and piles: see the next section. **P2, not started**
 
