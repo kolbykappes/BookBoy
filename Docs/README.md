@@ -21,7 +21,8 @@ them as decisions change, don't re-import the original brief.
 | [10-backlog.md](10-backlog.md) | **The to-do list**: requested features (controller support, achievements, ...), ideas, chores and open decisions. Add to it; hand any item to an agent |
 | [11-changelog.md](11-changelog.md) | **Dated log of what was completed**, newest first. Add an entry whenever work lands |
 | [12-narrative-reference-games.md](12-narrative-reference-games.md) | Research on successful games where a simple mechanic unlocks the story (Unpacking, Organized Inside, Obra Dinn, Outer Wilds, ...), the patterns they share, and ideas for BookBoy's narrative |
-| [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md) | **Draft concept for the real game** (inherited library, missing relative, wings as episodes, quiet library magic), with decisions made so far and open questions. Brainstorm status, not committed design |
+| [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md) | **Draft concept for the real game, Lamplit** (an inherited library, Uncle Rufus's deliberate test, seven rooms, no magic), with the settled story decisions and open questions. Brainstorm status, not committed design |
+| [14-build-plan.md](14-build-plan.md) | **Build plan for Lamplit v2**: the hub (a hallway with a desk) and Rooms 1 to 3, steps S0 to S9 with stop lines, a reuse map and a test script |
 | [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation

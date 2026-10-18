@@ -23,6 +23,39 @@ Kolby confirms. Research behind it: [12-narrative-reference-games.md](12-narrati
   place that visibly restores itself. **No crafting by conversion** (turning items into resources).
 - **Leaderboards per zone and mode** (not a single daily board). Save/load is required.
 
+## Story decisions, v2 (Kolby, 2026-10-18) - these supersede the older story sections below
+
+The story was reworked over a long brainstorm. Where the sections below mention Great-Aunt Ines, an island
+archive, a collector, a missing-then-returning relative, or themed wings, treat them as **superseded**. The
+mechanics sections (the librarian-craft tools, the mechanical ladder, the desk as a hub, the time budget) still
+stand.
+
+**Settled**
+- **Title: Lamplit.** The library is known locally as **"the Lamp"**.
+- You worked there **from age nine to fourteen**, helping light the reading-room lamps, shelving the returns, and so on.
+- **Uncle Rufus**, head librarian for over thirty years, wanted to retire, but nobody was trained to take over
+  and nobody knew his systems. He didn't think you would be interested. He wrote you a letter (it arrives about
+  seven days before Lamplight Night; the exact timing is open to change).
+- **Rufus has passed away** by the time you arrive. The tone should be warm and quiet (a Stardew grandfather), with
+  the grief carried by objects and notes, not scenes.
+- The town's leaders will **sell or condemn** the run-down library after Lamplight Night. The only outside
+  pressure is **a notice on the door with a checklist** (for example: lamp lit, shelves in order, building safe, a
+  librarian named). No inspector, no villain.
+- The library is in disarray **on purpose**: Rufus left it as a **test and training**. Putting it back in order
+  teaches you his systems. His personal belongings are gone (cleared out).
+- **The test was meant for you.** Rufus knew he was sick, and this was his last wish: that you learn his systems
+  and take over. His illness is part of the story, not hidden.
+- **Ending:** pass the checklist, light the lamp, and accept the keys. (The earlier "the town sees itself in what
+  the library holds" beat was dropped as too much for a small game.)
+- **Left out for now:** neighbors, an executor, a child helper, an appraiser or collector, and magic.
+
+**Still open**
+- Whether each system gets a small human reason (for example, the gardening books shelved by season because the town
+  plants by the Lamplight calendar) and an optional answer drawer as a hint tier.
+- The exact timing of the letter and the countdown (seven days is the working number).
+- The checklist items on the door and how they map to the days.
+- The wording of Rufus's last note.
+
 ## The concept in brief (proposal)
 
 You inherit an old library that has been reorganized by every generation, so each **wing** has its own look and

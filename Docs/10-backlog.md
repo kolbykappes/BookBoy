@@ -124,6 +124,23 @@ under "what to borrow". Split it into single items when picking one. Strongest c
 
 ---
 
+## Lamplit build (see [14-build-plan.md](14-build-plan.md) for the details of each step)
+
+One line each; the plan holds the work and the "done when". Build in order; each step is its own commit with tests.
+
+- **L-000** S0 branch `lamplit/day-1` and the new scene `Lamplit.unity` (the prototype scene stays untouched). **P1**
+- **L-001** S1 rules: Group mode and the container-family check (engine-free, tested). **P1**
+- **L-002** S2 campaign state: finds, installs, rooms finished, doors (engine-free, tested). **P1**
+- **L-003** S3 the hub: hallway, desk, six find spots, door stubs. **P1**
+- **L-004** S4 Room 1: 100 books in 20 groups of 5, group grading, completion banner. **P1**
+- **L-005** S5 finds and installs: pick up, put in a spot, effect applies (apron, shoes). **P1**
+- **L-006** S6 Room 2: four item families and containers (glasses, shelf list). **P2**
+- **L-007** S7 Room 3: ordered sets across three container types (pull list). **P2**
+- **L-008** S8 admin menu: reset, give, install, jump, complete, doors. **P2**
+- **L-009** S9 Play Mode check scripts in `tools/`; docs updated. **P2**
+
+---
+
 ## Design and research (the real game; see [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md))
 
 These are not prototype features. They are the next steps for designing the real game; the order is a suggestion.
