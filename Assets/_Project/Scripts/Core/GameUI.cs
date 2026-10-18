@@ -571,7 +571,109 @@ public class GameUI : MonoBehaviour
         Time.timeScale = active ? 1f : 0f;
     }
 
-    private int RowCount => _menu == Menu.Upgrades ? UpgradeCatalog.All.Count : _menu == Menu.Admin ? AdminRows.Length : _menu == Menu.Finds ? CampaignCatalog.Finds.Count + 1 : 0;
+    private bool InCampaign => _progress != null && _progress.Campaign != null;
+
+    private int RowCount => _menu == Menu.Upgrades ? UpgradeCatalog.All.Count
+        : _menu == Menu.Admin ? (InCampaign ? CampaignAdminRowCount : AdminRows.Length)
+        : _menu == Menu.Finds ? CampaignCatalog.Finds.Count + 1 : 0;
+
+    // ---- the admin menu of a Lamplit scene: reset / scatter / complete the current room, jump around, give or install finds, doors ----
+    private static readonly string[] CampaignAdminHead =
+    {
+        "Reset this room (scatter it and un-tidy it)", "Reset everything (rooms, finds, abilities, doors)", "Scatter this room's items again", "Complete this room (every item home)",
+        "Jump to the hub (the desk)", "Jump to Room 1 (Reading Room)", "Jump to Room 2 (Mailroom)", "Jump to Room 3 (Map Room)"
+    };
+
+    private static int CampaignAdminRowCount => CampaignAdminHead.Length + CampaignCatalog.Finds.Count * 2 + 4;
+
+    private string CampaignAdminText(int index)
+    {
+        int heads = CampaignAdminHead.Length, finds = CampaignCatalog.Finds.Count;
+        if (index < heads)
+        {
+            return CampaignAdminHead[index];
+        }
+
+        index -= heads;
+        if (index < finds)
+        {
+            return "Give the " + CampaignCatalog.Finds[index].Name.ToLowerInvariant() + " (into your hands)";
+        }
+
+        index -= finds;
+        if (index < finds)
+        {
+            FindDef f = CampaignCatalog.Finds[index];
+            return "Install the " + f.Name.ToLowerInvariant() + " at the desk" + (_progress.Campaign.State.IsInstalled(f.Id) ? "   [installed]" : "");
+        }
+
+        index -= finds;
+        switch (index)
+        {
+            case 0: return "Unlock Sister Glow, Home Beacon and Gather Family";
+            case 1: return "Open every door";
+            case 2: return "Doors back to the normal rule";
+            default: return "Close";
+        }
+    }
+
+    private bool ActivateCampaignAdmin(int row)
+    {
+        CampaignController c = _progress.Campaign;
+        int heads = CampaignAdminHead.Length, finds = CampaignCatalog.Finds.Count;
+        int room = c.CurrentRoom;
+        if (row < heads)
+        {
+            switch (row)
+            {
+                case 0:
+                case 2:
+                case 3:
+                    if (room == 0)
+                    {
+                        Toast("Stand inside a room first.", 2f);
+                        return false;
+                    }
+
+                    if (row == 0) c.ResetRoom(room); else if (row == 2) c.ScatterRoom(room); else c.CompleteRoom(room);
+                    Toast((row == 0 ? "Reset " : row == 2 ? "Scattered " : "Completed ") + CampaignCatalog.RoomName(room) + ".", 2f);
+                    return true;
+                case 1:
+                    c.ResetAll();
+                    Toast("Everything reset.", 2f);
+                    return true;
+                default:
+                    CloseMenu();   // the player has to be moving again for the jump to show
+                    c.JumpTo(row - 4);
+                    return true;
+            }
+        }
+
+        row -= heads;
+        if (row < finds)
+        {
+            bool ok = c.GiveFind(CampaignCatalog.Finds[row].Id);
+            Toast(ok ? "Gave the " + CampaignCatalog.Finds[row].Name.ToLowerInvariant() + "." : "Cannot give that (already installed or missing).", 2f);
+            return ok;
+        }
+
+        row -= finds;
+        if (row < finds)
+        {
+            bool ok = c.InstallFind(CampaignCatalog.Finds[row].Id);
+            Toast(ok ? "Installed the " + CampaignCatalog.Finds[row].Name.ToLowerInvariant() + "." : "Cannot install that (already installed or missing).", 2f);
+            return ok;
+        }
+
+        row -= finds;
+        switch (row)
+        {
+            case 0: c.UnlockAbilities(); Toast("Abilities unlocked.", 2f); return true;
+            case 1: for (int n = 1; n <= CampaignCatalog.RoomCount; n++) c.SetDoor(n, true); Toast("Every door is open.", 2f); return true;
+            case 2: c.ClearDoorOverrides(); Toast("Doors follow the rule again.", 2f); return true;
+            default: CloseMenu(); return true;
+        }
+    }
 
     private void RefreshMenu()
     {
@@ -590,6 +692,13 @@ public class GameUI : MonoBehaviour
         {
             _menuTitle.text = "FINDS        <color=#FFE680>" + _progress.Campaign.State.InstalledCount + " / " + CampaignCatalog.Finds.Count + " installed</color>";
             _menuHelp.text = "Find each item in its room, carry it to the desk and put it in its spot.   Tab or Esc to close.";
+        }
+        else if (InCampaign)
+        {
+            CampaignController c = _progress.Campaign;
+            int room = c.CurrentRoom;
+            _menuTitle.text = "ADMIN  (testing)        <color=#FFE680>" + (room == 0 ? "in the hub" : "in " + CampaignCatalog.RoomName(room)) + "</color>";
+            _menuHelp.text = c.Counts() + "\nUp/Down + Enter, or click.   F10 or Esc to close.";
         }
         else
         {
@@ -616,6 +725,11 @@ public class GameUI : MonoBehaviour
     {
         if (_menu == Menu.Admin)
         {
+            if (InCampaign)
+            {
+                return index >= 0 && index < CampaignAdminRowCount ? CampaignAdminText(index) : "";
+            }
+
             return index >= 0 && index < AdminRows.Length ? AdminRows[index] : "";
         }
 
@@ -701,6 +815,10 @@ public class GameUI : MonoBehaviour
             UpgradeNode n = UpgradeCatalog.All[row];
             done = _progress.TryBuy(n.Id);
             Toast(done ? "Unlocked " + n.Name + "." : _progress.Upgrades.IsUnlocked(n.Id) ? n.Name + " is already yours." : "Can't buy " + n.Name + " yet.", 2f);
+        }
+        else if (InCampaign)
+        {
+            done = ActivateCampaignAdmin(row);
         }
         else
         {
