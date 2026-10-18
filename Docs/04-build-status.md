@@ -373,3 +373,46 @@ The player asked for a key telling them which bookcase is which, by theme and no
   carried books and the shelf in front of you. Edit-mode renders show the held books clearly brighter with it.
 - Not verified by me: how it looks live (the Editor was in the background, so the Game view only gave stale captures, and the
   frame loop was frozen; the pointer and cursor checks are synchronous and passed).
+
+## Lamplit build: hub and Rooms 1 to 3 (2026-10-18, branch `lamplit/day-1`)
+
+Built from [14-build-plan.md](14-build-plan.md): steps S0 to S9, all stops (A to F) reached. The prototype scene
+(`LibraryPrototype.unity`) is unchanged and all its suites still pass; the new scene is `Assets/Scenes/Lamplit.unity`.
+
+- **Scene:** a copy of the prototype with the library content stripped (`tools/lamplit_s0_scene.cs`), then built by
+  `LamplitBuilder` (Editor-folder class, `Assets/_Project/Editor/`): `BuildHub()`, `BuildRoom1()`, `BuildRoom2()`, `BuildRoom3()`.
+  Each is re-runnable (removes and rebuilds its own objects; definitions and materials are mutated in place).
+  `LamplitBuilder.Shot(path, pos, lookAt)` renders a PNG from any point of view.
+- **Hub:** a hallway 3 x 16 m. The librarian's desk is at the entrance end with six spots (apron hook, shoe rack, glasses stand,
+  shelf-list board, clipboard, and a locked dumbwaiter hatch). Doors: Room 1 and Room 3 on the left, Room 2 on the right; a door
+  slides up when its room is open and its sign says LOCKED otherwise. Room 1 is open from the start; each next door opens when
+  the previous room is tidy.
+- **Room 1, Reading Room:** 100 books, 20 groups of 5 (a colour and a letter per group), 10 containers with 20 five-slot shelves.
+  **Group** rule: the first book on a shelf claims it; the same group in any slot is green, another group yellow. Apron and shoes
+  are on the lost-and-found table.
+- **Room 2, Mailroom:** 120 items: books, magazines, letters, parcels (distinct sizes), 6 groups of 5 each, 12 containers (3 per
+  family, colour-coded with signs). **Group** rule plus a **family check**: the wrong kind of container grades red, even when empty.
+  Glasses and shelf list are hidden here.
+- **Room 3, Map Room:** 120 items: atlases, rolled maps, flat sheets, 8 numbered sets of 5 each, 12 containers (atlas shelves, tube
+  racks, drawers). **Ordered** rule: number N in slot N (letter and number on the spine). The pull list is hidden here.
+- **Finds and the desk:** a find is a carried item (a `Book` with a `findId`); aim at its desk spot and press E or click. Only the
+  matching spot accepts it. Apron: carry +2 (6). Shoes: speed +15%. Glasses: Sister Glow. Shelf list: Home Beacon. Pull list: Gather
+  Family. Quick Shelve stays locked (the dumbwaiter hatch says so). Tab shows the finds list; shelves earn no tech-tree points here.
+- **Grading (engine-free, tested):** `PlacementRules.EvaluateCampaign` (red: wrong family or wrong room; yellow: another group owns
+  the shelf, or the number is not in its slot; green otherwise). Group claims are compared across every shelf in the room, so a
+  group cannot be split over two shelves. `Book` has `FamilyKey` / `GroupKey` / `NumberKey` that fall back to the library's
+  category / series / volume, so the prototype is untouched.
+- **Campaign state (engine-free, tested):** `CampaignState`, `CampaignCatalog` (finds, spots, grants), `UpgradeState.Grant`.
+  In the scene: `CampaignController`, `RoomZone`, `RoomDoor`, `FindSpot`.
+- **Abilities in Lamplit:** Sister Glow, Gather Family and Home Beacon match by family and group (`Book.SameGroupAs`); Home Beacon
+  lights a container of the item's family that already holds its group, else one with a free shelf, nearest first.
+- **Admin menu (F10) in Lamplit:** reset / scatter / complete this room, reset everything, jump to the hub or any room, give or
+  install any find, unlock the three abilities, open every door or put doors back to the rule, and a counts line.
+- **Verification:** 95 Edit Mode tests (21 new). Play Mode scripts in `tools/`: `verify_lamplit_hub.cs` (15), `_room1.cs` (24),
+  `_finds.cs` (18, includes a real mouse click), `_room2.cs` (27), `_room3.cs` (26), `_admin.cs` (20) and `_campaign.cs` (17, the
+  whole loop end to end). All prototype suites re-run and pass. Renders checked for the hub, each room and the HUD. Not verified by
+  me: how it feels to play (pacing, whether groups of five are right, colour and symbol legibility) - see the playtest chore in
+  [10-backlog.md](10-backlog.md).
+- **Known limits:** item shapes are cubes (placeholders on purpose); finds have no glow; Quick Shelve (`ShelfPlanner`) still plans by
+  the old colour/series rules, so it is locked in Lamplit; Home Beacon lights a whole container, not a shelf; no ceilings, sound or
+  story text.

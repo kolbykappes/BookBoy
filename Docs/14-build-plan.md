@@ -1,6 +1,6 @@
 # Build Plan v2: The Hub and Rooms 1 to 3
 
-Written 2026-10-18 (replaces the longer first draft). Concept and story: [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md).
+Written 2026-10-18 (replaces the longer first draft). **Status: built the same day, steps S0 to S9, every stop reached (A to F); see [04-build-status.md](04-build-status.md). Next: playtest it (backlog L-010).** Concept and story: [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md).
 
 **Goal:** get the core of the game working, small enough to build overnight and test the next day:
 

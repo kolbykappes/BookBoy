@@ -1,7 +1,8 @@
 # BookBoy
 
 Unity 6.6.6f1, URP, Windows PC target. First-person cozy book-sorting prototype set in an arcane
-library. Working scene: `Assets/Scenes/LibraryPrototype.unity`.
+library. Working scenes: `Assets/Scenes/LibraryPrototype.unity` (the one-room prototype) and `Assets/Scenes/Lamplit.unity` (the hub and
+Rooms 1 to 3 of the real game, built by `LamplitBuilder`; see Docs/14-build-plan.md).
 
 **Read [Docs/README.md](Docs/README.md) first** — it indexes the full project brief (vision,
 MVP spec, tech stack, build status, implementation plan, agent workflow). Keep

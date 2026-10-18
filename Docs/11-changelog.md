@@ -9,6 +9,24 @@ grouped by commit date, not by hour.
 
 ---
 
+### 2026-10-18
+
+*Lamplit build (branch `lamplit/day-1`, plan: [14-build-plan.md](14-build-plan.md))*
+- S1: Group placement mode, the container family check and campaign grading rules, engine-free with tests (`16f6a5f`).
+- S2: campaign state (finds, installs, rooms, doors) and `UpgradeState.Grant`, engine-free with tests (`efed941`).
+- Campaign runtime in the game code: item fields (family, group, number, room, symbol, find), Lamplit grading on `Book` and
+  `Bookcase`, `RoomZone`, `RoomDoor`, `FindSpot`, `CampaignController`, a finds list on Tab (`00b8ce2`).
+- S0: new scene `Lamplit.unity`, a copy of the prototype with the library content removed; the prototype scene is untouched (`2d4fe4a`).
+- S3: the hub - hallway, librarian's desk with six find spots, three doors (Stop A) (`660312a`).
+- S4: Room 1, the Reading Room - 100 books in 20 groups of 5, Group grading, finds on a side table (Stop B) (`b6f3b6e`).
+- S5: finds and installs - apron raises carry to 6, shoes raise speed 15%, wrong spots refuse (Stop C, the core loop) (`1787c4a`).
+- S6: Room 2, the Mailroom - four item families, the family check, glasses and shelf list (Stop D) (`6dffd34`).
+- S7: Room 3, the Map Room - ordered sets across three container types, the pull list (Stop E) (`4002833`).
+- S8: admin menu for Lamplit (Stop F) (`33596aa`).
+- S9: Play Mode check scripts for every step plus an end-to-end run of the whole test plan; docs updated.
+- Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
+  lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
+
 ### 2026-10-17
 
 *Docs and process*

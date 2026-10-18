@@ -424,7 +424,7 @@ public class GameUI : MonoBehaviour
             + Line("F", "quick shelve all held", u != null && u.HasQuickShelve) + "\n"
             + Line("C", "gather family", u != null && u.HasGatherFamily) + "\n"
             + Line("B", "home beacon", u != null && u.HasHomeBeacon) + "\n"
-            + Line("Tab", "upgrades menu", true) + "\n"
+            + Line("Tab", InCampaign ? "finds list" : "upgrades menu", true) + "\n"
             + Line("F10", "admin (testing)", true);
     }
 

@@ -124,20 +124,16 @@ under "what to borrow". Split it into single items when picking one. Strongest c
 
 ---
 
-## Lamplit build (see [14-build-plan.md](14-build-plan.md) for the details of each step)
+## Lamplit follow-ups (the S0 to S9 build is done; see [04-build-status.md](04-build-status.md) and the changelog for 2026-10-18)
 
-One line each; the plan holds the work and the "done when". Build in order; each step is its own commit with tests.
-
-- **L-000** S0 branch `lamplit/day-1` and the new scene `Lamplit.unity` (the prototype scene stays untouched). **P1**
-- **L-001** S1 rules: Group mode and the container-family check (engine-free, tested). **P1**
-- **L-002** S2 campaign state: finds, installs, rooms finished, doors (engine-free, tested). **P1**
-- **L-003** S3 the hub: hallway, desk, six find spots, door stubs. **P1**
-- **L-004** S4 Room 1: 100 books in 20 groups of 5, group grading, completion banner. **P1**
-- **L-005** S5 finds and installs: pick up, put in a spot, effect applies (apron, shoes). **P1**
-- **L-006** S6 Room 2: four item families and containers (glasses, shelf list). **P2**
-- **L-007** S7 Room 3: ordered sets across three container types (pull list). **P2**
-- **L-008** S8 admin menu: reset, give, install, jump, complete, doors. **P2**
-- **L-009** S9 Play Mode check scripts in `tools/`; docs updated. **P2**
+- **L-010** Playtest Lamplit with the test script at the end of [14-build-plan.md](14-build-plan.md) and note: how long Room 1 takes
+  (target about 20 minutes), whether five-item groups feel right, whether colours and letters are easy to tell apart. **P1**
+- **L-011** Quick Shelve for the dumbwaiter: `ShelfPlanner` still plans by colour, series and volume; give it Group and Ordered modes
+  and the family check, then let a find unlock it. **P2**
+- **L-012** Make finds easy to spot: a soft glow on a find until it is picked up, and a hint when a room's finds are still missing. **P2**
+- **L-013** Home Beacon at shelf level (light the shelf, not the whole container) and an option to show which shelf already holds a group. **P3**
+- **L-014** Rooms 4 to 7, the story layer, save/load (F-003), sound and the feel pass, per [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md). **P2**
+- **L-015** Placeholder cubes to real shapes and models (see D-005); ceilings and per-room lighting. **P3**
 
 ---
 
@@ -179,7 +175,8 @@ style for commissioned patron portraits, and check the rights of any public-doma
 ## Chores and housekeeping
 
 - **H-001** Push the branch and refresh PR #1's description (it still describes an early state; many commits are local only).
-- **H-003** Playtest pass by Kolby on the new lighting, floor, hand light and menu pointer; list anything that feels off here.
+- **H-003** Playtest pass by Kolby on the prototype's lighting, floor, hand light and menu pointer; list anything that feels off here.
+- **H-005** Merge or keep the branch: `lamplit/day-1` holds the whole Lamplit build (the PR #1 branch is `docs/project-and-competitive-analysis`).
 - **H-004** Look at the Editor-generated `BookBoy.slnx` change and decide whether to commit it.
 
 ---
