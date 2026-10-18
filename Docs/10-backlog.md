@@ -143,65 +143,76 @@ under "what to borrow". Split it into single items when picking one. Strongest c
 **Why:** Lamplit currently has every item of every room as a real object baked into the scene file (about 345 books, each 3 GameObjects, plus
 about 1,100 objects in the rooms). Measured 2026-10-18: 2,019 GameObjects, 950 renderers, 658 colliders in the scene (rooms 2 and 3 are now
 switched off at the start, which cut the live numbers to roughly a third, but the objects still exist). That does not scale to the roughly 930
-items of the campaign, and it is the wrong shape for save/load. Direction from Kolby:
+items of the campaign, and it is the wrong shape for save/load.
 
-- Items are **data**, not objects stored in the project: a room is a description (which items, which groups, where the containers are), and the
-  items are created from it when needed.
-- **Rooms are not loaded during the game until they are unlocked.** Whether a room should be unloaded again when the player leaves it is open
-  (see decisions below); in a game this small it may not matter for memory, but it should not be designed out.
-- **No physics and no scripts running on items while they sit on a shelf.**
-- **No always-on physics on the floor either**: no kicking piles, no simulated piles. Physics only on special occasions (a thrown book in
-  flight and what it hits). Interacting with items in a pile has to work without simulating them.
+**Decided (Kolby, 2026-10-18):**
+- **Items are dynamic data, not objects or asset files in the project.** Rooms (walls, containers, lights) are static scene content; the items that
+  get put away are created from data. Item definitions live only in data files, not as one asset per item.
+- **Rooms are not loaded until they are unlocked, and once loaded they stay loaded.** But a room's state is stored as data, so unloading a room
+  can be switched on later without redesign.
+- **Shelved items are inert**: no physics, no scripts.
+- **Physics must still work on piles** (a pile that ignores a thrown book looks wrong), but it is not running all the time: at rest everything is
+  frozen and cheap; physics is switched on locally, around where something happens (see L-020). No walking into piles to kick them apart.
 
-### L-016 Item data model and spawner
+### L-016 Item data model, data files and spawner
 **Status:** Todo · **Priority:** P2 · **Added:** 2026-10-18
-- One data asset (or file) per room that lists its items (family, group, number, symbol, colour, size) and its containers; the scene keeps only
-  the room's shell and the container positions, not the items. \`BookDefinition\` stays, but the per-item scene objects and the 128-plus
-  generated definition assets go away (definitions can be generated at load from compact data).
-- A spawner creates an item from a data row on demand and a **pool** reuses item objects (no create/destroy churn). Items are identified by
-  an id so state (where each one is) can be saved and restored.
+- Item definitions (family, group, number, symbol, colour, size, name) live **only in data files** (for example one JSON or text file per room under
+  `Assets/_Project/Data/`, loaded at run time); the 128-plus per-item `BookDefinition` asset files and the per-item scene objects go away.
+  `BookDefinition` can stay as a runtime object created from a data row. The builder (`LamplitBuilder`) writes and reads these files.
+- The scene keeps only each room's shell, containers and finds' desk spots, not the items. A spawner creates an item from a data row on demand,
+  and a **pool** reuses item objects (no create/destroy churn). Every item has a stable id, so where each one is can be saved and restored.
 - The spine labels (letter, number) stop being separate objects: fold them into the item's own mesh or material, so one item is one object, one
   renderer, and can be instanced.
-- Engine-free part (rules assembly): the data rows, ids, and a "room layout" description, with tests.
-- **Acceptance:** Lamplit looks and plays the same; the saved scene holds no item objects; a room's items can be rebuilt from data at any time;
-  all Lamplit suites and the admin commands (give, complete, reset, pile) still work.
+- Engine-free part (rules assembly): the data rows, ids, parsing and validation (never crash on a bad file), and a "room layout" description,
+  with tests.
+- **Acceptance:** Lamplit looks and plays the same; the saved scene holds no item objects and the project holds no per-item assets; a room's items
+  can be rebuilt from data at any time; all Lamplit suites and the admin commands (give, complete, reset, pile) still work.
 
-### L-017 Rooms load when unlocked (and optionally unload)
+### L-017 Rooms load when unlocked, with state kept as data
 **Status:** Todo · **Priority:** P2 · **Depends on:** L-016 · **Added:** 2026-10-18
 - A room's shell (walls, floor, containers, lights) and items are created or loaded when its door opens (or when an admin jumps there), not at
-  game start. Candidate approaches: additive scenes per room (one \`.unity\` per room, loaded and unloaded), or one scene with rooms spawned
+  game start. Candidate approaches: additive scenes per room (one `.unity` per room, loaded and unloaded), or one scene with rooms spawned
   from prefabs plus the data from L-016. Pick one with a short plan.
-- If a room is unloaded when the player leaves, its state (which item is where, found/installed finds, tidy or not) must live in the campaign
-  state and be restored on re-entry; this is the same data the save file needs (F-003), so design them together.
-- **Acceptance:** at the start of a run only the hub and Room 1 exist; opening a door brings the next room in; measure scene object counts
-  and memory before and after.
+- **Once opened a room stays loaded** (decided). But all of its state lives in the campaign data, not in scene objects: where each item is (id,
+  position, rotation, on which slot), which finds are installed, whether it is tidy. That is the same data the save file needs (F-003), so design
+  them together.
+- Unloading is an easy switch to turn on later: a `RoomZone.Unload()` that writes the state to data and removes the room, and a matching load that
+  restores it. Build it and test the round trip (unload then reload gives back exactly the same room), even though the game does not call it yet.
+- **Acceptance:** at the start of a run only the hub and Room 1 exist; opening a door brings the next room in; an unload and reload restores every
+  item's place; measure scene object counts and memory before and after.
 
 ### L-018 Shelved items are inert
 **Status:** Todo · **Priority:** P2 · **Depends on:** L-016 · **Added:** 2026-10-18
-- An item on a shelf has no rigidbody, no \`Update\`, no coroutines, no outline objects and no collider of its own if it can be avoided: the
+- An item on a shelf has no rigidbody, no `Update`, no coroutines, no outline objects and no collider of its own if it can be avoided: the
   shelf's aim volume plus the slot lookup already find the item for pick-up, and the grade is computed on events (placed, removed), not
-  polled every 0.25 s for every item (replace \`GameProgress.Recompute\` / \`CampaignController.Recompute\` polling with change notifications).
+  polled every 0.25 s for every item (replace `GameProgress.Recompute` / `CampaignController.Recompute` polling with change notifications).
 - **Acceptance:** a shelved item costs one mesh renderer and nothing else; per-frame script cost does not grow with the number of shelved items.
 
-### L-019 Piles you can pick from without simulating them
+### L-019 Piles at rest are frozen and cheap; picking from a pile
 **Status:** Todo · **Priority:** P2 · **Depends on:** L-016 · **Needs a decision (below)** · **Added:** 2026-10-18
-- A pile is a **frozen arrangement** (positions and rotations baked or settled once by a short simulation, then stored as data) with no running
-  physics: you cannot kick it, it never jitters, and it costs nothing while you walk past.
+- A pile at rest is a **frozen arrangement**: positions and rotations stored as data, no rigidbodies, no running physics. It never jitters and
+  costs nothing while you walk past; the player's walking never pushes it (decided: no kicking piles).
 - Picking an item from a pile must still feel right. Options to try: (a) each item keeps a cheap static trigger collider and the aim ray picks the
   one it hits (today's behaviour); (b) one compound collider per pile and a per-pile list that returns the item under the crosshair; (c) a
-  per-pile spatial grid with a look-at test. Items under others should be reachable (pick the top item first, or allow picking any item you can
-  aim at).
-- Removing an item from a pile leaves the others where they are (no collapse), or does one short, local settle of just the neighbours if that
-  looks wrong; decide after trying.
-- **Acceptance:** zero rigidbodies in a pile; a pile of 40 items costs no per-frame physics or script time; every item in it can be picked up.
+  per-pile spatial grid with a look-at test.
+- **Taking an item out of a pile makes the pile react**: the neighbours around the gap wake, settle (they may slump or slide into the gap) and
+  freeze again, using the same local physics as L-020. The new resting positions are stored as data.
+- **Acceptance:** zero active rigidbodies in a pile at rest; a pile of 40 items costs no per-frame physics or script time; every item in it can be
+  picked up; removing one makes only the nearby items move.
 
-### L-020 Physics only on special occasions
+### L-020 Local physics bubble (physics works, only where something happens)
 **Status:** Todo · **Priority:** P2 · **Depends on:** L-018, L-019 · **Added:** 2026-10-18
-- A thrown book is a real physics body only while it flies and settles. When it lands on or hits other loose items, decide what happens: nothing
-  moves (the thrown book just stops, simplest and cheapest), or only the items it actually touches are woken for a moment and then frozen again.
-  No other item is ever simulated.
-- The "pile up the books" feature (\`RoomZone.PileUp\`) keeps using a short real simulation for the drop and then freezes the result as data.
-- **Acceptance:** with no book in flight there are no active rigidbodies in the scene; a thrown book never makes a whole pile slide or scatter.
+- When a book is thrown, work out where it will land as soon as it leaves the hand: step its flight path forward (a few dozen short raycasts or
+  sphere casts under gravity) to the first thing it hits. Around that spot wake every frozen item inside a sphere (a starting radius of about
+  0.6 m and a cap of about 40 bodies, both tunable) so real collisions can happen: the thrown book plows into the pile, items shift, a few slide
+  away. The bodies outside the sphere stay frozen and still act as solid walls for the ones that move.
+- The thrown book is a real physics body while it flies and settles. When the bubble has been still for a moment (or after a time limit of a few
+  seconds), everything in it is frozen again and the new positions are stored as data. If the book lands on empty floor nothing else wakes.
+- The same bubble is used when an item is taken out of a pile (L-019) and by "pile up the books" (`RoomZone.PileUp`), which keeps its short real
+  drop and then freezes the result.
+- An engine-free part (rules assembly) holds the flight prediction math and the "which items are inside the sphere, and the cap" choice, with tests.
+- **Acceptance:** with no book in flight and no bubble active there are no active rigidbodies in the scene; a thrown book into a pile moves only
+  items near the landing spot and they all freeze again; a throw that misses every pile wakes nothing; the bubble never exceeds its cap.
 
 ### Measure first and last
 Before starting, record frame time (CPU and GPU, ms), draw calls (SRP batcher and standard), GameObject, renderer and collider counts, and memory in
@@ -259,9 +270,8 @@ style for commissioned patron portraits, and check the rights of any public-doma
 2. ~~F-002 / F-003: OK to lift the "no save/load" non-goal?~~ **Answered 2026-10-17:** yes, the real game has to save. Still
    present the file-format plan first (versioned, never crash on a corrupt file; per-zone checkpoints at the end of a "day").
 3. Which of the starter achievements do you actually want, and should there be one per bookcase theme?
-4. L-017: when the player leaves a room, should it be unloaded (state kept as data) or stay loaded once opened? Leaning: keep it loaded for now, but
-   keep the room's state in data so unloading can be switched on later.
-5. L-019 / L-020: when a thrown book lands on a pile, is it fine that nothing in the pile moves (the book just stops or rests on top)?
-6. L-019: picking from a pile: any item you can aim at, or only the top ones? Items removed from a pile: leave the rest exactly where they are?
-7. L-016: are generated asset files for each item definition still wanted in the project, or should item definitions live only in room data
-   files (smaller project, easier to edit in bulk)?
+4. ~~L-017: unload a room when the player leaves it?~~ **Answered 2026-10-18:** keep it loaded once opened, but store its state as data so unloading is an easy switch later.
+5. ~~L-019 / L-020: is it fine that a thrown book does not move a pile?~~ **Answered 2026-10-18:** no, physics should work on piles; wake the items in a sphere around the predicted landing spot, let them settle, freeze them again (L-020).
+6. L-019: picking from a pile: any item you can aim at, or only the top ones? And when one is taken out, should the neighbours settle into the gap (current plan: yes, with the local bubble)?
+7. ~~L-016: item definition asset files?~~ **Answered 2026-10-18:** items live only in data files; rooms stay static scene content.
+8. L-020: starting values for the bubble: radius about 0.6 m, at most about 40 bodies woken, frozen again after the pile has been still for a moment (time limit a few seconds). OK as a start, to tune by feel?
