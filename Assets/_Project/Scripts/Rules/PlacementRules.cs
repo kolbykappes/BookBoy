@@ -14,9 +14,49 @@ namespace BookBoy.Rules
         Correct
     }
 
+    /// <summary>How a container grades the items on its shelves (Lamplit). Ordered: number N belongs in slot N. Group: any slot is
+    /// fine as long as the whole shelf holds one group.</summary>
+    public enum PlacementMode
+    {
+        Ordered = 0,
+        Group = 1
+    }
+
     public static class PlacementRules
     {
         public const int NoClaim = -1;
+
+        /// <summary>A container family of -1 accepts items of any family.</summary>
+        public const int AnyFamily = -1;
+
+        /// <summary>True if a container of <paramref name="containerFamily"/> may hold an item of <paramref name="itemFamily"/>.</summary>
+        public static bool FamilyAccepted(int containerFamily, int itemFamily)
+        {
+            return containerFamily == AnyFamily || containerFamily == itemFamily;
+        }
+
+        /// <summary>Grades a placed item in the Lamplit rooms. Red: the container's family does not accept the item. Yellow: right
+        /// kind of container, but another group owns the shelf (or, in Ordered mode, the number is not in its own slot). Green: all
+        /// right. <paramref name="groupClaimHolds"/> comes from <see cref="ClaimHolds"/> over the room's shelves.</summary>
+        public static PlacementResult EvaluateCampaign(PlacementMode mode, bool familyAccepted, bool groupClaimHolds, int number, int slotIndex)
+        {
+            if (!familyAccepted)
+            {
+                return PlacementResult.WrongBookcase;
+            }
+
+            if (!groupClaimHolds)
+            {
+                return PlacementResult.RightBookcaseWrongSpot;
+            }
+
+            if (mode == PlacementMode.Ordered && (number < 1 || slotIndex != number - 1))
+            {
+                return PlacementResult.RightBookcaseWrongSpot;
+            }
+
+            return PlacementResult.Correct;
+        }
 
         /// <summary>Grades a placed book. Bookcases and shelves start unlabeled and are claimed by the first book
         /// placed on them, so the two claim flags come from <see cref="ClaimHolds"/>. Volume N belongs in slot N

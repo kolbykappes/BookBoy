@@ -133,6 +133,14 @@ namespace BookBoy.Rules
             return true;
         }
 
+        /// <summary>Unlocks one upgrade for free, ignoring its cost and prerequisite (a find installed at the desk grants these).
+        /// Returns false if the id is unknown or it is already owned.</summary>
+        public bool Grant(string id)
+        {
+            UpgradeNode node = UpgradeCatalog.Find(id);
+            return node != null && _unlocked.Add(node.Id);
+        }
+
         /// <summary>Unlocks everything for free (admin/testing). Points are left alone.</summary>
         public void UnlockAll()
         {
