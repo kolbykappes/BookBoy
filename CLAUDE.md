@@ -28,6 +28,21 @@ MVP spec, tech stack, build status, implementation plan, agent workflow). Keep
   has to save, spans multiple zones with persistent progress, and keeps per-zone leaderboards, so save/load is in
   scope for it. Still present a plan before building it (see backlog F-003).
 
+## Research before Unity craft decisions (Kolby, 2026-10-18)
+
+Claude's Unity knowledge is not deep enough to trust from memory on craft questions. Do not guess and then iterate on the scene.
+Before changing **camera and FOV, lighting and exposure, scale and units, geometry and draw-call efficiency, physics setup,
+render-pipeline or quality settings, UI scaling, or anything similar**:
+
+1. Search the web first (Unity manual and Unity Learn, the URP docs, Unity blog and GDC/Unite talks, well-regarded
+   developer write-ups). Prefer primary sources over forum answers; when sources disagree, say so.
+2. Write down what the sources say, with links, in `Docs/unity-practices/<topic>.md` (one file per topic; index them in
+   [Docs/README.md](Docs/README.md)). Check that folder first: reuse earlier research instead of repeating it.
+3. State the recommended change and its source before making it, and keep the smallest change that satisfies it. Try the
+   cheap knob first. Example of what went wrong: books looked too small, so the whole world was resized 1.6x, rooms and doors
+   included; a cheaper fix (item proportions, camera distance, or just the book size) was never weighed against it.
+4. Mark anything not backed by a source as a guess, and say so to Kolby. Never present a guess as established Unity practice.
+
 ## Backlog and changelog
 
 - To-do list: [Docs/10-backlog.md](Docs/10-backlog.md). When Kolby mentions a new feature or chore, add it there (id, status,
