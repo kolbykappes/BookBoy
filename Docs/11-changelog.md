@@ -27,6 +27,8 @@ grouped by commit date, not by hour.
 - Piles: each room starts as several random piles tossed around the middle (6, 7 and 8 piles), baked into the scene with a physics
   settle in the Editor; a new "pile up the books" feature (`RoomZone.PileUp`, `CampaignController.PileRoom`, admin menu) tosses a room's
   books into fresh random piles with real physics; engine-free `PilePlanner` with tests.
+- Rooms beyond a shut door are switched off until the door opens: live books 345 to 102, renderers 950 to 306, colliders 658 to 212, lights 14
+  to 8 at the start of a run (`RoomZone.SetLive`, `CampaignController`).
 - Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
   lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
 

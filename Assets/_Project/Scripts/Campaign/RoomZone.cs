@@ -35,6 +35,35 @@ public class RoomZone : MonoBehaviour
 
     public Bounds WorldBounds => new Bounds(boundsCenter, boundsSize);
 
+    /// <summary>Switches the whole room on or off: its walls, containers and lights (the room object) and also its items and finds, which
+    /// do not stay parented to the room (shelving and tossing move them to the scene root), so they are switched one by one. A switched-off
+    /// room costs nothing: no renderers, colliders, lights or scripts.</summary>
+    public void SetLive(bool live)
+    {
+        gameObject.SetActive(live);
+        if (items != null)
+        {
+            foreach (Book b in items)
+            {
+                if (b != null)
+                {
+                    b.gameObject.SetActive(live);
+                }
+            }
+        }
+
+        if (finds != null)
+        {
+            foreach (Book b in finds)
+            {
+                if (b != null)
+                {
+                    b.gameObject.SetActive(live);
+                }
+            }
+        }
+    }
+
     public bool Contains(Vector3 worldPoint)
     {
         return WorldBounds.Contains(worldPoint);
@@ -204,6 +233,28 @@ public class RoomZone : MonoBehaviour
         }
 
         yield return new WaitForSeconds(2.6f);
+
+        // "piling" means done only when every item has settled back into a normal book (bounded: at most 20 s more)
+        for (int guard = 0; guard < 200; guard++)
+        {
+            bool anySolid = false;
+            foreach (PileDrop d in drops)
+            {
+                if (d.Book != null && d.Book.hasPhysicsDrop)
+                {
+                    anySolid = true;
+                    break;
+                }
+            }
+
+            if (!anySolid)
+            {
+                break;
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
         IsPiling = false;
     }
 

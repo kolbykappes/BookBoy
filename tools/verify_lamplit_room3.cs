@@ -13,7 +13,7 @@ Book B(char fam, char g, int n) { return UnityEngine.GameObject.Find("R3_" + fam
 ShelfSlot Slot(int container, int shelf, int k) { return zone.shelves[container * 2 + shelf].slots[k]; }
 BookBoy.Rules.PlacementResult Put(Book b, ShelfSlot s) { if (b.currentSlot != null) b.currentSlot.Release(); return s.Accept(b, b.transform.localScale); }
 void ClearAll() { foreach (var b in zone.items) if (b.currentSlot != null) b.currentSlot.Release(); }
-cc.ResetAll();
+cc.ResetAll(); cc.ActivateAllRooms();
 
 // containers 0-3 atlases (shelves), 4-7 rolled maps (tube racks), 8-11 flat sheets (drawers)
 Check("120 items, 24 shelves of 5, 12 containers with the Ordered rule", zone.items.Length == 120 && zone.shelves.Length == 24 && System.Linq.Enumerable.All(zone.shelves, s => s.slots.Length == 5 && s.bookcase.rules == ContainerRules.Ordered));

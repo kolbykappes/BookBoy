@@ -133,6 +133,9 @@ under "what to borrow". Split it into single items when picking one. Strongest c
 - **L-012** Make finds easy to spot: a soft glow on a find until it is picked up, and a hint when a room's finds are still missing. **P2**
 - **L-013** Home Beacon at shelf level (light the shelf, not the whole container) and an option to show which shelf already holds a group. **P3**
 - **L-014** Rooms 4 to 7, the story layer, save/load (F-003), sound and the feel pass, per [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md). **P2**
+- **L-016** Make the scene cheap at campaign scale (about 930 items): create a room's items from data when the room opens (pooled) instead of
+  baking them into the scene; fold the two spine-label objects into the item's material or one mesh; use GPU-instanced shared materials instead of
+  per-item property blocks; bake occlusion culling; merge static geometry; measure frame time and draw calls before and after. **P2**
 - **L-015** Placeholder cubes to real shapes and models (see D-005); ceilings and per-room lighting. **P3**
 
 ---

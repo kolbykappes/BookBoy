@@ -441,3 +441,20 @@ is a "pile up the books" feature to do it again.
 - **Bug found and fixed on the way:** `Book.StopPhysicsTumble` removed the rigidbody with a deferred `Destroy`. If a pile-up restarted while
   books were still in flight, the new toss reused that rigidbody in the same frame and lost it at the end of the frame, leaving the book frozen
   in mid-air with a solid collider. It now removes it immediately (`EndSolid` too).
+
+### Lamplit: rooms are switched off until their door opens (2026-10-18)
+
+Question raised: why are Rooms 2 and 3 full of live books and lights before the player can reach them? Measured before the change: 2,019
+GameObjects, 950 renderers, 658 colliders, 345 books, 14 lights in the scene (about 1,100 objects in the three rooms; each item is 3
+GameObjects: the cube and two spine-label glyphs). Unity frustum-culls drawing automatically, but it does not occlude things behind walls,
+and it never culls colliders or scripts, so unreachable rooms were costing memory, physics and draw submissions for nothing.
+
+- **Change:** `CampaignController` switches a room off (`RoomZone.SetLive(false)`: the room object plus every item and find, since items do not stay
+  parented to the room) until its door is open. Room 1 starts on; tidying a room opens the next door and switches that room on. Admin commands that
+  touch a room (jump, pile, complete, give or install a find) switch it on and keep it on; "reset everything" keeps already-open rooms on.
+- **Result at the start of a run:** live books 102 (was 345), renderers 306 (was 950), colliders 212 (was 658), lights 8 (was 14).
+- **Verified:** `tools/verify_lamplit_activity.cs` (8 checks) and all other Lamplit suites pass. The scene is still saved with every room on; the
+  controller switches them off when the game starts.
+- **Also fixed:** `RoomZone.IsPiling` now stays true until every item has settled back into a normal book (it used to clear about a second early).
+- **Not done (backlog L-016):** the real fix for scale is to keep items as data and create them when a room opens (pooled), merge the spine
+  labels into the item's own material, share materials for instancing, and bake occlusion culling. Frame time and draw calls were not measured.

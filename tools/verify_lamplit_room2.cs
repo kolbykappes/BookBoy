@@ -14,7 +14,7 @@ int Fam(int f) { return f; }
 ShelfSlot Slot(int container, int shelf, int k) { return zone.shelves[container * 2 + shelf].slots[k]; }
 BookBoy.Rules.PlacementResult Put(Book b, ShelfSlot s) { if (b.currentSlot != null) b.currentSlot.Release(); return s.Accept(b, b.transform.localScale); }
 void ClearAll() { foreach (var b in zone.items) if (b.currentSlot != null) b.currentSlot.Release(); foreach (var b in zone1.items) if (b.currentSlot != null) b.currentSlot.Release(); }
-cc.ResetAll();
+cc.ResetAll(); cc.ActivateAllRooms();
 
 // containers: 0-2 books, 3-5 magazines, 6-8 letters, 9-11 parcels
 // ---- the room as built ----

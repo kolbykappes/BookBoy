@@ -28,6 +28,10 @@ public class CampaignController : MonoBehaviour
     private int[] _finishedShelves;
     private int[] _total;
 
+    // Rooms beyond a shut door are switched off entirely (no renderers, colliders, lights or scripts) until the door opens. An admin
+    // command that touches a room (jump, pile, complete...) switches it on and keeps it on.
+    private bool[] _adminActive;
+
     public int RoomCount => rooms != null ? rooms.Length : 0;
 
     private void Start()
@@ -36,6 +40,7 @@ public class CampaignController : MonoBehaviour
         _ui = FindFirstObjectByType<GameUI>();
         _interactor = FindFirstObjectByType<PlayerInteractor>();
         State.Reset();
+        _adminActive = new bool[RoomCount + 2];
         _correct = new int[RoomCount + 1];
         _finishedShelves = new int[RoomCount + 1];
         _total = new int[RoomCount + 1];
@@ -146,6 +151,50 @@ public class CampaignController : MonoBehaviour
             string name = CampaignCatalog.RoomName(door.roomNumber);
             door.SetLabel(open ? name.ToUpperInvariant() : name.ToUpperInvariant() + "\nLOCKED");
         }
+
+        ApplyRoomActivity();
+    }
+
+    /// <summary>Switches each room on if its door is open (or an admin command needs it), off otherwise.</summary>
+    private void ApplyRoomActivity()
+    {
+        if (rooms == null || _adminActive == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < RoomCount; i++)
+        {
+            int n = i + 1;
+            bool on = State.IsDoorOpen(n) || _adminActive[n];
+            if (rooms[i].gameObject.activeSelf != on)
+            {
+                rooms[i].SetLive(on);
+            }
+        }
+    }
+
+    /// <summary>Admin / tests: switch a room on and keep it on even though its door is shut.</summary>
+    public void ActivateRoom(int room)
+    {
+        if (room >= 1 && room <= RoomCount && _adminActive != null)
+        {
+            _adminActive[room] = true;
+            ApplyRoomActivity();
+        }
+    }
+
+    public void ActivateAllRooms()
+    {
+        for (int n = 1; n <= RoomCount; n++)
+        {
+            ActivateRoom(n);
+        }
+    }
+
+    public bool IsRoomActive(int room)
+    {
+        return room >= 1 && room <= RoomCount && rooms[room - 1].gameObject.activeSelf;
     }
 
     // ---------------------------------------------------------------- finds and the desk
@@ -329,6 +378,7 @@ public class CampaignController : MonoBehaviour
             return;
         }
 
+        ActivateRoom(room);
         ReleaseCarriedItems(false);
         zone.PileUp(1000 + room + Mathf.FloorToInt(Time.realtimeSinceStartup));
         Recompute();
@@ -355,6 +405,7 @@ public class CampaignController : MonoBehaviour
             return;
         }
 
+        ActivateRoom(room);
         ReleaseCarriedItems(false);
         zone.PlaceAllHome();
         Recompute();
@@ -390,6 +441,11 @@ public class CampaignController : MonoBehaviour
     public void ResetAll()
     {
         ReleaseCarriedItems(true);
+        for (int n = 1; n <= RoomCount; n++)
+        {
+            _adminActive[n] = rooms[n - 1].gameObject.activeSelf;   // a room that is already on stays on (its piles are still dropping)
+        }
+
         State.Reset();
         foreach (FindSpot s in spots)
         {
@@ -406,7 +462,10 @@ public class CampaignController : MonoBehaviour
                 }
             }
 
-            room.PileUp(1000 + room.roomNumber);
+            if (room.gameObject.activeSelf)
+            {
+                room.PileUp(1000 + room.roomNumber);   // rooms that were never opened are untouched and stay switched off
+            }
         }
 
         _progress?.ResetUpgrades();
@@ -418,6 +477,12 @@ public class CampaignController : MonoBehaviour
     /// <summary>Admin: put the find in the player's hands (or at their feet if the hands are full).</summary>
     public bool GiveFind(string findId)
     {
+        FindDef wanted = CampaignCatalog.FindById(findId);
+        if (wanted != null)
+        {
+            ActivateRoom(wanted.Room);   // a find in a switched-off room would stay switched off in the player's hands
+        }
+
         Book book = FindBook(findId);
         if (book == null || State.IsInstalled(findId) || _interactor == null)
         {
@@ -451,8 +516,13 @@ public class CampaignController : MonoBehaviour
     /// <summary>Admin: install a find straight into its desk spot.</summary>
     public bool InstallFind(string findId)
     {
-        Book book = FindBook(findId);
         FindDef def = CampaignCatalog.FindById(findId);
+        if (def != null)
+        {
+            ActivateRoom(def.Room);
+        }
+
+        Book book = FindBook(findId);
         if (book == null || def == null || State.IsInstalled(findId))
         {
             return false;
@@ -508,6 +578,11 @@ public class CampaignController : MonoBehaviour
     /// <summary>Admin: teleport the player to the hub (0) or the entry of a room.</summary>
     public void JumpTo(int room)
     {
+        if (room > 0)
+        {
+            ActivateRoom(room);
+        }
+
         Transform target = room == 0 ? hubSpawn : (Room(room) != null ? Room(room).entryPoint : null);
         if (target == null || _interactor == null)
         {
