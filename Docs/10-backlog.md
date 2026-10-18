@@ -268,6 +268,60 @@ style for commissioned patron portraits, and check the rights of any public-doma
 
 ---
 
+## Tooling, scale and research follow-ups (Kolby, 2026-10-18)
+
+Order Kolby set: **tooling first, then the player capsule and lighting.** Research behind these is in [unity-practices/](unity-practices/README.md) (files 1 to 21;
+22 to 27 are being written: save/load, aspect/FOV/motion blur, Player builds, Steam, AI book assets, adult-scale cozy rooms). Per the CLAUDE.md research rule, read the matching
+file before changing anything in the scene.
+
+### T-001 Test the no-focus Editor workflow  **P1, Todo, no approval needed**
+- Goal: stop the Editor window being forced to the front while Kolby works on the same PC.
+- Try (research file 20 and 21): `unity command set_autotick` once per session before Play; prove frames advance with `wait_for Time.frameCount changed` or `status` frame count and
+  `playerLoopTicking`; `capture_game_view --source camera` for off-screen captures; never call `editor_focus`. Compare one off-screen capture with a focused Game-view capture (do the
+  Volume effects, tonemapping and vignette appear?). Check `Step()` from an eval. Check empirically whether gamepad input reaches the Editor unfocused (CLAUDE.md rule 2 says no; the Input System docs say yes).
+- Needs Unity open, so do it when Kolby says the Editor is open and he is happy for a few minutes of Play. Run the Lamplit suites unfocused as the proof.
+- Fallback if it does not work: a separate clone of the project with its own Library for headless verification (file 19), or a Player build (T-006).
+- Done when: the workflow is in CLAUDE.md and the unity-editor-ops skill, rule 2 is corrected, and a full suite run happens with Unity in the background.
+
+### T-002 Back to an adult-sized player and cozy rooms  **P1, Todo, plan first**
+- Kolby's call: the storybook rescale (world 1.6x, eye 1.15 m, FOV 75, held book 0.55) was a wrong turn. The rooms feel like a giants' hall. Want an **adult-sized actor** (eye about 1.6 to 1.7 m)
+  and rooms that feel cozy.
+- Research (file 1 to 4) says the 1.6x scale was not itself invalid, but the player capsule is still the adult one (2.0 m tall, radius 0.5, confirmed from the prefab; no scene override), so the
+  player is a child's eye in an adult body. File 27 (pending) covers how cozy tidy games keep items readable at adult scale (exaggerating key items, hold/inspect view, narrower FOV, etc.).
+- Plan before building: world scale back to 1.0 via the builder constants (WorldScale, EyeHeight, MoveSpeed/Sprint, reach, CarryScale, wall/door/ceiling heights, container and book sizes, magelight height, FOV);
+  decide which item exaggeration to keep so books stay readable; rebuild hub and rooms; re-run the suites; render and measure the book's screen fraction at 1 to 1.5 m.
+- Check held-book clipping against shelves after the change.
+
+### T-003 Lighting pass after T-002  **P2, Todo, Needs approval for the settings items**
+- From research files 5 to 9: orbs lower or ceiling hotspot reduced, lamp range and intensity retuned for the new scale; Bloom Clamp about 3 to 6; motion blur lower or off; the leftover 0.5 directional light removed;
+  shadow settings sized for rooms (soft shadows Medium, fewer cascades, shorter max distance, atlas large enough for the shadowed lights); Trilight ambient checked. The `ProjectSettings/` and render-pipeline items need Kolby's yes.
+- Measure before and after on rendered frames (luminance of books and wood, hotspot size); do not judge by eye alone.
+
+### T-004 AI-assisted book models and cover materials  **P2, Todo**
+- Kolby wants simple book models and cover materials / maps made with AI. Research file 26 (pending). First experiment: one procedural or bpy-generated book mesh with 3 cover variants, checked by a rendered screenshot.
+  Keep spine letters and numbers drawn by the game. Record tool, prompt and date per asset (Steam asks for AI disclosure). Related: L-015.
+
+### T-005 A reviewer for changes  **P2, Todo, discuss first**
+- A separate agent that reviews a change before it is committed. Proposed design is in the chat of 2026-10-18; not built yet. See D-006.
+
+### T-006 Player-build performance check  **P2, Todo**
+- Use a real Windows Player build (development build, Mono) to confirm performance facts; the Editor is fine for day-to-day work. Research file 24 (pending): build from a script, run unattended, log frame time, draw calls
+  and memory to a CSV, take screenshots, compare to a baseline. A Player is also a way to verify without the Editor's focus problem.
+
+### T-007 Save and load, tonight  **P1, Todo, plan first (F-003 already approved in principle)**
+- Research file 22 (pending) gives the design. Keep the save logic engine-free and covered by Edit Mode tests; present the file-format plan before building.
+
+### T-008 Aspect ratio, FOV and motion blur settings  **P2, Todo, Needs approval (input and render settings)**
+- 16:9 only (1080p, 1440p, 4K; windowed/borderless/full). Research file 23 (pending): FOV slider, motion blur default and toggle, head bob, look sensitivity. Feeds F-004 (settings menu).
+
+### T-009 Steam release path  **P3, Todo**
+- Research file 25 (pending): Steamworks signup and fee, store page, Coming Soon timeline, SteamPipe, Auto-Cloud for saves, AI disclosure, Unity licence terms. Achievements (F-002) and controller (F-001) stay for later.
+
+### D-006 Overnight and interactive working modes  **Decision to settle**
+- Kolby: approvals should work differently when he is interactive and when he leaves the assistant to work overnight. Not yet defined; see the open question in the chat of 2026-10-18.
+
+---
+
 ## Chores and housekeeping
 
 - **H-001** Push the branch and refresh PR #1's description (it still describes an early state; many commits are local only).
@@ -288,3 +342,4 @@ style for commissioned patron portraits, and check the rights of any public-doma
 6. ~~L-019: picking from a pile, and what happens to the rest?~~ **Answered 2026-10-18:** you can pick up any item you can see (aim at), not just the top ones; when one is pulled out, the neighbours settle.
 7. ~~L-016: item definition asset files?~~ **Answered 2026-10-18:** items live only in data files; rooms stay static scene content.
 8. ~~L-020: bubble starting values (about 0.6 m, about 40 bodies)?~~ **Answered 2026-10-18:** good enough. The goal is only that it feels a bit natural: no chained or cascading physics, no always-on physics; most games in the genre move nothing but the active item, which feels odd, so a small local reaction is the target.
+9. D-006: what should the assistant do differently overnight (unattended) compared with interactive work? A proposed split is in the chat of 2026-10-18.
