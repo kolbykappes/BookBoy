@@ -263,9 +263,13 @@ public class CampaignController : MonoBehaviour
     private void Snap(Book book, FindSpot spot)
     {
         Transform t = book.transform;
-        t.SetParent(spot.anchor != null ? spot.anchor : spot.transform, false);
+        Vector3 realSize = t.lossyScale;
+        Transform parent = spot.anchor != null ? spot.anchor : spot.transform;
+        t.SetParent(parent, false);
         t.localPosition = Vector3.zero;
         t.localRotation = Quaternion.identity;
+        Vector3 ps = parent.lossyScale;   // the desk spots are built at world scale: keep the find its real size, not scaled again
+        t.localScale = new Vector3(realSize.x / ps.x, realSize.y / ps.y, realSize.z / ps.z);
         Collider c = book.GetComponent<Collider>();
         if (c != null)
         {

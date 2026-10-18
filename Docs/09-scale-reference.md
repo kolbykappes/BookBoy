@@ -73,3 +73,18 @@ board thickness, or neighboring shelves overlap.
 Series differ by shade and size so a player can tell them apart: series A is the base color at the sizes in
 the table above, series B is a lighter shade and a different size (thickness 0.045-0.055, height 0.24-0.30,
 depth 0.17-0.18). Volume numbers are 0.03 m pixel digits near the bottom of the spine.
+
+## Lamplit uses a "storybook" scale (2026-10-18) - this supersedes the life-size rule above for the Lamplit scene
+
+The life-size rule above made the books too small to read and the rooms too distant (Kolby's comparison with Witch Cabin Cleanup: books there fill
+about twice as much of the screen, and a pile is a few chunky, readable books). Measured and decided:
+
+- **Lens:** vertical field of view **75 degrees** (was 40, a telephoto look). Witch Cabin's default is 90. A wider lens alone makes everything look
+  *smaller*, so it needs the next two changes with it.
+- **Player:** eye height **1.15 m** (was 1.7), walk 3.2 and sprint 4.8 m/s, reach 2.8 m (aim 12 m), held books drawn at 0.55. A smaller player
+  makes the whole world feel big and close.
+- **Everything the player handles is 1.6 times life size** (`LamplitBuilder.WorldScale`): containers, items, finds and the desk props. A book is about
+  0.38 x 0.26 x 0.07 m, a container 2.9 m tall, a slot pitch 0.115 m. Rooms, doors and the hub are sized to hold them: rooms 12 m wide, 11.4 to
+  13.4 m deep, walls 4.2 m, doors 2.0 x 3.0 m, hub 4.8 x 24.8 m.
+- **One number:** change `WorldScale` (and the player values in `ApplyPlayerScale`) and rebuild the hub and rooms with `LamplitBuilder`.
+- The prototype scene (`LibraryPrototype.unity`) keeps the life-size values.

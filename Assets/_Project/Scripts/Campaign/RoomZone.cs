@@ -29,6 +29,9 @@ public class RoomZone : MonoBehaviour
     public Vector2 scatterMax;
     public Transform entryPoint;
 
+    [Tooltip("How much bigger than life size the items are: piles are planned wider (spacing and radius) by this factor.")]
+    public float pileSpread = 1f;
+
     [Header("Room bounds, used to tell which room the player is in")]
     public Vector3 boundsCenter;
     public Vector3 boundsSize;
@@ -150,7 +153,7 @@ public class RoomZone : MonoBehaviour
             b.transform.SetParent(null, true);
         }
 
-        LastPlan = PilePlanner.Plan(list.Count, scatterMin.x, scatterMin.y, scatterMax.x, scatterMax.y, seed);
+        LastPlan = PilePlanner.Plan(list.Count, scatterMin.x, scatterMin.y, scatterMax.x, scatterMax.y, seed, 1.3f * Mathf.Max(1f, pileSpread));
         var rng = new System.Random(seed * 31 + 7);
         var rounds = new int[LastPlan.PileCount];
         var drops = new System.Collections.Generic.List<PileDrop>();
@@ -159,7 +162,7 @@ public class RoomZone : MonoBehaviour
             int pile = LastPlan.PileOf[i];
             int round = rounds[pile]++;
             double angle = rng.NextDouble() * System.Math.PI * 2.0;
-            float radius = (0.12f + 0.05f * Mathf.Sqrt(LastPlan.ItemsIn(pile))) * (float)rng.NextDouble();
+            float radius = (0.12f + 0.05f * Mathf.Sqrt(LastPlan.ItemsIn(pile))) * Mathf.Max(1f, pileSpread) * (float)rng.NextDouble();
             float height = 0.9f + 0.15f * (float)rng.NextDouble();
             var origin = new Vector3(LastPlan.CenterX[pile] + Mathf.Cos((float)angle) * radius, height, LastPlan.CenterZ[pile] + Mathf.Sin((float)angle) * radius);
             double toss = rng.NextDouble() * System.Math.PI * 2.0;

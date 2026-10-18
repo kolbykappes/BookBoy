@@ -31,6 +31,9 @@ grouped by commit date, not by hour.
   to 8 at the start of a run (`RoomZone.SetLive`, `CampaignController`).
 - Backlog: data-driven items, rooms loaded when unlocked, inert shelved items, frozen piles and physics only on special occasions written up as L-016 to
   L-020 (Kolby's direction), with open decisions listed; not started.
+- Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
+  comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
+  (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
 - Fixed: an unbounded `while` in three verify scripts hung the Editor (needed a kill and relaunch); loops are bounded now and the
   lesson is in `.claude/memory/unity-testing.md` (`dfb230f`).
 

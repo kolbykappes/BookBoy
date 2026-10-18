@@ -95,3 +95,26 @@ public static partial class LamplitBuilder
         return log.ToString();
     }
 }
+
+public static partial class LamplitBuilder
+{
+    /// <summary>Deletes every Book in the scene that no room refers to (as an item or a find). Items do not stay parented under their room (shelving
+    /// and tossing move them to the scene root), so rebuilding a room's object does not remove the previous build's items; this does.</summary>
+    public static string RemoveOrphanItems()
+    {
+        var keep = new System.Collections.Generic.HashSet<Book>();
+        foreach (var zone in Object.FindObjectsByType<RoomZone>(FindObjectsInactive.Include))
+        {
+            if (zone.items != null) foreach (var b in zone.items) if (b != null) keep.Add(b);
+            if (zone.finds != null) foreach (var b in zone.finds) if (b != null) keep.Add(b);
+        }
+
+        int removed = 0;
+        foreach (var b in Object.FindObjectsByType<Book>(FindObjectsInactive.Include))
+        {
+            if (b != null && !keep.Contains(b)) { Object.DestroyImmediate(b.gameObject); removed++; }
+        }
+
+        return "removed " + removed + " orphan items";
+    }
+}

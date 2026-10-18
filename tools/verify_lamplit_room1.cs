@@ -20,7 +20,7 @@ var perGroup = new System.Collections.Generic.Dictionary<int, int>(); foreach (v
 Check("exactly 20 groups with 5 books each", perGroup.Count == 20 && System.Linq.Enumerable.All(perGroup.Values, c => c == 5));
 var symbols = new System.Collections.Generic.HashSet<string>(); foreach (var b in zone.items) symbols.Add(b.definition.symbol);
 Check("every group has its own letter (colour never decides alone)", symbols.Count == 20);
-Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 0.7f));
+Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 1.4f));
 Check("each container uses the Group rule and accepts any family", System.Linq.Enumerable.All(zone.shelves, s => s.bookcase.rules == ContainerRules.Group && s.bookcase.containerFamily == -1));
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
 

@@ -458,3 +458,21 @@ and it never culls colliders or scripts, so unreachable rooms were costing memor
 - **Also fixed:** `RoomZone.IsPiling` now stays true until every item has settled back into a normal book (it used to clear about a second early).
 - **Not done (backlog L-016):** the real fix for scale is to keep items as data and create them when a room opens (pooled), merge the spine
   labels into the item's own material, share materials for instancing, and bake occlusion culling. Frame time and draw calls were not measured.
+
+### Lamplit: storybook scale (2026-10-18)
+
+Kolby compared a Lamplit pile with Witch Cabin Cleanup: our books were too small and the view too distant. Diagnosis (measured): our camera had a **40
+degree** field of view (a telephoto look), and the items followed the life-size rule, so a book filled about half as much of the screen. A wider lens
+on its own made things *smaller*, which the renders showed. What fixed it was changing the item size relative to the player.
+
+- **Camera and player:** FOV 75, eye height 1.15 m, speed 3.2 / 4.8, reach 2.8 m, aim 12 m, held books 0.55 (`LamplitBuilder.ApplyPlayerScale`).
+- **World scale 1.6** (`LamplitBuilder.WorldScale`): containers (the whole container object is scaled, so slots, aim volumes and highlights follow), items, finds and
+  desk props. The hub is 4.8 x 24.8 m, rooms 12 m wide and 11.4 to 13.4 m deep, walls 4.2 m, doors 2.0 x 3.0 m; signs, lights and the pile spacing
+  (`RoomZone.pileSpread`) are scaled to match. Installed finds keep their real size on the scaled desk spots; the slot-aim depth follows the container's scale.
+- **Builder fix:** items do not stay parented under their room, so rebuilding a room used to leave the previous build's items behind (duplicates). The room
+  builders now call `RemoveOrphanItems()`.
+- **Verified:** 109 unit tests; all eight Lamplit suites, the live pile check and the prototype shelves, carry and toss suites pass; the checks were updated for
+  the new geometry (spawn, doors, eye height, "in the air" thresholds). Real Game-view captures show chunky, readable books and a pile with weight, and held
+  books are bright with the group letter legible. Not judged: how it feels to walk around (pace, room size).
+- **Next if it still feels off:** a different multiplier is a one-number change; richer item art (cover colour, a real title, lying face up), smaller
+  piles, and depth of field are the next levers.

@@ -43,7 +43,7 @@ public class Shelf : MonoBehaviour
         }
 
         // Intersect at roughly mid-book depth: the slot origin is the front line, books extend ~0.1 m behind it.
-        Vector3 slotPlanePoint = slots[0].transform.position + transform.forward * 0.08f;
+        Vector3 slotPlanePoint = slots[0].transform.position + transform.forward * (0.08f * transform.lossyScale.z);
         var plane = new Plane(transform.forward, slotPlanePoint);
         Vector3 aimPoint = plane.Raycast(worldRay, out float distance) ? worldRay.GetPoint(distance) : fallbackWorldPoint;
 

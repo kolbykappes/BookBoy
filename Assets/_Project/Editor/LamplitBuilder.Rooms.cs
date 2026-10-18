@@ -5,10 +5,10 @@ using UnityEngine;
 
 public static partial class LamplitBuilder
 {
-    // Rooms sit beside the hub. Left of the hub: Room 1 (z 0..8) and Room 3 (z 8..16). Right of the hub: Room 2 (z 4..12).
-    // Each is 10 m wide (x 1.6..11.6 from the hub wall) with the containers along the far wall and loose items scattered in the middle.
-    private const float ContainerPitch = 0.62f;
-    private const float RoomWidth = 10f;
+    // Rooms sit beside the hub. Left of the hub: Room 1 (z 0..11.4) and Room 3 (z 11.4..24.8). Right of the hub: Room 2 (z 5.7..19.1).
+    // Each is RoomWidth wide with the containers (at world scale) along the far wall and the piles of loose items in the middle.
+    private static float ContainerPitch => 0.62f * WorldScale;
+    private const float RoomWidth = 12f;
 
     public struct RoomSpec
     {
@@ -19,9 +19,9 @@ public static partial class LamplitBuilder
         public Color Wall;
 
         public float DoorZ => (Z0 + Z1) / 2f;
-        public float InnerX => Left ? -1.6f : 1.6f;                         // the hub-side edge of the room
-        public float FarWallX => Left ? -11.5f : 11.5f;
-        public float ContainerX => Left ? -11.22f : 11.22f;                 // container centre: back against the far wall
+        public float InnerX => Left ? -(HubHalf + 0.1f) : HubHalf + 0.1f;   // the hub-side edge of the room
+        public float FarWallX => Left ? -(HubHalf + RoomWidth) : HubHalf + RoomWidth;
+        public float ContainerX => FarWallX + (Left ? 1f : -1f) * (0.1f + 0.36f * WorldScale / 2f);   // container centre: back against the far wall
         public float ContainerYaw => Left ? -90f : 90f;                     // front faces into the room
         public Vector3 Inward => Left ? Vector3.left * -1f : Vector3.left;  // from the far wall towards the hub (+X for Left rooms)
     }
@@ -30,9 +30,9 @@ public static partial class LamplitBuilder
     {
         switch (room)
         {
-            case 1: return new RoomSpec { Number = 1, Left = true, Z0 = 0f, Z1 = 8f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.40f, 0.48f, 0.38f) };
-            case 2: return new RoomSpec { Number = 2, Left = false, Z0 = 4f, Z1 = 12f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.34f, 0.46f, 0.50f) };
-            default: return new RoomSpec { Number = 3, Left = true, Z0 = 8f, Z1 = 16f, BuildLowWall = false, BuildHighWall = true, Wall = new Color(0.36f, 0.40f, 0.55f) };
+            case 1: return new RoomSpec { Number = 1, Left = true, Z0 = 0f, Z1 = 11.4f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.40f, 0.48f, 0.38f) };
+            case 2: return new RoomSpec { Number = 2, Left = false, Z0 = 5.7f, Z1 = 19.1f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.34f, 0.46f, 0.50f) };
+            default: return new RoomSpec { Number = 3, Left = true, Z0 = 11.4f, Z1 = 24.8f, BuildLowWall = false, BuildHighWall = true, Wall = new Color(0.36f, 0.40f, 0.55f) };
         }
     }
 
@@ -43,7 +43,7 @@ public static partial class LamplitBuilder
         var root = FreshRoot(name);
         var shell = FreshChild(root, "Shell");
         var wallMat = EnsureMat("Mat_Wall_R" + s.Number, s.Wall, 0.1f);
-        float xHub = s.Left ? -1.6f : 1.6f, xFar = s.Left ? -11.6f : 11.6f;
+        float xHub = s.InnerX, xFar = s.FarWallX + (s.Left ? -0.1f : 0.1f);
         float x0 = Mathf.Min(xHub, xFar), x1 = Mathf.Max(xHub, xFar);
 
         Floor(shell, "Floor", x0, x1, s.Z0, s.Z1, FloorMat("R" + s.Number, x1 - x0, s.Z1 - s.Z0));
@@ -52,29 +52,30 @@ public static partial class LamplitBuilder
         if (s.BuildHighWall) Wall(shell, "WallHigh", false, s.Z1, x0, x1, null, wallMat);
 
         // the room-side sign over the doorway and the entry point just inside it
-        float sx = s.Left ? -1.62f : 1.62f;
-        Sign(shell, "DoorSignInside", new Vector3(sx, 2.8f, s.DoorZ), s.Left ? Vector3.left : Vector3.right, new Vector2(1.3f, 0.5f),
-            CampaignCatalog.RoomName(s.Number).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 70);
+        float sx = s.Left ? -(HubHalf + 0.12f) : HubHalf + 0.12f;
+        Sign(shell, "DoorSignInside", new Vector3(sx, (DoorHeight + WallHeight) / 2f, s.DoorZ), s.Left ? Vector3.left : Vector3.right, new Vector2(1.8f, 0.7f),
+            CampaignCatalog.RoomName(s.Number).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 80);
 
         var entry = new GameObject("Entry").transform;
         entry.SetParent(root, false);
-        entry.SetPositionAndRotation(new Vector3(s.Left ? -2.6f : 2.6f, 1f, s.DoorZ), Quaternion.Euler(0f, s.Left ? 270f : 90f, 0f));
+        entry.SetPositionAndRotation(new Vector3(s.Left ? -(HubHalf + 1.2f) : HubHalf + 1.2f, 1f, s.DoorZ), Quaternion.Euler(0f, s.Left ? 270f : 90f, 0f));
 
         float cx = (x0 + x1) / 2f, cz = (s.Z0 + s.Z1) / 2f;
         var zone = root.gameObject.AddComponent<RoomZone>();
         zone.roomNumber = s.Number;
         zone.displayName = CampaignCatalog.RoomName(s.Number);
         zone.entryPoint = entry;
-        zone.boundsCenter = new Vector3(cx, 1.6f, cz);
-        zone.boundsSize = new Vector3(x1 - x0 - 0.2f, 4f, s.Z1 - s.Z0 - 0.2f);
+        zone.boundsCenter = new Vector3(cx, 2.1f, cz);
+        zone.boundsSize = new Vector3(x1 - x0 - 0.2f, 5f, s.Z1 - s.Z0 - 0.2f);
         float sgn = s.Left ? 1f : -1f;   // from the far wall toward the hub
-        zone.scatterMin = new Vector2(Mathf.Min(s.FarWallX + sgn * 2.4f, s.FarWallX + sgn * 8.4f), s.Z0 + 1.1f);
-        zone.scatterMax = new Vector2(Mathf.Max(s.FarWallX + sgn * 2.4f, s.FarWallX + sgn * 8.4f), s.Z1 - 1.1f);
+        zone.scatterMin = new Vector2(Mathf.Min(s.FarWallX + sgn * 3.2f, s.FarWallX + sgn * 9.4f), s.Z0 + 1.4f);
+        zone.scatterMax = new Vector2(Mathf.Max(s.FarWallX + sgn * 3.2f, s.FarWallX + sgn * 9.4f), s.Z1 - 1.4f);
+        zone.pileSpread = WorldScale;
 
         // lights: two near the middle, one near the containers casting soft shadows
-        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 2.9f, s.Z0 + 2.0f), 3.2f, false, 8f);
-        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 2.9f, s.Z1 - 2.0f), 3.2f, false, 8f);
-        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 3.2f, 2.9f, cz), 3.6f, true, 8f);
+        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 3.6f, s.Z0 + 2.8f), 4.6f, false, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f), 3.6f, s.Z1 - 2.8f), 4.6f, false, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 4.0f, 3.6f, cz), 5.0f, true, 10f);
         return root;
     }
 
@@ -101,18 +102,19 @@ public static partial class LamplitBuilder
     {
         var table = FreshChild(room, "FindTable");
         var wood = LoadMat("Mat_Wood");
-        float x = s.Left ? -10.2f : 10.2f;
-        float z = s.Z1 - 0.7f;
-        Cube("Top", table, new Vector3(x, 0.72f, z), new Vector3(0.9f, 0.05f, 0.55f), wood);
-        Cube("Legs", table, new Vector3(x, 0.35f, z), new Vector3(0.8f, 0.7f, 0.45f), wood);
-        Sign(table, "Label", new Vector3(x, 1.5f, z + 0.27f), Vector3.back, new Vector2(0.55f, 0.2f), "LOST &\nFOUND", new Color(0.84f, 0.70f, 0.40f), 60);
+        float x = s.FarWallX + (s.Left ? 1f : -1f) * 2.4f;
+        float z = s.Z1 - 1.3f;
+        float len = 0.55f * count * WorldScale + 0.5f;
+        Cube("Top", table, new Vector3(x, 0.9f, z), new Vector3(len, 0.06f, 1.0f), wood);
+        Cube("Legs", table, new Vector3(x, 0.44f, z), new Vector3(len - 0.15f, 0.88f, 0.85f), wood);
+        Sign(table, "Label", new Vector3(x, 2.0f, z + 0.5f), Vector3.back, new Vector2(1.0f, 0.38f), "LOST &\nFOUND", new Color(0.84f, 0.70f, 0.40f), 70);
 
         var spots = new List<Transform>();
         for (int i = 0; i < count; i++)
         {
             var t = new GameObject("FindSpot_" + (i + 1)).transform;
             t.SetParent(table, false);
-            t.position = new Vector3(x + (i - (count - 1) / 2f) * 0.3f, 0.745f, z);
+            t.position = new Vector3(x + (i - (count - 1) / 2f) * 0.55f * WorldScale, 0.93f, z);
             spots.Add(t);
         }
 
@@ -134,6 +136,7 @@ public static partial class LamplitBuilder
         def.symbol = "";
         def.spineColor = color;
         EditorUtility.SetDirty(def);
+        size *= WorldScale;
         var book = Item(parent, "Find_" + findId, def, size, false);
         book.transform.SetPositionAndRotation(hideSpot.position + Vector3.up * (size.y * 0.5f), Quaternion.Euler(0f, 180f, 0f));
         return book;
@@ -182,7 +185,7 @@ public static partial class LamplitBuilder
                 def.series = 0;
                 def.volume = n;
                 EditorUtility.SetDirty(def);
-                var book = Item(itemsRoot, "R1_" + letter + n, def, ReadingScales[g % ReadingScales.Length], false);
+                var book = Item(itemsRoot, "R1_" + letter + n, def, ReadingScales[g % ReadingScales.Length] * WorldScale, false);
                 items.Add(book);
                 homes.Add(shelf.slots[n - 1]);
             }
@@ -200,6 +203,7 @@ public static partial class LamplitBuilder
         zone.findHideSpots = hide;
 
         BakePiles(zone, 1001);
+        RemoveOrphanItems();
         RegisterCampaign();
         MarkDirty();
         return "room 1 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
@@ -243,7 +247,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 4; f++)
         {
             float z = zc + ((f * 3 + 1) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 2.3f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(1.7f, 0.4f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 70);
+            Sign(root, "FamilySign_" + MailFamilies[f], new Vector3(s.FarWallX - 0.12f * (s.Left ? -1f : 1f), 3.5f, z), s.Left ? Vector3.right : Vector3.left, new Vector2(2.5f, 0.6f), MailPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");
@@ -272,7 +276,7 @@ public static partial class LamplitBuilder
                     def.series = 0;
                     def.volume = n;
                     EditorUtility.SetDirty(def);
-                    items.Add(Item(itemsRoot, "R2_" + MailFamilies[f][0] + "_" + letter + n, def, MailSizes[f], false));
+                    items.Add(Item(itemsRoot, "R2_" + MailFamilies[f][0] + "_" + letter + n, def, MailSizes[f] * WorldScale, false));
                     homes.Add(shelf.slots[n - 1]);
                 }
             }
@@ -289,6 +293,7 @@ public static partial class LamplitBuilder
         zone.findHideSpots = hide;
 
         BakePiles(zone, 1002);
+        RemoveOrphanItems();
         RegisterCampaign();
         MarkDirty();
         return "room 2 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
@@ -330,7 +335,7 @@ public static partial class LamplitBuilder
         for (int f = 0; f < 3; f++)
         {
             float z = zc + ((f * 4 + 1.5f) - 5.5f) * ContainerPitch;
-            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 2.3f, z), Vector3.right, new Vector2(2.1f, 0.4f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 70);
+            Sign(root, "FamilySign_" + MapFamilies[f], new Vector3(s.FarWallX + 0.12f, 3.5f, z), Vector3.right, new Vector2(3.2f, 0.6f), MapPlural[f], new Color(0.84f, 0.70f, 0.40f), 80);
         }
 
         var itemsRoot = FreshChild(root, "Items");
@@ -359,7 +364,7 @@ public static partial class LamplitBuilder
                     def.series = 0;
                     def.volume = n;
                     EditorUtility.SetDirty(def);
-                    items.Add(Item(itemsRoot, "R3_" + MapInitial[f] + "_" + letter + n, def, MapSizes[f], true));
+                    items.Add(Item(itemsRoot, "R3_" + MapInitial[f] + "_" + letter + n, def, MapSizes[f] * WorldScale, true));
                     homes.Add(shelf.slots[n - 1]);
                 }
             }
@@ -375,6 +380,7 @@ public static partial class LamplitBuilder
         zone.findHideSpots = hide;
 
         BakePiles(zone, 1003);
+        RemoveOrphanItems();
         RegisterCampaign();
         MarkDirty();
         return "room 3 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";

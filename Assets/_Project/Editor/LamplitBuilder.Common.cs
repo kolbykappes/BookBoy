@@ -17,10 +17,16 @@ public static partial class LamplitBuilder
     private const string MatDir = "Assets/_Project/Art/Materials";
     private const string DefDir = "Assets/_Project/ScriptableObjects/Lamplit";
 
-    public const float WallHeight = 3.2f;
+    /// <summary>Everything the player handles (containers, items, finds, desk props) is built this many times life size, so books are chunky and
+    /// readable at a glance; rooms, doors and the hub are sized to hold them. Change this one number and rebuild the hub and the three rooms.</summary>
+    public const float WorldScale = 1.6f;
+
+    public const float WallHeight = 4.2f;
     public const float WallThickness = 0.2f;
-    public const float DoorWidth = 1.4f;
-    public const float DoorHeight = 2.4f;
+    public const float DoorWidth = 2.0f;
+    public const float DoorHeight = 3.0f;
+    public const float HubHalf = 2.4f;          // hub wall centres are at x = +-HubHalf
+    public const float HubLength = 24.8f;
     public const float SlotPitch = 0.072f;
     public const float FrontLine = -0.14f;
     private static readonly float[] ShelfTops = { 0.85f, 1.30f };
@@ -323,6 +329,7 @@ public static partial class LamplitBuilder
 
         bookcase.shelves = shelfList.ToArray();
         bookcase.all = new[] { bookcase };
+        root.transform.localScale = Vector3.one * WorldScale;   // the whole container (boards, shelves, slots, aim volumes) at world scale
         return bookcase;
     }
 
@@ -383,12 +390,12 @@ public static partial class LamplitBuilder
         Color text = TextColorFor(def.spineColor);
         if (!string.IsNullOrEmpty(def.symbol))
         {
-            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.032f, text);
+            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.032f * WorldScale, text);
         }
 
         if (showNumber)
         {
-            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.030f, text);
+            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.030f * WorldScale, text);
         }
 
         return book;

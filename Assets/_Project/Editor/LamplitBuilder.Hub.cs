@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public static partial class LamplitBuilder
 {
-    // Hub: a hallway 3 m wide and 16 m long (x -1.5..1.5, z 0..16). The desk is at the z = 0 end. Doors: Room 1 and Room 3 on the left
-    // wall (z = 4 and 12), Room 2 on the right wall (z = 8).
-    public static readonly float[] DoorZ = { 4f, 8f, 12f };
+    // Hub: a hallway about 4.8 m wide and 24.8 m long (x -HubHalf..HubHalf, z 0..HubLength). The desk is at the z = 0 end. Doors: Room 1 and
+    // Room 3 on the left wall, Room 2 on the right wall, each at the middle of its room.
+    public static readonly float[] DoorZ = { 5.7f, 12.4f, 18.1f };
 
     /// <summary>A copy of the floor tile material whose tiling fits a floor of w x d metres (0.8 m tiles).</summary>
     public static Material FloorMat(string name, float w, float d)
@@ -37,11 +37,12 @@ public static partial class LamplitBuilder
         var brass = EnsureMat("Mat_Brass", new Color(0.75f, 0.58f, 0.25f), 0.45f, 0.6f);
         var doorMat = EnsureMat("Mat_Door", new Color(0.30f, 0.18f, 0.09f), 0.2f);
 
-        Floor(hub, "Floor", -1.6f, 1.6f, 0f, 16f, FloorMat("Hub", 3.2f, 16f));
-        Wall(hub, "WallLeft", true, -1.5f, 0f, 16f, new[] { DoorZ[0], DoorZ[2] }, wallMat);
-        Wall(hub, "WallRight", true, 1.5f, 0f, 16f, new[] { DoorZ[1] }, wallMat);
-        Wall(hub, "WallEnd0", false, 0f, -1.6f, 1.6f, null, wallMat);
-        Wall(hub, "WallEnd16", false, 16f, -1.6f, 1.6f, null, wallMat);
+        float edge = HubHalf + 0.1f;
+        Floor(hub, "Floor", -edge, edge, 0f, HubLength, FloorMat("Hub", edge * 2f, HubLength));
+        Wall(hub, "WallLeft", true, -HubHalf, 0f, HubLength, new[] { DoorZ[0], DoorZ[2] }, wallMat);
+        Wall(hub, "WallRight", true, HubHalf, 0f, HubLength, new[] { DoorZ[1] }, wallMat);
+        Wall(hub, "WallEnd0", false, 0f, -edge, edge, null, wallMat);
+        Wall(hub, "WallEndFar", false, HubLength, -edge, edge, null, wallMat);
 
         BuildDesk(hub, wood, brass);
 
@@ -51,7 +52,7 @@ public static partial class LamplitBuilder
         {
             int room = i + 1;
             bool left = room != 2;
-            float x = left ? -1.5f : 1.5f;
+            float x = left ? -HubHalf : HubHalf;
             var root = new GameObject("Door_" + room);
             root.transform.SetParent(hub, false);
             var door = root.AddComponent<RoomDoor>();
@@ -60,22 +61,22 @@ public static partial class LamplitBuilder
             door.leaf = leaf.transform;
             door.blocker = leaf.GetComponent<Collider>();
             door.openHeight = DoorHeight + 0.1f;
-            float signX = left ? -1.38f : 1.38f;
-            var text = Sign(root.transform, "DoorSign", new Vector3(signX, 2.8f, DoorZ[i]), left ? Vector3.right : Vector3.left, new Vector2(1.3f, 0.5f),
-                CampaignCatalog.RoomName(room).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 70);
+            float signX = left ? -(HubHalf - 0.12f) : HubHalf - 0.12f;
+            var text = Sign(root.transform, "DoorSign", new Vector3(signX, (DoorHeight + WallHeight) / 2f, DoorZ[i]), left ? Vector3.right : Vector3.left, new Vector2(1.8f, 0.7f),
+                CampaignCatalog.RoomName(room).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 80);
             door.label = text;
             doors.Add(door);
         }
 
         // lights: warm orbs down the hallway
-        Orb(hub, "MageLight_Hub_1", new Vector3(0f, 2.7f, 3.0f), 3.4f, false, 8f);
-        Orb(hub, "MageLight_Hub_2", new Vector3(0f, 2.7f, 8.0f), 3.2f, false, 8f);
-        Orb(hub, "MageLight_Hub_3", new Vector3(0f, 2.7f, 13.0f), 3.2f, false, 8f);
+        Orb(hub, "MageLight_Hub_1", new Vector3(0f, 3.5f, HubLength * 0.17f), 4.6f, false, 10f);
+        Orb(hub, "MageLight_Hub_2", new Vector3(0f, 3.5f, HubLength * 0.5f), 4.4f, false, 10f);
+        Orb(hub, "MageLight_Hub_3", new Vector3(0f, 3.5f, HubLength * 0.83f), 4.4f, false, 10f);
 
         // player start: at the desk, looking at it
         var spawn = new GameObject("HubSpawn").transform;
         spawn.SetParent(hub, false);
-        spawn.SetPositionAndRotation(new Vector3(0f, 1f, 2.6f), Quaternion.Euler(0f, 180f, 0f));
+        spawn.SetPositionAndRotation(new Vector3(0f, 1f, 3.6f), Quaternion.Euler(0f, 180f, 0f));
         var player = GameObject.Find("Player");
         if (player != null)
         {
@@ -94,22 +95,24 @@ public static partial class LamplitBuilder
     private static void BuildDesk(Transform hub, Material wood, Material brass)
     {
         var desk = FreshChild(hub, "Desk");
-        Cube("Top", desk, new Vector3(0f, 0.875f, 0.45f), new Vector3(2.8f, 0.05f, 0.6f), wood);
-        Cube("Body", desk, new Vector3(0f, 0.425f, 0.45f), new Vector3(2.7f, 0.85f, 0.5f), wood);
-        Sign(desk, "DeskSign", new Vector3(0f, 2.35f, 0.14f), Vector3.forward, new Vector2(1.8f, 0.45f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 70);
+        float deskWidth = HubHalf * 2f - 0.1f;
+        Cube("Top", desk, new Vector3(0f, 0.875f, 0.6f), new Vector3(deskWidth, 0.05f, 1.0f), wood);
+        Cube("Body", desk, new Vector3(0f, 0.425f, 0.6f), new Vector3(deskWidth - 0.1f, 0.85f, 0.9f), wood);
+        Sign(desk, "DeskSign", new Vector3(0f, 3.1f, 0.14f), Vector3.forward, new Vector2(2.8f, 0.8f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 80);
 
         // six spots in a row on the desk top; each accepts one find. The last is locked for now.
         var spotRoot = FreshChild(desk, "Spots");
         string[] ids = { "apron_hook", "shoe_rack", "glasses_stand", "shelf_list_board", "clipboard", CampaignCatalog.DumbwaiterSpot };
         string[] labels = { "Apron hook", "Shoe rack", "Glasses stand", "Shelf-list board", "Clipboard", "Dumbwaiter hatch" };
         string[] signs = { "APRON\nHOOK", "SHOE\nRACK", "GLASSES\nSTAND", "SHELF-LIST\nBOARD", "CLIP-\nBOARD", "DUMB-\nWAITER" };
-        float[] xs = { 1.1f, 0.66f, 0.22f, -0.22f, -0.66f, -1.1f };   // the player looks toward -Z, so +X is on the left
+        float[] xs = { 1.75f, 1.05f, 0.35f, -0.35f, -1.05f, -1.75f };   // the player looks toward -Z, so +X is on the left
         const float top = 0.9f;
         for (int i = 0; i < ids.Length; i++)
         {
             var go = new GameObject("Spot_" + ids[i]);
             go.transform.SetParent(spotRoot, false);
-            go.transform.position = new Vector3(xs[i], top, 0.55f);
+            go.transform.position = new Vector3(xs[i], top, 0.75f);
+            go.transform.localScale = Vector3.one * WorldScale;   // desk props at world scale (so are the finds that hang on them)
             var spot = go.AddComponent<FindSpot>();
             spot.spotId = ids[i];
             spot.label = labels[i];
@@ -150,7 +153,7 @@ public static partial class LamplitBuilder
                     break;
             }
 
-            Sign(go.transform, "Label", new Vector3(xs[i], 1.58f, 0.6f), Vector3.forward, new Vector2(0.38f, 0.22f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
+            Sign(spotRoot, "Label_" + ids[i], new Vector3(xs[i], 2.15f, 0.85f), Vector3.forward, new Vector2(0.62f, 0.36f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
         }
     }
 
@@ -184,9 +187,9 @@ public static partial class LamplitBuilder
     public const float EyeHeight = 1.15f;
     public const float MoveSpeed = 3.2f;
     public const float SprintSpeed = 4.8f;
-    public const float InteractionRange = 2.4f;
-    public const float MaxAimRange = 10f;
-    public const float CarryScale = 0.9f;
+    public const float InteractionRange = 2.8f;
+    public const float MaxAimRange = 12f;
+    public const float CarryScale = 0.55f;   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
     public static string ApplyPlayerScale()
