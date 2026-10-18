@@ -20,7 +20,12 @@ MVP spec, tech stack, build status, implementation plan, agent workflow). Keep
   non-goals list in [Docs/02-mvp-spec.md](Docs/02-mvp-spec.md) until the MVP loop is proven fun.
   **Exception (requested explicitly, 2026-10-17):** the run timer/score, upgrade points per finished shelf, the tech
   tree and unlockable abilities, and carrying several books are in scope; see the note at the top of the MVP spec.
-  Save/load, procedural generation, combat/fail states and the rest of the non-goals list still stand.
+  Save/load, procedural generation, combat/fail states and the rest of the non-goals list still stand
+  **for this prototype**.
+  **Scope clarification (Kolby, 2026-10-17):** the prototype (128 books, one room) is a mechanics and Unity-learning
+  test, not the scope of the real game. The real game (draft: [Docs/13-concept-draft-inherited-library.md](Docs/13-concept-draft-inherited-library.md))
+  has to save, spans multiple zones with persistent progress, and keeps per-zone leaderboards, so save/load is in
+  scope for it. Still present a plan before building it (see backlog F-003).
 
 ## Backlog and changelog
 

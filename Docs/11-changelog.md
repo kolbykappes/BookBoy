@@ -14,6 +14,16 @@ grouped by commit date, not by hour.
 *Docs and process*
 - Added this changelog and the [backlog](10-backlog.md); seeded the backlog with controller support, achievements and save/load.
 - Refreshed the competitive research (new deep dives, screenshots index) (`611df0b`, `8aea8c2`).
+- Witch Cabin Cleanup hands-on write-up from Kolby's 51 screenshots: settings, HUD, economy, the ledger, the tarot collection,
+  spells in play, a 21-row "what to borrow" table, and a screenshot index
+  ([competitive/16-witch-cabin-cleanup.md](competitive/16-witch-cabin-cleanup.md)).
+- Narrative reference research: how successful games unlock story through a simple mechanic (Unpacking, Organized Inside, Obra
+  Dinn, Outer Wilds, and more) ([12-narrative-reference-games.md](12-narrative-reference-games.md)).
+- First concept draft for the real game: an inherited library, a missing relative, no magic, seven days (wings) with a
+  mechanical ladder and a time and item budget ([13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md)).
+- Scope clarification recorded in [../CLAUDE.md](../CLAUDE.md) and [02-mvp-spec.md](02-mvp-spec.md): the non-goals describe the
+  prototype; the real game must save. Backlog updated (new F-010 and D-001 to D-005, settings research folded into F-004, F-003
+  approved in principle).
 
 *Menus, HUD and lighting follow-up*
 - Menus no longer free the Windows cursor: it stays locked and hidden and the menus draw their own pointer (`dc720bd`).

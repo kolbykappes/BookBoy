@@ -67,7 +67,7 @@ abilities and both menus; legend shows controller glyph names when a gamepad was
 admin-menu pile-up and "unlock all" do not award achievements.
 
 ### F-003 Save progress, best times and achievements
-**Status:** Todo · **Priority:** P2 (needed by F-002 to be worth anything) · **Needs approval** (save/load is on the non-goals list) · **Added:** 2026-10-17
+**Status:** Todo · **Priority:** P2 (needed by F-002 to be worth anything) · **Approved in principle** (Kolby, 2026-10-17: "the game has to save"; the non-goals list describes the prototype). Still present the file-format plan before building. · **Added:** 2026-10-17
 
 **Goal:** remember unlocked achievements, best finish time and settings between sessions.
 
@@ -81,6 +81,10 @@ save (a run is short). Engine-free serialization model in `BookBoy.Rules` with r
 ### F-004 Settings menu
 **Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
 Mouse sensitivity, field of view, master volume, controller look speed / dead zone / invert Y. Needs F-003 to remember them.
+**From the competitor research (2026-10-17):** camera comfort was the most common new complaint across the genre (motion blur,
+head bob, low camera), so also offer: a head-bob toggle, a motion-blur toggle, camera height, a recolorable highlight (also a
+colorblind aid), held-item list size, toggle sprint, and a "low feedback" mode. See the settings table in
+[competitive/16-witch-cabin-cleanup.md](competitive/16-witch-cabin-cleanup.md). Rebinding keys would touch input bindings (needs approval).
 
 ### F-005 Sound
 **Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
@@ -107,12 +111,57 @@ a shelf earns a point). Dismissed forever once seen (needs F-003) or per run unt
 Sound and screen feedback for Gather Family / Home Beacon / Quick Shelve, a visible recharge ring on the held book, a brief
 slow-motion on the last book of a shelf. Needs playtest feedback first.
 
+### F-010 Borrow list from the competitor research
+**Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
+The full ranked table (21 rows, with effort estimates) is in [competitive/16-witch-cabin-cleanup.md](competitive/16-witch-cabin-cleanup.md)
+under "what to borrow". Split it into single items when picking one. Strongest candidates for this prototype, each small:
+- Upgrade menu shows the change in numbers ("capacity 4 to 5") and a "Need N" line instead of just greying out (row 1).
+- A visible progress pop on each correct placement, not only at shelf completion (rows 2 and 3).
+- A shelf-completion sequence: a pulse along the finished series, a "+1" over each book, the point flying to the HUD (row 18).
+- A hover count on shelved books ("2/4") and the placement ghost (rows 4 and 5).
+- Check that a tossed book can never be lost or end up out of bounds, and consider a "call the books" recovery (row 10).
+- A hotbar-style countdown ring for the four abilities (row 13 and the cooldown note).
+
+---
+
+## Design and research (the real game; see [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md))
+
+These are not prototype features. They are the next steps for designing the real game; the order is a suggestion.
+
+### D-001 Prototype the least proven mechanical layers
+**Status:** Todo · **Priority:** P1 · **Added:** 2026-10-17
+Days 1 to 3 of the concept (group, different types, order) repeat what the genre does. The new ideas are Day 4 (restore: clean
+and mend before shelving), Day 5 (identify and decipher with a key card) and Day 6 (reconcile two numbering systems). Build the
+smallest slice of Day 4 and Day 5 and **measure items per minute and how fun each is**; the concept's time budget assumes about
+4.5 to 6 items per minute throughout. Slice with the usual guardrails (engine-free rules plus tests).
+
+### D-002 Research real archival and conservation techniques
+**Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
+The lessons in the concept (shelf-reading, dating by watermarks and postmarks, conservation, finding aids, provenance and
+accession records, cross-referencing legacy systems) come from general knowledge. Research each properly before writing it into
+the game, and the history of library ordering (a first pass confirmed the Pinakes, Dewey's dates and that catalogs were probably
+introduced around 800 CE; chained libraries and card catalogs are unverified).
+
+### D-003 Settle the open questions in the concept draft
+**Status:** Todo · **Priority:** P1 · **Added:** 2026-10-17
+Where the relative is, how many patron portraits to commission and in what style, how long a "day" is and where it saves,
+whether the pure (no-tools) ruleset needs its own boards, and whether Day 2 is a real mechanic or a second sorting key.
+
+### D-004 Look into why two narrative-through-mechanic games reviewed worse
+**Status:** Todo · **Priority:** P3 · **Added:** 2026-10-17
+`Telling Lies` (63%) and `Heaven's Vault` (84%) use the same kind of approach as the best-reviewed games in
+[12-narrative-reference-games.md](12-narrative-reference-games.md) but reviewed noticeably worse. Find out why.
+
+### D-005 Decide the visual style and commissioning plan
+**Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
+No generative AI for art or text. Choose one base 3D style (possibly CC0 packs plus a few hero props), the bookplate or engraving
+style for commissioned patron portraits, and check the rights of any public-domain images per item.
+
 ---
 
 ## Chores and housekeeping
 
 - **H-001** Push the branch and refresh PR #1's description (it still describes an early state; many commits are local only).
-- **H-002** Decide what to do with the untracked competitive-research files in `Docs/competitive/` (not part of the game work).
 - **H-003** Playtest pass by Kolby on the new lighting, floor, hand light and menu pointer; list anything that feels off here.
 - **H-004** Look at the Editor-generated `BookBoy.slnx` change and decide whether to commit it.
 
@@ -121,5 +170,6 @@ slow-motion on the last book of a shelf. Needs playtest feedback first.
 ## Decisions waiting on Kolby
 
 1. F-001: OK to read `Gamepad.current` directly like the keyboard and mouse (no binding changes)? Which buttons for the four abilities?
-2. F-002 / F-003: OK to lift the "no save/load" non-goal for a tiny settings/achievements file only?
+2. ~~F-002 / F-003: OK to lift the "no save/load" non-goal?~~ **Answered 2026-10-17:** yes, the real game has to save. Still
+   present the file-format plan first (versioned, never crash on a corrupt file; per-zone checkpoints at the end of a "day").
 3. Which of the starter achievements do you actually want, and should there be one per bookcase theme?

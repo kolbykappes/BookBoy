@@ -11,6 +11,11 @@ twelve books and exact-slot placement until 2026-10-17; see [04-build-status.md]
 > tech tree to spend them on, and unlockable abilities. They were requested explicitly; the "hard timers / score
 > attacks / economy" non-goals were written to keep the first loop simple and are relaxed for these features only.
 
+> **Scope clarification, 2026-10-17 (Kolby):** this spec describes the *prototype*, a mechanics and Unity-learning
+> test. The real game is larger (multiple zones, persistent progress, per-zone leaderboards, a story), and the
+> non-goals below (save/load in particular) apply to the prototype only. See
+> [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md).
+
 ## Player experience requirements
 
 - First-person player can walk, look around, collide with geometry, and approach shelves.

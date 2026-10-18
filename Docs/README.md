@@ -20,6 +20,8 @@ them as decisions change, don't re-import the original brief.
 | [../.claude/memory/](../.claude/memory/unity-editor-state.md) | Unity dev lessons (cold tier, read on demand; each file has a `retrieval_hook`): [editor state](../.claude/memory/unity-editor-state.md), [prefabs & assets](../.claude/memory/unity-prefabs-and-assets.md), [testing](../.claude/memory/unity-testing.md), [editor-driving tooling](../.claude/memory/unity-tooling-editor-drivers.md), [geometry/physics](../.claude/memory/unity-measuring-geometry-animation-physics.md). **These take precedence over other docs on Unity workflow.** |
 | [10-backlog.md](10-backlog.md) | **The to-do list**: requested features (controller support, achievements, ...), ideas, chores and open decisions. Add to it; hand any item to an agent |
 | [11-changelog.md](11-changelog.md) | **Dated log of what was completed**, newest first. Add an entry whenever work lands |
+| [12-narrative-reference-games.md](12-narrative-reference-games.md) | Research on successful games where a simple mechanic unlocks the story (Unpacking, Organized Inside, Obra Dinn, Outer Wilds, ...), the patterns they share, and ideas for BookBoy's narrative |
+| [13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md) | **Draft concept for the real game** (inherited library, missing relative, wings as episodes, quiet library magic), with decisions made so far and open questions. Brainstorm status, not committed design |
 | [09-scale-reference.md](09-scale-reference.md) | Real-world-grounded sizes for player eye height, books, and shelving — check before placing/sizing any new object |
 
 ## Quick orientation
