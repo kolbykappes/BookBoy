@@ -434,7 +434,10 @@ is a "pile up the books" feature to do it again.
   piles; `RebakeAllPiles()` redoes all three rooms. Setting `Physics.simulationMode` was tried and rejected: it makes the Editor
   rewrite `ProjectSettings/DynamicsManager.asset` (a fenced file), and `Physics.Simulate` does nothing without it.
 - **Result:** Room 1 starts as 6 piles, Room 2 as 7, Room 3 as 8 (uneven sizes, highest point under 0.3 m).
-- **Verified:** 14 new Edit Mode tests (109 total). Play Mode: `tools/verify_lamplit_piles.cs` part 1 (14 checks: baked piles in all three
-  rooms, then the admin pile-up of a tidy room starts) passed, and all seven Lamplit suites still pass. **Not yet verified:** part 2
-  (`verify_lamplit_piles_part2.cs`: the live drop actually landing in piles) needs Play-mode frames to run, and the Editor window was in
-  the background (Unity throttles it), so that check is still to be run with the Editor in front.
+- **Verified:** 14 new Edit Mode tests (109 total). Play Mode: `tools/verify_lamplit_piles.cs` (14 checks: baked piles in all three rooms, then the admin
+  pile-up of a tidy room starts) and `_piles_part2.cs` (6 checks: the live drop lands in several piles, nothing in the air or still solid, a book
+  can be picked up from a pile) pass; part 2 needs running frames, so run it with the Editor window in front. All seven other Lamplit suites and
+  the prototype suites (carry, toss, abilities, pile) still pass.
+- **Bug found and fixed on the way:** `Book.StopPhysicsTumble` removed the rigidbody with a deferred `Destroy`. If a pile-up restarted while
+  books were still in flight, the new toss reused that rigidbody in the same frame and lost it at the end of the frame, leaving the book frozen
+  in mid-air with a solid collider. It now removes it immediately (`EndSolid` too).

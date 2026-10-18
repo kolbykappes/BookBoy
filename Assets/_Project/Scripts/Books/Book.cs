@@ -318,7 +318,7 @@ public class Book : MonoBehaviour
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            if (Application.isPlaying) Destroy(rb); else DestroyImmediate(rb);
+            DestroyImmediate(rb);
         }
 
         Collider bookCollider = GetComponent<Collider>();
@@ -341,10 +341,12 @@ public class Book : MonoBehaviour
             _settle = null;
         }
 
+        // Immediate, not deferred: a new toss in the same frame (a pile-up restarting while books are in flight) would otherwise reuse
+        // this rigidbody and then lose it at the end of the frame, leaving the book frozen in mid-air.
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            Destroy(rb);
+            DestroyImmediate(rb);
         }
 
         Collider bookCollider = GetComponent<Collider>();
