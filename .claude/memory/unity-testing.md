@@ -130,3 +130,14 @@ produces.
 - Right after a real recompile the domain reload makes the next command fail
   with a generic "Network error" - that is "not ready yet", not a test
   problem. Wait for `editor_status` = ready, then run.
+
+## An unbounded loop in an eval script hangs the Editor for good (2026-10-18)
+
+`unity command eval_file` runs on the Editor's main thread. A `while (cond) step();` whose condition never becomes true (here:
+`while (carry.Current != book) carry.Cycle(1)` after a pickup silently failed because a Gather Family flight had disabled that
+book's collider) spins the main thread at 100% CPU. The Pipeline just reports "Main thread operation timed out" for every call
+after that, the window shows "Not Responding", and the only way out is to kill the Unity process and relaunch it
+(`Unity.exe -projectPath C:\Code\BookBoy`). Play Mode state is lost, which is harmless; unsaved edits are not.
+**Rule: never write `while` in a `tools/` script. Use `for (int guard = 0; guard < N && cond; guard++)`.** Also: a flight or
+timer started by one verify script is still running when the next one starts in the same Play session; use a fresh session
+(stop, focus, play) per suite.

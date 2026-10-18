@@ -33,7 +33,7 @@ carry.SetCapacity(4);   // 5 carried, capacity 4: nothing is dropped, but nothin
 Bookcase CaseOfTheme(BookCategory t) { foreach (var bc in UnityEngine.Object.FindObjectsByType<Bookcase>(UnityEngine.FindObjectsInactive.Include)) if (bc.theme == t) return bc; return null; }
 // place the current book on a shelf slot
 var slot = CaseOfTheme(BookCategory.Alchemy).shelves[0].slots[0];
-while (carry.Current != B("Book_Alchemy_A1")) carry.Cycle(1);
+for (int guard = 0; guard < 20 && carry.Current != B("Book_Alchemy_A1"); guard++) carry.Cycle(1);
 bool placed = pi.PlaceCurrent(slot);
 Check("placing the current book puts it on the slot and out of the hands", placed && slot.occupant == B("Book_Alchemy_A1") && carry.Count == 4 && !carry.Items.Contains(B("Book_Alchemy_A1")));
 Check("a placed book gets its real size back (not the carried size)", (B("Book_Alchemy_A1").transform.localScale - scales[0]).magnitude < 0.0005f, B("Book_Alchemy_A1").transform.localScale + " vs " + scales[0]);

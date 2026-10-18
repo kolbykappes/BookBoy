@@ -56,7 +56,7 @@ System.AppDomain.CurrentDomain.SetData("beaconRoot", "BeaconFrame_" + home.name)
 // ---- Gather Family: nothing happens (and no cooldown) when it cannot pull ----
 Reset(); gp.AddPoints(40); gp.TryBuy("gather");
 foreach (var n in new[] { BN(2, 0, 3), BN(0, 0, 1), BN(1, 0, 1), BN(3, 0, 1) }) pi.PickUp(B(n));
-carry.Cycle(1); while (carry.Current != B(BN(2, 0, 3))) carry.Cycle(1);
+carry.Cycle(1); for (int guard = 0; guard < 20 && carry.Current != B(BN(2, 0, 3)); guard++) carry.Cycle(1);
 Check("hands full: Gather Family pulls nothing and does not start its timer", gf.Activate() == 0 && gp.IsAbilityReady(BookBoy.Rules.AbilityId.GatherFamily));
 
 // ---- Gather Family: starts at 2 books, nearest first, trail behind them ----

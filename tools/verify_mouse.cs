@@ -42,7 +42,7 @@ Check("LEFT click picked the aimed loose book up", carry.Contains(loose) && carr
 var slot = CaseOfTheme(BookCategory.Astronomy).shelves[0].slots[0];
 pi.PickUp(B("Book_Beasts_A3"));   // a second book in hand: the "next" book
 Aim(new UnityEngine.Vector3(slot.transform.position.x, 1.55f, 3.2f), slot.transform.position + new UnityEngine.Vector3(0f, 0.05f, 0f));
-while (carry.Current != loose) carry.Cycle(1);
+for (int guard = 0; guard < 20 && carry.Current != loose; guard++) carry.Cycle(1);
 Click("left");
 Check("LEFT click placed the current held book in the aimed slot", slot.occupant == loose && carry.Count == 1, "occupant=" + (slot.occupant ? slot.occupant.name : "none"));
 Check("it was graded green (right bookcase, shelf and slot)", loose.Grade() == BookBoy.Rules.PlacementResult.Correct);
