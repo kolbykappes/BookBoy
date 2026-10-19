@@ -126,40 +126,46 @@ height -= 0.35 * lines
 # position along the spine path in metres (0..SPINE_LEN) and up the book
 sp = (U - 0.30) / 0.40 * SPINE_LEN
 ribs = np.zeros((H, W))
-for zc in (0.060, 0.115, 0.241, 0.296):            # four raised bands (m from the bottom)
+for zc in (0.138, 0.265):                           # two raised bands between the three plates (m from the bottom)
     ribs += np.exp(-((z_m - zc) / 0.0055) ** 2)
-for zc in (0.022, 0.334):                           # head and tail bands
+for zc in (0.040,):                                 # a lower band under the number plate
+    ribs += 0.9 * np.exp(-((z_m - zc) / 0.0050) ** 2)
+for zc in (0.014, 0.342):                           # head and tail bands
     ribs += 0.8 * np.exp(-((z_m - zc) / 0.0045) ** 2)
-for zc in (0.075, 0.100, 0.256, 0.281):             # fine rules between the bands
+for zc in (0.127, 0.149, 0.254, 0.276):             # fine rules beside the two middle bands
     ribs += 0.25 * np.exp(-((z_m - zc) / 0.0007) ** 2)
 height += np.where(spine, 0.45 * ribs, 0.0)
 
-# label plate: 62 mm wide centred on the spine, 0.14 to 0.235 up (matches the letter's position, local y = +0.05)
-pw, pz0, pz1 = 0.062, 0.150, 0.250
-in_plate = (np.abs(sp - SPINE_LEN / 2) < pw / 2) & (z_m > pz0) & (z_m < pz1) & spine
-plate_edge = np.minimum(pw / 2 - np.abs(sp - SPINE_LEN / 2), np.minimum(z_m - pz0, pz1 - z_m))
-height += np.where(in_plate, 0.12, 0.0)
-height -= np.where(in_plate, 0.25 * np.exp(-((plate_edge - 0.003) / 0.0007) ** 2), 0.0)   # a rule inside the plate edge
+# three label plates on the spine, from the top: a set icon, the set letter, the volume number (centres at v 0.853, 0.562 and 0.257,
+# which is where LamplitBuilder.Item puts the labels: local y +0.353, +0.062 and -0.243)
+PLATES = ((0.275, 0.332, 0.050), (0.145, 0.255, 0.062), (0.058, 0.125, 0.056))   # (bottom m, top m, width m)
+in_plate = np.zeros((H, W), dtype=bool)
+for pz0, pz1, pw in PLATES:
+    mask = (np.abs(sp - SPINE_LEN / 2) < pw / 2) & (z_m > pz0) & (z_m < pz1) & spine
+    edge = np.minimum(pw / 2 - np.abs(sp - SPINE_LEN / 2), np.minimum(z_m - pz0, pz1 - z_m))
+    in_plate |= mask
+    height += np.where(mask, 0.12, 0.0)
+    height -= np.where(mask, 0.25 * np.exp(-((edge - 0.003) / 0.0007) ** 2), 0.0)   # a rule inside the plate edge
 
 # ---- albedo (a MULTIPLY texture: bright and neutral) ----
 hn = (height - height.mean()) / (np.abs(height - height.mean()).max() + 1e-9)
 gy, gx = np.gradient(height)
 edge_shade = np.clip(np.sqrt(gx * gx + gy * gy) * 40.0, 0.0, 1.0)       # steep parts of the relief (rib sides, groove walls) read darker
-albedo = 0.84 + 0.06 * hn
+albedo = 0.95 + 0.03 * hn
 albedo += 0.015 * lowpass_noise(H, W, 3)
-albedo -= 0.30 * np.clip(lines, 0, 1)                                    # grooves print darker
-albedo -= 0.16 * edge_shade                                              # relief edges
+albedo -= 0.20 * np.clip(lines, 0, 1)                                    # grooves print darker
+albedo -= 0.09 * edge_shade                                              # relief edges
 albedo += np.where(spine, 0.07 * np.clip(ribs, 0, 1), 0.0)              # the tops of the raised bands catch the light
-albedo += np.where(in_plate, 0.16, 0.0)                                  # the label plate is lighter so the letter reads
+albedo += np.where(in_plate, 0.05, 0.0)                                  # the label plate is lighter so the letter reads
 # edge wear on the board perimeters and the spine's head and tail
 wear = np.zeros((H, W))
 edge_b = np.minimum.reduce([BOARD_LEN - s_back, z_m, BOOK_H - z_m])
 edge_f = np.minimum.reduce([BOARD_LEN - s_front, z_m, BOOK_H - z_m])
 wear += np.where(back, np.exp(-edge_b / 0.004), 0.0) + np.where(front, np.exp(-edge_f / 0.004), 0.0)
-albedo -= 0.05 * wear * (0.5 + 0.5 * (lowpass_noise(H, W, 2) > 0))
+albedo -= 0.04 * wear * (0.5 + 0.5 * (lowpass_noise(H, W, 2) > 0))
 # plain top and bottom rows, and the plain strip the inner faces and end caps use (u near 0.005)
 plain = (V < 0.012) | (V > 0.988) | (U < 0.012)
-albedo = np.where(plain, 0.84, albedo)
+albedo = np.where(plain, 0.94, albedo)
 height = np.where(plain, 0.0, height)
 albedo = np.clip(albedo, 0.55, 1.0)
 

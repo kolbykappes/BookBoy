@@ -13,6 +13,13 @@ foreach (var kv in new[] { ("Case_Solo", widthSolo), ("Case_Triple", widthTriple
     Check(kv.Item1 + ": the front is toward -z (min z about -(depth/2 + 0.075), max z about depth/2 + 0.01)", System.Math.Abs(b.min.z + (LamplitBuilder.CaseDepth / 2f + 0.075f)) < 0.01f && System.Math.Abs(b.max.z - (LamplitBuilder.CaseDepth / 2f + 0.01f)) < 0.01f, b.min.z.ToString("F3") + " .. " + b.max.z.ToString("F3"));
     Check(kv.Item1 + ": stands on the floor and clears the ceiling (0 to under 2.7 m)", b.min.y > -0.001f && b.max.y < 2.70f, b.min.y.ToString("F3") + " .. " + b.max.y.ToString("F3"));
     Check(kv.Item1 + ": three submeshes (wood, back, brass)", m.subMeshCount == 3, m.subMeshCount.ToString());
+    if (m.subMeshCount == 3)
+    {
+        float backMin = 9f, brassMax = -9f;
+        foreach (var t in m.GetTriangles(1)) backMin = System.Math.Min(backMin, v[t].z);
+        foreach (var t in m.GetTriangles(2)) brassMax = System.Math.Max(brassMax, v[t].z);
+        Check(kv.Item1 + ": submesh 1 is the back panel (all at the back, z > 0.1) and submesh 2 the brass (all at the front, z < -0.1)", backMin > 0.1f && brassMax < -0.1f, "back min z " + backMin.ToString("F3") + ", brass max z " + brassMax.ToString("F3"));
+    }
     for (int i = 0; i < LamplitBuilder.ShelfRows; i++)
     {
         float top = LamplitBuilder.BaseHeight + i * LamplitBuilder.ShelfSpacing; int n = 0;

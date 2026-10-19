@@ -34,6 +34,8 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Lighting pass (scene-level): brighter orbs (5.0, range 9), measured before and after with post-processing on; pipeline-setting changes proposed, not applied (T-003).
+- Palette: 24 colours solved for contrast against the wood and for colour-blind separation (BookBoy.Rules.Palette, tested); spines now carry a set icon, a letter and a volume number on three plates (T-010).
 - Lamplit bookcases: carved Blender meshes (stepped plinth, reeded pilasters, dentil cornice, arched crest, brass nameplate plates) with a procedural mahogany wood material, one shared mesh for the triple (Mat_CaseWood, Mat_CaseBack, Mat_CaseBrass; tools/blender/make_cases.py).
 - PerfLab: a performance test scene with up to 3000 tome books in baked piles, an overlay of frame time and draw calls and hotkeys for book count, lighting presets, book shadows, GPU instancing and colour mode (T-018 stage A); the pile planner can make many piles.
 - Lamplit: books are now a Blender-built tome mesh (rounded spine, boards, page block) with a sample cloth cover material (Mat_BookCover and Mat_BookPages); bookcases have 2.4 in boards, packed slots, 1 in of headroom, a plinth lip and a crown; held books at full size (T-004, T-017).

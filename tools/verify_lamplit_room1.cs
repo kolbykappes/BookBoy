@@ -32,6 +32,11 @@ Check("each bookcase uses the Group rule and accepts any family", System.Linq.En
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
 Check("books are tomes: 12 to 15 in tall, 4 in thick, 10 in deep, and fit their shelf (spine under the slot pitch)", System.Linq.Enumerable.All(zone.items, b => b.transform.localScale.y >= 0.3047f && b.transform.localScale.y <= 0.3811f && System.Math.Abs(b.transform.localScale.x - 0.1016f) < 0.0005f && System.Math.Abs(b.transform.localScale.z - 0.254f) < 0.0005f && b.transform.localScale.x < LamplitBuilder.SlotPitch));
 
+// the spine: icon, letter and number on every book; every set colour keeps its contrast with the wood (backlog T-010)
+Check("every book has a set icon, a letter and a volume number on its spine", System.Linq.Enumerable.All(zone.items, bk => bk.transform.Find("Label_Icon") != null && bk.transform.Find("Label_Symbol") != null && bk.transform.Find("Label_Number") != null));
+double woodEff = 0.066, coverTex = 0.733; double minRatio = 1e9, sumRatio = 0; var seenSets = new System.Collections.Generic.HashSet<int>(); int nSets = 0;
+foreach (var bk in zone.items) { if (!seenSets.Add(bk.GroupKey)) continue; var c = bk.definition.spineColor; double r = BookBoy.Rules.Palette.ContrastRatio(BookBoy.Rules.Palette.Luminance(c.r, c.g, c.b) * coverTex, woodEff); minRatio = System.Math.Min(minRatio, r); sumRatio += r; nSets++; }
+Check("every set colour keeps a contrast of at least 2.2 against the wood, average above 2.5", minRatio >= 2.19 && sumRatio / nSets > 2.5, "min " + minRatio.ToString("F2") + " avg " + (sumRatio / nSets).ToString("F2"));
 // headroom: the tallest book clears the board above it by at least 1 in, on every row including the top one
 float board = LamplitBuilder.BoardThickness, inch = 0.0254f;
 Check("every row has at least 1 in of headroom above the tallest (15 in) book", LamplitBuilder.ShelfSpacing - board - LamplitBuilder.BookMaxHeight >= inch - 0.0005f && LamplitBuilder.ContainerHeight - board - (LamplitBuilder.BaseHeight + 3f * LamplitBuilder.ShelfSpacing) - LamplitBuilder.BookMaxHeight >= inch - 0.0005f,

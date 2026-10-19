@@ -23,5 +23,6 @@ MonoBehaviour:
   setSize: 0
   number: 1
   room: 0
+  iconIndex: -1
   symbol: 
   findId: shoes

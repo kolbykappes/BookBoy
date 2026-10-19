@@ -33,6 +33,9 @@ public class BookDefinition : ScriptableObject
     [Tooltip("The room (1-3) this item belongs to; 0 = any. Containers of another room grade it wrong.")]
     public int room;
 
+    [Tooltip("Set icon (0 to 7: disc, triangle, diamond, square, star, heart, moon, cross) shown at the top of the spine, a second cue next to the letter. -1 = none.")]
+    public int iconIndex = -1;
+
     [Tooltip("A letter shown on the item: the group's symbol, so colour never decides alone.")]
     public string symbol = "";
 

@@ -17,11 +17,12 @@ MonoBehaviour:
   category: 0
   series: 0
   volume: 5
-  spineColor: {r: 0.56684256, g: 0.85, b: 0.17, a: 1}
+  spineColor: {r: 0.9411765, g: 0.85490197, b: 0.10980392, a: 1}
   family: 0
   group: 2
   setSize: 8
   number: 5
   room: 1
+  iconIndex: 2
   symbol: C
   findId: 

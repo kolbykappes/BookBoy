@@ -326,7 +326,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
 - **Done 2026-10-18 (step 1, engine-free):** `PlacementRules.SetFitsShelf`, an `EvaluateCampaign` overload with `setFitsShelf` (yellow, never overrides red), `BookDefinition.setSize`, `Book.GradeCampaign` wired to the shelf's slot count; 3 new Edit Mode tests (112 pass). Not yet used by the builder (setSize defaults to 0 = any shelf, so nothing changes in the current rooms).
 - Touches: `CampaignCatalog` (set sizes and counts), `PlacementRules.EvaluateCampaign` (capacity check, engine-free, Edit Mode tests first), builder (containers, groups, item counts), signs, finished-shelf tracking, verify scripts and `CampaignRulesTests`.
 
-### T-003 Lighting pass after T-002  **P2, Todo, Needs approval for the settings items**
+### T-003 Lighting pass after T-002  **P2, safe parts done 2026-10-19; the settings items below still need Kolby's approval**
 - Scene and builder (no approval): lamps lower or ceiling hotspot reduced (the ceiling gets about 32x the floor's light with lamps 0.45 m below it, file 5), lamp range and intensity retuned for the new scale, remove the leftover 0.5 directional light if it only adds an invisible term, check ambient (Trilight is very dark).
 - **Approval:** shadow settings sized for the rooms (soft shadows Medium instead of High; fewer than 4 cascades and a shorter max distance than 50 m; an atlas big enough for the shadowed lights, since 3 shadowed point lights at tier 512 need 18 shadow maps and a 2048 atlas holds 16);
   Bloom Clamp about 3 to 6 (default 65472); motion blur off or low; keep Neutral tonemapping and Post Exposure for brightness (files 6 to 8).
@@ -372,7 +372,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
   Next Fest editions are Feb 22 to Mar 1 and Jun 14 to 21, 2027 (a demo needs its own App ID; June looks realistic). Decide the AI policy and keep the provenance log. Steamworks.NET behind a plain-C# interface when it is time (domain reload is off). Genre pricing is $4.99 to $5.99.
   Re-read Valve's live AI-disclosure page before shipping.
 
-### T-010 Palette: per-hue lightness solve  **P2, Todo, no approval needed (this is L-021)**
+### T-010 Palette: per-hue lightness solve  **Done 2026-10-19 (see build status); a rendered per-set check and a colour-blind review by eye remain (this is L-021)**
 - File 18: HSV value is not luminance; 10 of 20 groups are below a 2.0 ratio against the wood (#6B401F) even in flat albedo (purple #613299 is 1.02, navy #325099 is 1.15). Replace `GroupColor` with a per-hue lightness solve in Oklab (floor L about 0.67 for a 2.5 ratio on this wood),
   check red/green pairs with a colour-blind simulation, keep the letters (deuteranopia collapses some pairs to a tiny distance). Re-measure on **rendered** frames (tonemapping changes lit ratios and is undocumented). WCAG's 3:1 non-text bar is higher than our 2.0 and 2.5 targets, and only a proxy in dark scenes.
 

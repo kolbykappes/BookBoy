@@ -9,8 +9,8 @@ public static partial class LamplitBuilder
     // Each is RoomWidth wide with the containers (at world scale) along the far wall and the piles of loose items in the middle.
     private static float ContainerPitch => CaseWidth(5) + 0.08f;   // legacy 5-slot rows (Rooms 2 and 3 are not converted yet)
     private const float RoomWidth = 12f * LayoutK;   // 7.5 m (24'7")
-    private const float OrbIntensity = 2.0f;   // provisional: the lamps are lower (2.1 m) and the rooms smaller, so the storybook 4.4 to 5 is too bright; retune in the lighting pass (T-003)
-    private const float OrbRange = 6f;
+    private const float OrbIntensity = 5.0f;   // provisional: the lamps are lower (2.1 m) and the rooms smaller, so the storybook 4.4 to 5 is too bright; retune in the lighting pass (T-003)
+    private const float OrbRange = 9f;
 
     public struct RoomSpec
     {
@@ -208,6 +208,7 @@ public static partial class LamplitBuilder
             {
                 var def = Definition("Item_R1_" + letter + n);
                 def.setSize = setSize;
+                def.iconIndex = g % PixelDigit.IconCount;
                 def.bookId = "r1_" + char.ToLowerInvariant(letter) + n;
                 def.displayName = "Book " + letter;
                 def.family = 0;
@@ -220,7 +221,7 @@ public static partial class LamplitBuilder
                 def.series = 0;
                 def.volume = n;
                 EditorUtility.SetDirty(def);
-                var book = Item(itemsRoot, "R1_" + letter + n, def, ReadingScales[g % ReadingScales.Length] * WorldScale, false);
+                var book = Item(itemsRoot, "R1_" + letter + n, def, ReadingScales[g % ReadingScales.Length] * WorldScale, true);
                 items.Add(book);
                 homes.Add(shelf.slots[n - 1]);
             }

@@ -51,7 +51,24 @@ public class PixelDigit : MonoBehaviour
         new[] { "10001", "10001", "01010", "00100", "01010", "10001", "10001" },   // X
         new[] { "10001", "10001", "01010", "00100", "00100", "00100", "00100" },   // Y
         new[] { "11111", "00001", "00010", "00100", "01000", "10000", "11111" },   // Z
+        // set icons (36 to 43): solid shapes that cannot be mistaken for a letter or a digit, a second cue next to the colour and the letter
+        new[] { "00000", "01110", "11111", "11111", "11111", "01110", "00000" },   // disc
+        new[] { "00000", "00100", "01110", "01110", "11111", "11111", "00000" },   // triangle
+        new[] { "00100", "01110", "11111", "11111", "01110", "00100", "00000" },   // diamond
+        new[] { "00000", "11111", "11111", "11111", "11111", "11111", "00000" },   // square
+        new[] { "00100", "10101", "01110", "11111", "01110", "10101", "00100" },   // star
+        new[] { "01010", "11111", "11111", "11111", "01110", "00100", "00000" },   // heart
+        new[] { "00110", "01100", "11000", "11000", "11000", "01100", "00110" },   // moon
+        new[] { "00100", "00100", "11111", "11111", "00100", "00100", "00100" },   // cross
     };
+
+    public const int IconCount = 8;
+
+    /// <summary>The value to give a PixelDigit to show set icon number i (0 to 7, wraps): a disc, triangle, diamond, square, star, heart, moon or cross.</summary>
+    public static int IconValue(int i)
+    {
+        return 36 + ((i % IconCount) + IconCount) % IconCount;
+    }
 
     /// <summary>The value to give a PixelDigit to show the letter c (A-Z, case-insensitive): digits are 0-9, letters follow.</summary>
     public static int LetterValue(char c)
@@ -61,8 +78,8 @@ public class PixelDigit : MonoBehaviour
 
     private static readonly Dictionary<int, Mesh> MeshCache = new Dictionary<int, Mesh>();
 
-    [Tooltip("0-9 are digits; 10-35 are the letters A-Z (see LetterValue).")]
-    [Range(0, 35)] public int value = 1;
+    [Tooltip("0-9 are digits; 10-35 are the letters A-Z (see LetterValue); 36-43 are the set icons (see IconValue).")]
+    [Range(0, 43)] public int value = 1;
     public Color color = Color.white;
     public Material material;
 

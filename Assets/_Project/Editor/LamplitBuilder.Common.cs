@@ -493,7 +493,7 @@ public static partial class LamplitBuilder
             ti.SaveAndReimport();
         }
 
-        var wood = EnsureMat("Mat_CaseWood", new Color(0.82f, 0.43f, 0.20f), 0.60f);
+        var wood = EnsureMat("Mat_CaseWood", new Color(0.62f, 0.30f, 0.14f), 0.60f);
         wood.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedo));
         wood.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(normal));
         wood.SetFloat("_BumpScale", 1.0f);
@@ -613,27 +613,42 @@ public static partial class LamplitBuilder
         book.placedTime = 0;
         book.ApplyColor();
 
+        // the spine has three plates (tools/blender/make_book_textures.py): icon on top, the set letter in the middle, the volume number at the bottom
         Color text = TextColorFor(def.spineColor);
+        bool plates = mesh != null;
         if (!string.IsNullOrEmpty(def.symbol))
         {
-            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.055f * WorldScale, text);
+            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), plates ? 0.062f : 0.05f, 0.055f * WorldScale, text);
+        }
+
+        if (def.iconIndex >= 0 && plates)
+        {
+            Label(go.transform, "Label_Icon", PixelDigit.IconValue(def.iconIndex), 0.353f, 0.040f * WorldScale, text);
         }
 
         if (showNumber)
         {
-            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.048f * WorldScale, text);
+            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), plates ? -0.243f : -0.30f, 0.046f * WorldScale, text);
         }
 
         return book;
     }
 
-    /// <summary>A distinct colour for group number g of n (hue steps, alternating lightness).</summary>
+    /// <summary>The 24 set colours (backlog T-010): solved by BookBoy.Rules.Palette.Solve (tools/solve_palette.cs) so that every one keeps a contrast of at least 2.2 against
+    /// the wood once the cover texture's darkening is counted (average 3.5), and stays as far from the others as possible for normal vision and the three kinds of
+    /// colour blindness (smallest pair distance 0.045 in Oklab). In greedy order: the first k are the best k. The letter, icon and number on the spine carry the identity,
+    /// colour alone never does.</summary>
+    private static readonly string[] GroupHex =
+    {
+        "#74FEFD", "#A09600", "#F0DA1C", "#4FAAFE", "#F067A6", "#A5D2A4", "#C9F5A8", "#DEB13A", "#29D5E4", "#30A46F", "#D87DD8", "#9EB47D",
+        "#9BEBCC", "#C9D374", "#FB85B2", "#4490FE", "#FEB2FD", "#E9EE6F", "#BBA442", "#D47D73", "#C56FDF", "#DBC70D", "#FCA4D6", "#B2C16D",
+    };
+
+    /// <summary>The colour of set number g (the table repeats after 24).</summary>
     public static Color GroupColor(int g, int n)
     {
-        float hue = (g * 0.618034f) % 1f;   // golden-ratio steps keep neighbouring groups apart
-        float sat = 0.55f + 0.25f * ((g % 3) / 2f);
-        float val = g % 2 == 0 ? 0.85f : 0.60f;
-        return Color.HSVToRGB(hue, sat, val);
+        ColorUtility.TryParseHtmlString(GroupHex[((g % GroupHex.Length) + GroupHex.Length) % GroupHex.Length], out Color c);
+        return c;
     }
 
     public static void MarkDirty()

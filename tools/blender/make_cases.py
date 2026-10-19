@@ -150,6 +150,14 @@ def build(bays, name):
         b.box(px - ex, px + pw + ex, -HD - 0.044, -HD, H - 0.115, H - 0.045, 0, Z_AXIS)         # capital
         b.box(px - ex - 0.010, px + pw + ex + 0.010, -HD - 0.054, -HD, H - 0.045, H, 0, Z_AXIS)  # abacus
 
+    # ---- the planked backs (built BEFORE the brass plates: Blender orders the material slots by first use, and Unity expects wood, back, brass) ----
+    for (x0, x1) in bay_x:
+        pw = 0.07
+        nplank = max(1, int(round((x1 - x0) / pw)))
+        w = (x1 - x0) / nplank
+        for k in range(nplank):
+            b.box(x0 + k * w + 0.0015, x0 + (k + 1) * w - 0.0015, HD - 0.02, HD, BH, H - BOARD, 1, Z_AXIS)
+
     # ---- shelf boards (the first shelf rests on the plinth cap), nosing, brass plates ----
     for bi, (x0, x1) in enumerate(bay_x):
         for r in range(1, ROWS):
@@ -158,12 +166,6 @@ def build(bays, name):
             b.box(x0 - 0.004, x1 + 0.004, -HD - 0.014, -HD + 0.004, t - 0.048, t - 0.006, 0, X_AXIS)   # front nosing
             cx = (x0 + x1) / 2
             b.box(cx - 0.055, cx + 0.055, -HD - 0.0185, -HD - 0.0145, t - 0.040, t - 0.014, 2, X_AXIS)  # brass nameplate
-        # the planked back
-        pw = 0.07
-        nplank = max(1, int(round((x1 - x0) / pw)))
-        w = (x1 - x0) / nplank
-        for k in range(nplank):
-            b.box(x0 + k * w + 0.0015, x0 + (k + 1) * w - 0.0015, HD - 0.02, HD, BH, H - BOARD, 1, Z_AXIS)
 
     # ---- top board and cornice ----
     b.box(-W / 2, W / 2, -HD, HD, H - BOARD, H, 0, X_AXIS)
