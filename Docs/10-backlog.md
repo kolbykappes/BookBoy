@@ -263,62 +263,129 @@ whether the pure (no-tools) ruleset needs its own boards, and whether Day 2 is a
 
 ### D-005 Decide the visual style and commissioning plan
 **Status:** Todo · **Priority:** P2 · **Added:** 2026-10-17
-No generative AI for art or text. Choose one base 3D style (possibly CC0 packs plus a few hero props), the bookplate or engraving
+~~No generative AI for art or text.~~ **Updated 2026-10-18 (Kolby):** AI is fine for placeholders; Kolby will add the real art later. Keep a provenance log; Steam requires disclosure of shipped AI assets (T-004). Choose one base 3D style (possibly CC0 packs plus a few hero props), the bookplate or engraving
 style for commissioned patron portraits, and check the rights of any public-domain images per item.
 
 ---
 
 ## Tooling, scale and research follow-ups (Kolby, 2026-10-18)
 
-Order Kolby set: **tooling first, then the player capsule and lighting.** Research behind these is in [unity-practices/](unity-practices/README.md) (files 1 to 21;
-22 to 27 are being written: save/load, aspect/FOV/motion blur, Player builds, Steam, AI book assets, adult-scale cozy rooms). Per the CLAUDE.md research rule, read the matching
-file before changing anything in the scene.
+Order Kolby set: **tooling first, then the player capsule and lighting.** The research behind all of this is in [unity-practices/](unity-practices/README.md) (27 files, each with sources and
+"Implication for BookBoy"). Per the CLAUDE.md research rule, read the matching file before changing anything in the scene. "Approval" below means CLAUDE.md fences the change
+(`ProjectSettings/`, render-pipeline settings, layers, input): present the plan and get an explicit yes first.
+
+### Recommended order of work
+
+1. **T-001** no-focus Editor workflow (stops the Editor stealing the window), then record it in CLAUDE.md and the unity-editor-ops skill.
+2. **T-002** adult-sized player and cozy rooms (undo the storybook rescale; FOV per the decision below).
+3. **T-003** lighting pass on the new scale (measured before and after; the settings items need approval).
+4. **T-010** palette: per-hue Oklab lightness solve, rendered and measured (L-021).
+5. **T-004 + T-012** procedural book mesh and cover materials, which also removes the per-book `MaterialPropertyBlock`.
+
+Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI), T-006 (Player-build check), T-015 (statics), T-008 (settings menu), T-009 (Steam lead times).
+
+### Decisions made 2026-10-18
+
+- **AI art:** fine for placeholders; Kolby will add the real art later. D-005 is updated. Keep a provenance log (tool, prompt, date) for every AI asset, because Steam requires disclosure of shipped AI assets (file 25, 26).
+- **FOV (Claude to settle, derived from Kolby's Witch Cabin screenshot and research files 2, 23 and 27):** the player-facing FOV is **horizontal**, default **90 degrees at 16:9 (58.7 vertical in Unity)**, slider **70 to 110 horizontal (43.0 to 77.6 vertical)** with a reset button; convert with `Camera.HorizontalToVerticalFieldOfView(h, 16f/9f)`.
+  Why: Witch Cabin, which Kolby likes, has its FOV slider at 90 (`Docs/competitive/img/witch-cabin/03-settings-image.png`); the knob sits about 43% along the track, which fits a horizontal range of about 60 to 130 and
+  cannot be a vertical value (90 vertical would be about 121 horizontal). [derived, medium confidence: the game does not state the axis]. Narrower is more intimate (Level Design Book; Firewatch 55). At 58.7 vertical a 0.32 m book fills 23.7% of the screen at 1.2 m and
+  19% at 1.5 m, inside the 16 to 23% band measured from the reference games; file 27's 65 vertical (97 horizontal) gives 20.9% and 16.7%, also inside. **Verify by measuring the rebuilt room;** fall back to about 97 horizontal if 90 feels tight.
+- **Save design:** not now. Kolby will do it as a separate session later (T-007 is deferred; research file 22 is kept).
+- **Sound, controller (F-001) and achievements (F-002):** later. **Aspect ratio:** 16:9 only. **Testing:** the Editor is fine for most checks.
 
 ### T-001 Test the no-focus Editor workflow  **P1, Todo, no approval needed**
 - Goal: stop the Editor window being forced to the front while Kolby works on the same PC.
-- Try (research file 20 and 21): `unity command set_autotick` once per session before Play; prove frames advance with `wait_for Time.frameCount changed` or `status` frame count and
-  `playerLoopTicking`; `capture_game_view --source camera` for off-screen captures; never call `editor_focus`. Compare one off-screen capture with a focused Game-view capture (do the
-  Volume effects, tonemapping and vignette appear?). Check `Step()` from an eval. Check empirically whether gamepad input reaches the Editor unfocused (CLAUDE.md rule 2 says no; the Input System docs say yes).
-- Needs Unity open, so do it when Kolby says the Editor is open and he is happy for a few minutes of Play. Run the Lamplit suites unfocused as the proof.
-- Fallback if it does not work: a separate clone of the project with its own Library for headless verification (file 19), or a Player build (T-006).
+- Try (research files 20 and 21): `unity command set_autotick` once per session before Play; prove frames advance with `wait_for Time.frameCount changed` or `status` frame count and `playerLoopTicking`;
+  `capture_game_view --source camera` for off-screen captures; never call `editor_focus`. Compare one off-screen capture with a focused Game-view capture (do the Volume effects, tonemapping and vignette appear?).
+  Check `EditorApplication.Step()` from an eval. Check empirically whether gamepad input reaches the Editor unfocused (CLAUDE.md rule 2 says no; the Input System docs say yes).
+- Also record in CLAUDE.md and the skill: eval has a 5 s main-thread timeout and the docs never say a timed-out eval is aborted, so long work goes in `eval_file` with bounded loops and polling.
+- Needs Unity open, so do it when Kolby says the Editor is open and a few minutes of Play is fine. Run the Lamplit suites in the background as the proof.
+- Fallback if it does not work: a separate clone of the project with its own Library (file 19), or a Player build (T-006).
 - Done when: the workflow is in CLAUDE.md and the unity-editor-ops skill, rule 2 is corrected, and a full suite run happens with Unity in the background.
 
-### T-002 Back to an adult-sized player and cozy rooms  **P1, Todo, plan first**
-- Kolby's call: the storybook rescale (world 1.6x, eye 1.15 m, FOV 75, held book 0.55) was a wrong turn. The rooms feel like a giants' hall. Want an **adult-sized actor** (eye about 1.6 to 1.7 m)
-  and rooms that feel cozy.
-- Research (file 1 to 4) says the 1.6x scale was not itself invalid, but the player capsule is still the adult one (2.0 m tall, radius 0.5, confirmed from the prefab; no scene override), so the
-  player is a child's eye in an adult body. File 27 (pending) covers how cozy tidy games keep items readable at adult scale (exaggerating key items, hold/inspect view, narrower FOV, etc.).
-- Plan before building: world scale back to 1.0 via the builder constants (WorldScale, EyeHeight, MoveSpeed/Sprint, reach, CarryScale, wall/door/ceiling heights, container and book sizes, magelight height, FOV);
-  decide which item exaggeration to keep so books stay readable; rebuild hub and rooms; re-run the suites; render and measure the book's screen fraction at 1 to 1.5 m.
-- Check held-book clipping against shelves after the change.
+### T-002 Back to an adult-sized player and cozy rooms  **P1, Todo, plan first, no approval (builder and scene only)**
+- Kolby's call: the storybook rescale (world 1.6x, eye 1.15 m, FOV 75, held book 0.55) was a wrong turn. The rooms feel like a giants' hall. Want an **adult-sized actor** and rooms that feel cozy.
+- Research: the ceiling is 2.6x the eye height (engine defaults about 1.9 to 2.0, a real house 1.45); no source supports exaggerating more than about 1.33x; readability comes from the **screen fraction** of a book
+  (16 to 23% of screen height, spines 5.3 to 5.7% thick), not from world size (files 1, 3, 27). The player collider is still the adult prefab one (2.0 m, radius 0.5; confirmed from the prefab, no scene override), so it must be set explicitly.
+- Starting numbers (derived in file 27, not sourced; settle by measuring): eye 1.65 m; capsule 1.8 m, radius 0.35; FOV per the decision above; ceiling 2.6 m; door 1.1 x 2.2 m; hub 3.0 m wide; book 0.32 m tall, 0.06 to 0.085 m thick; slot pitch 0.09 m;
+  boards at 0.95 m and 1.40 m (0.45 m apart); reach 2.8 m; magelights at 2.0 m; world scale 1.0. Keep: thick spines, 1.33x item height, the wide door, the long reach, the held-book shrink.
+- Steps: (1) plan and approve the numbers; (2) set them through the builder constants (`WorldScale, EyeHeight, MoveSpeed/SprintSpeed, InteractionRange, CarryScale, WallHeight, DoorWidth/DoorHeight, HubHalf, SlotPitch, BaseHeight, ShelfSpacing, ContainerHeight, OrbHeight, SignHeight, item size arrays`);
+  (3) capsule height, radius and centre on the player (scene override, not the Starter Assets prefab); (4) rebuild the hub and rooms, re-run all suites; (5) render and measure the book's screen fraction at 1.2 and 1.5 m and the spine thickness fraction;
+  (6) check held-book clipping against shelves (pull the held book back near surfaces first if it clips); (7) update `09-scale-reference.md` and `04-build-status.md`.
 
 ### T-003 Lighting pass after T-002  **P2, Todo, Needs approval for the settings items**
-- From research files 5 to 9: orbs lower or ceiling hotspot reduced, lamp range and intensity retuned for the new scale; Bloom Clamp about 3 to 6; motion blur lower or off; the leftover 0.5 directional light removed;
-  shadow settings sized for rooms (soft shadows Medium, fewer cascades, shorter max distance, atlas large enough for the shadowed lights); Trilight ambient checked. The `ProjectSettings/` and render-pipeline items need Kolby's yes.
-- Measure before and after on rendered frames (luminance of books and wood, hotspot size); do not judge by eye alone.
+- Scene and builder (no approval): lamps lower or ceiling hotspot reduced (the ceiling gets about 32x the floor's light with lamps 0.45 m below it, file 5), lamp range and intensity retuned for the new scale, remove the leftover 0.5 directional light if it only adds an invisible term, check ambient (Trilight is very dark).
+- **Approval:** shadow settings sized for the rooms (soft shadows Medium instead of High; fewer than 4 cascades and a shorter max distance than 50 m; an atlas big enough for the shadowed lights, since 3 shadowed point lights at tier 512 need 18 shadow maps and a 2048 atlas holds 16);
+  Bloom Clamp about 3 to 6 (default 65472); motion blur off or low; keep Neutral tonemapping and Post Exposure for brightness (files 6 to 8).
+- Measure before and after on rendered frames (luminance of books and wood, hotspot size). Do not judge by eye alone.
 
-### T-004 AI-assisted book models and cover materials  **P2, Todo**
-- Kolby wants simple book models and cover materials / maps made with AI. Research file 26 (pending). First experiment: one procedural or bpy-generated book mesh with 3 cover variants, checked by a rendered screenshot.
-  Keep spine letters and numbers drawn by the game. Record tool, prompt and date per asset (Steam asks for AI disclosure). Related: L-015.
+### T-004 Procedural book mesh and cover materials (AI for placeholders)  **P2, Todo**
+- Per file 26: generate the book mesh in C# with an editor generator (about 60 to 300 triangles, authored at real size with a **bottom pivot**, which means changing `ShelfSlot.Accept`, which assumes a centre pivot); CC0 or procedural cover patterns first (ambientCG, Poly Haven);
+  AI only for neutral tileable base patterns or placeholders. Spine letters and numbers stay drawn by the game. Avoid AI 3D meshes for books. 512 px covers (about 0.33 MB with BC7 and mips) are enough.
+- First experiment: one procedural book, 3 cover variants, checked by rendered screenshot and the Stats window (acceptance criteria are at the end of file 26). Log tool, prompt and date per AI asset. Related: L-015. Do after T-002 (book sizes) and together with T-012.
 
 ### T-005 A reviewer for changes  **P2, Todo, discuss first**
-- A separate agent that reviews a change before it is committed. Proposed design is in the chat of 2026-10-18; not built yet. See D-006.
+- A separate agent that reviews a change before it is committed. Proposed design is in the chat of 2026-10-18: a fresh agent with read-only tools that gets only the diff and the matching research notes and returns block/advise findings
+  (contradicts a sourced note, unsourced number, breaks a guardrail, tests do not exercise the change, diff bigger than the goal). Not built yet. See D-006.
 
 ### T-006 Player-build performance check  **P2, Todo**
-- Use a real Windows Player build (development build, Mono) to confirm performance facts; the Editor is fine for day-to-day work. Research file 24 (pending): build from a script, run unattended, log frame time, draw calls
-  and memory to a CSV, take screenshots, compare to a baseline. A Player is also a way to verify without the Editor's focus problem.
+- Use a real Windows Player (Development Build, Mono only; IL2CPP is not installed) to confirm performance facts; the Editor is fine for day-to-day work. Research file 24: pass the scene list and options per build call (`EditorBuildSettings` lists only LibraryPrototype, not Lamplit),
+  set runInBackground and vSync in code, no ProjectSettings change. Build a small self-driving harness active only with `-perf` that walks the rooms, writes a CSV, a summary JSON and screenshots, and quits with an exit code; a script diffs the summary against a committed baseline.
+- **First, take a baseline now** (Editor Stats and Frame Debugger: SetPass, batches, shadow casters) before T-003 and T-012 change anything. A Player is also a possible way to verify without the Editor's focus problem.
+- Unknowns to test: whether a launched Player steals focus, whether `-batchmode` without `-nographics` renders, build time, whether the first build touches tracked ProjectSettings files.
 
-### T-007 Save and load, tonight  **P1, Todo, plan first (F-003 already approved in principle)**
-- Research file 22 (pending) gives the design. Keep the save logic engine-free and covered by Edit Mode tests; present the file-format plan before building.
+### T-007 Save and load  **Deferred: Kolby will do the design in a separate session later**
+- Research is kept in file 22 (location, JsonUtility DTOs, schema plus migrations, atomic write with .bak, room-local pile poses, derived doors, Steam Auto-Cloud). Do not start. Items to remember when it starts: persist which shelves already awarded points; set final Company and Product names (ProjectSettings, approval);
+  verify `FindObjectsByType` finds objects under inactive rooms; design questions (does New Game keep per-zone best times; do resumed runs count for leaderboards).
 
-### T-008 Aspect ratio, FOV and motion blur settings  **P2, Todo, Needs approval (input and render settings)**
-- 16:9 only (1080p, 1440p, 4K; windowed/borderless/full). Research file 23 (pending): FOV slider, motion blur default and toggle, head bob, look sensitivity. Feeds F-004 (settings menu).
+### T-008 Settings menu: FOV, motion blur, windowed default  **P2, Todo, Needs approval (input and project settings)**
+- File 23 and the FOV decision above: horizontal FOV slider 70 to 110, default 90, reset button; motion blur toggle (off by default; blur is velocity based and covers the whole frame while turning, and accessibility guidance wants a toggle); no head bob; resolution list (1080p, 1440p, 4K),
+  fullscreen mode (windowed, borderless, fullscreen); the committed windowed default is 1024x768 (4:3), change it to 16:9. Do not force 16:9 in code. Feeds F-004.
 
-### T-009 Steam release path  **P3, Todo**
-- Research file 25 (pending): Steamworks signup and fee, store page, Coming Soon timeline, SteamPipe, Auto-Cloud for saves, AI disclosure, Unity licence terms. Achievements (F-002) and controller (F-001) stay for later.
+### T-009 Steam release path  **P3, Todo; some steps are Kolby's**
+- File 25. Lead times drive the order: Steamworks partner signup and tax/bank paperwork take 15 to 30 days, then a 30-day wait after the $100 app fee (Valve's pages say 21 on one, 30 on another; plan 30); the Coming Soon page must be live at least 14 days before release; store page and build review take 3 to 5 business days each;
+  Next Fest editions are Feb 22 to Mar 1 and Jun 14 to 21, 2027 (a demo needs its own App ID; June looks realistic). Decide the AI policy and keep the provenance log. Steamworks.NET behind a plain-C# interface when it is time (domain reload is off). Genre pricing is $4.99 to $5.99.
+  Re-read Valve's live AI-disclosure page before shipping.
+
+### T-010 Palette: per-hue lightness solve  **P2, Todo, no approval needed (this is L-021)**
+- File 18: HSV value is not luminance; 10 of 20 groups are below a 2.0 ratio against the wood (#6B401F) even in flat albedo (purple #613299 is 1.02, navy #325099 is 1.15). Replace `GroupColor` with a per-hue lightness solve in Oklab (floor L about 0.67 for a 2.5 ratio on this wood),
+  check red/green pairs with a colour-blind simulation, keep the letters (deuteranopia collapses some pairs to a tiny distance). Re-measure on **rendered** frames (tonemapping changes lit ratios and is undocumented). WCAG's 3:1 non-text bar is higher than our 2.0 and 2.5 targets, and only a proxy in dark scenes.
+
+### T-011 UI: world-space text and scaling  **P3, Todo, no approval needed**
+- File 17: world-space signs from legacy Text go soft within about 1 m; use TextMeshPro (or Dynamic Pixels Per Unit). CanvasScaler Match is 0 (width), which drifts on odd aspect ratios; use 0.5. The legend font 20 is at the minimum (18 px at 1080p); raise it. Fewer Canvas objects.
+
+### T-012 Book rendering: remove the per-book MaterialPropertyBlock  **P2, Todo, no approval needed**
+- Found by file 26 and confirmed in the repo: all books share one material, `Mat_BookSpine`, and `Book.cs` sets each colour through a `MaterialPropertyBlock`. Unity says an MPB breaks the SRP Batcher in URP, so books are probably outside it (unconfirmed in the Frame Debugger).
+  Bake the colour into vertex colours or use shared per-colour materials, and check the "Enable GPU Instancing" checkbox state. Measure with the T-006 baseline (batches, SetPass) before and after. About 340 items is probably not a real draw-call problem, so this is hygiene and a prerequisite for a pooled highlighter, not an emergency.
+
+### T-013 One pooled highlighter  **P3, Todo; the outline-renderer-feature variant needs approval (renderer/layers)**
+- File 16: per-book hulls, a light and a particle system are built at runtime and never pooled; `MaterialPropertyBlock` on the x-ray hull also breaks the SRP Batcher. Replace with one shared highlighter that follows the aimed or pulsing book. Picking itself is already right (nearest ray hit equals the visible surface); call `Physics.SyncTransforms()` after piles change.
+
+### T-014 Pile throws and per-body physics  **P2, Todo, no approval if per body (project-wide changes need approval)**
+- File 15: idle books are static triggers, so a thrown solid book falls **through** pile books today; pulling a book out wakes nothing. For L-020 choose between making neighbours solid in a bubble with a kinematic outer ring to rest on, or a runtime proxy PhysicsScene like the bake (both are reasoning from sources; prototype and measure).
+- File 14: `ContinuousDynamic` on every tossed book and bake proxy is Unity's last resort and the most expensive; use Continuous Speculative first. Set solver iterations, max depenetration and sleep per body, not project-wide (starting overlaps may "explode"; PhysX default starting depenetration is 3.0, the project's is 10).
+  Check that the player cannot kick piles (the manual disagrees with itself on whether CharacterController pushes Rigidbodies; test).
+
+### T-015 Statics hygiene and Enter Play Mode  **P3, Todo; changing the setting needs approval**
+- File 13: Unity 6.6 defaults domain reload off and recommends it; the project also skips scene reload (the non-default half). Audit statics now and add the 6.6 reset attributes (`[AutoStaticsCleanup]`, `[OnEnteringPlayMode]`, `[OnExitingPlayMode]`) or the older RuntimeInitializeOnLoadMethod(SubsystemRegistration) reset. Reconsider the scene-reload-off setting if room state leaks, and always when measuring load times.
+  Update CLAUDE.md rule 9 with the concrete attributes.
+
+### T-016 Item state as plain C# with string IDs  **P3, Todo, with the save design**
+- File 11: ScriptableObjects as read-only definitions (in a Player they are read-only; runtime writes leak between Play sessions with domain reload off); a plain-C# ItemState with string IDs for state and room unload; plain Instantiate until profiling says to pool. Supports L-016 to L-019; do it when the save design starts.
+
+### Approval queue (nothing here is applied; ask before doing any)
+
+- T-003: shadow settings (soft shadows, cascades, max distance, atlas), Bloom Clamp, motion blur.
+- T-008: windowed default 16:9, any input or render setting behind the settings menu.
+- T-013: an outline renderer feature (renderer data / layers).
+- T-014: any project-wide physics setting (Time.fixedDeltaTime, solver, contact offset).
+- T-015: the scene-reload setting.
+- T-007 (later): final Company and Product names.
 
 ### D-006 Overnight and interactive working modes  **Decision to settle**
-- Kolby: approvals should work differently when he is interactive and when he leaves the assistant to work overnight. Not yet defined; see the open question in the chat of 2026-10-18.
+- Kolby: approvals should work differently when he is interactive and when he leaves the assistant to work overnight. Not yet defined. Proposed split (in the chat of 2026-10-18): interactive = ask before fenced settings and before pushing; overnight = never touch fenced settings or push without a standing yes,
+  queue those as written proposals with a measured before and after, keep working in the safe zone (builder, scripts, tests, docs), commit locally with the reviewer step on, stop and write up after two failed test runs. Open: may overnight work push to GitHub?
 
 ---
 
@@ -343,3 +410,6 @@ file before changing anything in the scene.
 7. ~~L-016: item definition asset files?~~ **Answered 2026-10-18:** items live only in data files; rooms stay static scene content.
 8. ~~L-020: bubble starting values (about 0.6 m, about 40 bodies)?~~ **Answered 2026-10-18:** good enough. The goal is only that it feels a bit natural: no chained or cascading physics, no always-on physics; most games in the genre move nothing but the active item, which feels odd, so a small local reaction is the target.
 9. D-006: what should the assistant do differently overnight (unattended) compared with interactive work? A proposed split is in the chat of 2026-10-18.
+10. ~~D-005 vs T-004: generative AI for art?~~ **Answered 2026-10-18:** fine for placeholders; real art comes later.
+11. ~~FOV: 90 horizontal or 65 vertical?~~ **Settled by Claude 2026-10-18 from Kolby's data:** horizontal 90 default (58.7 vertical), slider 70 to 110; verify by measuring (see the decision in the tooling section).
+12. ~~Save design now?~~ **Answered 2026-10-18:** no, a separate session later (T-007 deferred).
