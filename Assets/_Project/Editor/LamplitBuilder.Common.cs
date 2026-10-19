@@ -299,7 +299,12 @@ public static partial class LamplitBuilder
 
     /// <summary>One bookcase: a wooden unit with ShelfRows shelves of <paramref name="slots"/> slots (8 for a main case, 4 for a wing). yaw rotates it
     /// about Y (0 = front faces -Z).</summary>
-    public static Bookcase Container(Transform parent, string name, Vector3 pos, float yaw, ContainerRules rules, int family, RoomZone room, Material wood, int slots = 5)
+    /// <summary>How a bookcase looks: plain wooden cubes (the old look and the colliders), colliders only (the visual is a separate mesh), or the
+    /// Blender-built mesh named by visualMesh (Case_Solo, Case_Wing) with the cubes kept as invisible colliders.</summary>
+    public enum CaseLook { Cubes, ColliderOnly, Mesh }
+
+    public static Bookcase Container(Transform parent, string name, Vector3 pos, float yaw, ContainerRules rules, int family, RoomZone room, Material wood, int slots = 5,
+        CaseLook look = CaseLook.Cubes, string visualMesh = null)
     {
         float w = CaseWidth(slots), d = CaseDepth, h = ContainerHeight;
         var root = new GameObject(name);
@@ -324,6 +329,19 @@ public static partial class LamplitBuilder
 
         Cube("Top", root.transform, new Vector3(0f, h - BoardThickness / 2f, 0f), new Vector3(w, BoardThickness, d), wood);
         Cube("Crown", root.transform, new Vector3(0f, h + 0.025f, -0.01f), new Vector3(w + 0.04f, 0.05f, d + 0.04f), wood);   // a cornice on top
+        if (look != CaseLook.Cubes)
+        {
+            foreach (Transform c in root.transform)   // keep only the colliders: the visual is the Blender mesh
+            {
+                var mr = c.GetComponent<MeshRenderer>();
+                if (mr != null) { Object.DestroyImmediate(mr); Object.DestroyImmediate(c.GetComponent<MeshFilter>()); }
+            }
+        }
+
+        if (look == CaseLook.Mesh)
+        {
+            AddCaseVisual(root.transform, visualMesh, Vector3.zero);
+        }
 
         var highlightMat = LoadMat("Mat_SlotHighlight");
         var shelfList = new List<Shelf>();
@@ -410,6 +428,104 @@ public static partial class LamplitBuilder
         pd.color = color;
         pd.material = LoadMat("Mat_Digit");
         pd.Rebuild();
+    }
+
+    private const string ModelDir = "Assets/_Project/Art/Models";
+    private const string WoodTexDir = "Assets/_Project/Art/Textures/Wood";
+
+    /// <summary>The Blender bookcase mesh (Case_Solo, Case_Triple or Case_Wing), or null if it has not been imported.</summary>
+    public static Mesh CaseMesh(string meshName)
+    {
+        foreach (var o in AssetDatabase.LoadAllAssetsAtPath(ModelDir + "/" + meshName + ".fbx"))
+        {
+            if (o is Mesh m) return m;
+        }
+
+        return null;
+    }
+
+    /// <summary>Adds the visual of a bookcase (the carved wood mesh with its three materials) as a child at the given local position.</summary>
+    public static GameObject AddCaseVisual(Transform parent, string meshName, Vector3 localPos)
+    {
+        var mesh = CaseMesh(meshName);
+        if (mesh == null) throw new System.InvalidOperationException("Missing mesh " + meshName + " (run tools/blender/make_cases.py and LamplitBuilder.SetupCaseAssets())");
+        var go = new GameObject("Visual_" + meshName, typeof(MeshFilter), typeof(MeshRenderer));
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = localPos;
+        go.GetComponent<MeshFilter>().sharedMesh = mesh;
+        go.GetComponent<MeshRenderer>().sharedMaterials = new[] { LoadMat("Mat_CaseWood"), LoadMat("Mat_CaseBack"), LoadMat("Mat_CaseBrass") };
+        return go;
+    }
+
+    /// <summary>Imports the three bookcase meshes and the wood textures with the right settings and (re)creates the wood, back-panel and brass
+    /// materials. Safe to run repeatedly. Sources: tools/blender/make_cases.py and make_wood_textures.py.</summary>
+    public static string SetupCaseAssets()
+    {
+        foreach (string n in new[] { "Case_Solo", "Case_Triple", "Case_Wing" })
+        {
+            var model = AssetImporter.GetAtPath(ModelDir + "/" + n + ".fbx") as ModelImporter;
+            if (model == null) throw new System.InvalidOperationException("Missing " + n + ".fbx (run tools/blender/make_cases.py)");
+            model.globalScale = 1f;
+            model.useFileScale = true;   // Blender writes centimetres
+            model.materialImportMode = ModelImporterMaterialImportMode.None;
+            model.importNormals = ModelImporterNormals.Import;
+            model.importTangents = ModelImporterTangents.CalculateMikk;
+            model.isReadable = false;
+            model.addCollider = false;
+            model.meshCompression = ModelImporterMeshCompression.Off;
+            model.importBlendShapes = false;
+            model.importCameras = false;
+            model.importLights = false;
+            model.animationType = ModelImporterAnimationType.None;
+            model.SaveAndReimport();
+        }
+
+        string albedo = WoodTexDir + "/T_Wood_Albedo.png", normal = WoodTexDir + "/T_Wood_Normal.png";
+        foreach (var path in new[] { albedo, normal })
+        {
+            var ti = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (ti == null) throw new System.InvalidOperationException("Missing " + path + " (run tools/blender/make_wood_textures.py)");
+            ti.textureType = path == normal ? TextureImporterType.NormalMap : TextureImporterType.Default;
+            ti.wrapMode = TextureWrapMode.Repeat;
+            ti.mipmapEnabled = true;
+            ti.anisoLevel = 8;
+            ti.textureCompression = TextureImporterCompression.CompressedHQ;
+            ti.SaveAndReimport();
+        }
+
+        var wood = EnsureMat("Mat_CaseWood", new Color(0.82f, 0.43f, 0.20f), 0.60f);
+        wood.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedo));
+        wood.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(normal));
+        wood.SetFloat("_BumpScale", 1.0f);
+        wood.EnableKeyword("_NORMALMAP");
+        EditorUtility.SetDirty(wood);
+        var back = EnsureMat("Mat_CaseBack", new Color(0.30f, 0.15f, 0.07f), 0.10f);
+        back.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedo));
+        back.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(normal));
+        back.SetFloat("_BumpScale", 0.6f);
+        back.EnableKeyword("_NORMALMAP");
+        EditorUtility.SetDirty(back);
+        var brass = EnsureMat("Mat_CaseBrass", new Color(1.0f, 0.78f, 0.34f), 0.45f, 0.12f);
+        EditorUtility.SetDirty(brass);
+        AssetDatabase.SaveAssets();
+        return "case assets set up: " + (CaseMesh("Case_Solo") != null) + " " + (CaseMesh("Case_Triple") != null) + " " + (CaseMesh("Case_Wing") != null);
+    }
+
+    /// <summary>Writes the case numbers (from the constants above) to tools/blender/case_params.json for make_cases.py.</summary>
+    public static string WriteCaseParams()
+    {
+        string json = "{\n  \"slot_pitch\": " + SlotPitch.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"side_thickness\": " + SideThickness.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"board_thickness\": " + BoardThickness.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"case_depth\": " + CaseDepth.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"case_margin\": " + CaseMargin.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"base_height\": " + BaseHeight.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"shelf_spacing\": " + ShelfSpacing.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+            + ",\n  \"shelf_rows\": " + ShelfRows
+            + ",\n  \"container_height\": " + ContainerHeight.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + "\n}\n";
+        string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, "../tools/blender/case_params.json"));
+        System.IO.File.WriteAllText(path, json);
+        return "wrote " + path;
     }
 
     public const string BookModelPath = "Assets/_Project/Art/Models/Book_Tome.fbx";

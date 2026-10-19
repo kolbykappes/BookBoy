@@ -34,6 +34,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Lamplit bookcases: carved Blender meshes (stepped plinth, reeded pilasters, dentil cornice, arched crest, brass nameplate plates) with a procedural mahogany wood material, one shared mesh for the triple (Mat_CaseWood, Mat_CaseBack, Mat_CaseBrass; tools/blender/make_cases.py).
 - PerfLab: a performance test scene with up to 3000 tome books in baked piles, an overlay of frame time and draw calls and hotkeys for book count, lighting presets, book shadows, GPU instancing and colour mode (T-018 stage A); the pile planner can make many piles.
 - Lamplit: books are now a Blender-built tome mesh (rounded spine, boards, page block) with a sample cloth cover material (Mat_BookCover and Mat_BookPages); bookcases have 2.4 in boards, packed slots, 1 in of headroom, a plinth lip and a crown; held books at full size (T-004, T-017).
 - Fixed: nothing could be picked up at the new eye height (the aim ray hit the player's own collider first); the interactor now ignores the player's colliders; new check tools/verify_lamplit_pickup.cs.

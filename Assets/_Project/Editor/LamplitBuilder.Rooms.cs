@@ -160,6 +160,7 @@ public static partial class LamplitBuilder
     {
         RequireLamplitScene();
         SetupBookAssets();
+        SetupCaseAssets();
         var s = Spec(1);
         var root = BuildShell(s);
         var zone = root.GetComponent<RoomZone>();
@@ -172,11 +173,16 @@ public static partial class LamplitBuilder
         float edge = (CaseWidth(8) + CaseWidth(4)) / 2f + 0.005f;
         var containers = new List<Bookcase>
         {
-            Container(holder, "Triple_WingA", new Vector3(s.ContainerX, 0f, tripleZ - edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4),
-            Container(holder, "Triple_Main", new Vector3(s.ContainerX, 0f, tripleZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8),
-            Container(holder, "Triple_WingB", new Vector3(s.ContainerX, 0f, tripleZ + edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4),
-            Container(holder, "Solo", new Vector3(s.ContainerX, 0f, soloZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8),
+            Container(holder, "Triple_WingA", new Vector3(s.ContainerX, 0f, tripleZ - edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4, CaseLook.ColliderOnly),
+            Container(holder, "Triple_Main", new Vector3(s.ContainerX, 0f, tripleZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8, CaseLook.ColliderOnly),
+            Container(holder, "Triple_WingB", new Vector3(s.ContainerX, 0f, tripleZ + edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4, CaseLook.ColliderOnly),
+            Container(holder, "Solo", new Vector3(s.ContainerX, 0f, soloZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8, CaseLook.Mesh, "Case_Solo"),
         };
+        // one shared carved visual for the triple (the three cases above only carry the colliders, shelves and slots)
+        var tripleVisual = new GameObject("Triple_Visual").transform;
+        tripleVisual.SetParent(holder, false);
+        tripleVisual.SetPositionAndRotation(new Vector3(s.ContainerX, 0f, tripleZ), Quaternion.Euler(0f, s.ContainerYaw, 0f));
+        AddCaseVisual(tripleVisual, "Case_Triple", Vector3.zero);
         var allShelves = new List<Shelf>();
         foreach (var c in containers) allShelves.AddRange(c.shelves);
         zone.shelves = allShelves.ToArray();

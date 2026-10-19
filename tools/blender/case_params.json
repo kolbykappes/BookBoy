@@ -1,0 +1,12 @@
+{
+  "_comment": "Numbers copied from LamplitBuilder (Common.cs). Regenerate with LamplitBuilder.WriteCaseParams() if those constants change; tools/verify_case_mesh.cs checks the mesh against the live constants.",
+  "slot_pitch": 0.104,
+  "side_thickness": 0.06,
+  "board_thickness": 0.06,
+  "case_depth": 0.33,
+  "case_margin": 0.13,
+  "base_height": 0.38,
+  "shelf_spacing": 0.47,
+  "shelf_rows": 4,
+  "container_height": 2.26
+}
