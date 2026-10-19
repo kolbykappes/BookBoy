@@ -202,6 +202,7 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         ShelfSlot slotToLight = _focusedSlot;
+        bool ghostOn = UpdateGhost(slotToLight);
         if (_litSlot != null && _litSlot != slotToLight)
         {
             _litSlot.SetHighlight(false);
@@ -210,7 +211,7 @@ public class PlayerInteractor : MonoBehaviour
         _litSlot = slotToLight;
         if (_litSlot != null)
         {
-            _litSlot.SetHighlight(true);
+            _litSlot.SetHighlight(!ghostOn);   // the thin bar only when there is no ghost to show
         }
 
         if (crosshair == null)
@@ -236,8 +237,52 @@ public class PlayerInteractor : MonoBehaviour
         }
     }
 
+    private SlotGhost _ghost;
+    private bool _ghostLooked;
+    private ShelfSlot _ghostSlot;
+    private Book _ghostBook;
+    private BookBoy.Rules.PlacementResult _ghostGrade;
+    private float _ghostNext;
+
+    /// <summary>Shows the translucent ghost of the held book in the aimed empty slot (graded as if it were placed there); false when there is none.</summary>
+    private bool UpdateGhost(ShelfSlot slot)
+    {
+        if (!_ghostLooked)
+        {
+            _ghost = GetComponent<SlotGhost>();
+            _ghostLooked = true;
+        }
+
+        Book held = Carry.IsEmpty ? null : Carry.Current;
+        if (_ghost == null || slot == null || held == null || held.IsFind)
+        {
+            if (_ghost != null)
+            {
+                _ghost.Hide();
+            }
+
+            return false;
+        }
+
+        if (slot != _ghostSlot || held != _ghostBook || Time.unscaledTime >= _ghostNext)
+        {
+            _ghostSlot = slot;
+            _ghostBook = held;
+            _ghostNext = Time.unscaledTime + 0.2f;   // claims change only when books are placed or removed
+            _ghostGrade = held.PreviewGrade(slot);
+        }
+
+        _ghost.Show(held, slot, _ghostGrade, Carry.RealScale(held));
+        return _ghost.IsShown;
+    }
+
     private void OnDisable()
     {
+        if (_ghost != null)
+        {
+            _ghost.Hide();
+        }
+
         if (_litBook != null)
         {
             _litBook.SetFocused(false);

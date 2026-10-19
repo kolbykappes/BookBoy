@@ -383,6 +383,10 @@ public static partial class LamplitBuilder
 
             shelf.slots = slotList;
             shelfList.Add(shelf);
+            if (look != CaseLook.Cubes)
+            {
+                AddClaimPlate(shelfGo.transform, shelf, s);
+            }
         }
 
         bookcase.shelves = shelfList.ToArray();
@@ -526,6 +530,67 @@ public static partial class LamplitBuilder
         string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, "../tools/blender/case_params.json"));
         System.IO.File.WriteAllText(path, json);
         return "wrote " + path;
+    }
+
+    /// <summary>The transparent unlit material the placement ghost is tinted from (Mat_SlotGhost). Created or updated in place.</summary>
+    public static Material EnsureGhostMaterial()
+    {
+        const string path = MatDir + "/Mat_SlotGhost.mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (m == null)
+        {
+            m = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            AssetDatabase.CreateAsset(m, path);
+        }
+
+        m.SetFloat("_Surface", 1f);                                  // transparent
+        m.SetFloat("_Blend", 0f);                                    // alpha blending
+        m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        m.SetFloat("_ZWrite", 0f);
+        m.SetFloat("_Cull", 2f);
+        m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        m.SetOverrideTag("RenderType", "Transparent");
+        m.renderQueue = 3000;
+        m.SetColor("_BaseColor", new Color(0.25f, 1f, 0.35f, 0.4f));
+        EditorUtility.SetDirty(m);
+        return m;
+    }
+
+    /// <summary>Makes sure the player has a SlotGhost component wired to the ghost material.</summary>
+    public static void EnsureSlotGhost(GameObject player)
+    {
+        var ghost = player.GetComponent<SlotGhost>();
+        if (ghost == null) ghost = player.AddComponent<SlotGhost>();
+        ghost.template = EnsureGhostMaterial();
+        EditorUtility.SetDirty(ghost);
+    }
+
+    /// <summary>Puts the claim labels on the brass plate of a shelf (the plate is part of the case mesh): the set's icon and letter appear on it once a set claims the shelf.
+    /// Row 0 has its plate on the plinth panel, the other rows on the board nosing. Local positions are in the case's own space.</summary>
+    private static void AddClaimPlate(Transform shelfGo, Shelf shelf, int row)
+    {
+        float plateZ = row == 0 ? 0.209f : ShelfTops[row] - 0.027f;
+        float plateY = row == 0 ? -CaseDepth / 2f - 0.005f : -CaseDepth / 2f - 0.0195f;
+        var digitMat = LoadMat("Mat_Digit");
+        PixelDigit Make(string name, float x)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(shelfGo, false);
+            go.transform.localPosition = new Vector3(x, plateZ - ShelfTops[row], plateY);
+            go.transform.localScale = Vector3.one * 0.028f;
+            var pd = go.AddComponent<PixelDigit>();
+            pd.material = digitMat;
+            pd.value = 10;
+            pd.color = new Color(0.20f, 0.11f, 0.03f);
+            go.SetActive(false);
+            return pd;
+        }
+
+        var plate = shelfGo.gameObject.AddComponent<ClaimPlate>();
+        plate.shelf = shelf;
+        plate.letter = Make("ClaimLetter", 0.026f);
+        plate.icon = Make("ClaimIcon", -0.028f);
     }
 
     public const string BookModelPath = "Assets/_Project/Art/Models/Book_Tome.fbx";

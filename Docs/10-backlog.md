@@ -138,12 +138,8 @@ under "what to borrow". Split it into single items when picking one. Strongest c
   lightness floor, avoid dark navy, purple and maroon, keep the wood dark and warm and the room lit enough, and re-measure (target: each group 2.0 or more, average
   2.5 or more; method and numbers in [competitive/scale-and-camera-comparison.md](competitive/scale-and-camera-comparison.md)). Keep letters, not colour alone, as the
   identifier. **P2, decided to do later**
-- **L-022** Ghost of the held item in the aimed slot (Librarian and Witch Cabin do this): a translucent silhouette of the carried book in the exact slot, tinted by
-  how it would grade (green, yellow, red), in place of today's thin highlight bar. Needs the slot to know the held item's size and the grade preview from the rules
-  (engine-free, tested). **P2, decided to do later (before L-023)**
-- **L-023** Make claims visible: when the first group is placed on a shelf, a nameplate or small label appears on the board edge with the group's letter and name
-  (Shelves and Sorcery does this); cleared when the shelf empties. Today the first-book-claims rule is invisible. Try after L-022 and decide whether both are needed.
-  **P3, decided to do later**
+- - **L-022** Ghost of the held item in the aimed slot: **done 2026-10-19** (see build status).
+- - **L-023** Claims made visible on a brass plate per shelf: **done 2026-10-19** (see build status).
 - **L-015** Placeholder cubes to real shapes and models (see D-005); ceilings and per-room lighting. **P3**
 - **L-016 to L-020** Data-driven items, rooms loaded on demand, cheap shelved items and piles: see the next section. **P2, not started**
 
@@ -383,7 +379,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
 - Found by file 26 and confirmed in the repo: all books share one material, `Mat_BookSpine`, and `Book.cs` sets each colour through a `MaterialPropertyBlock`. Unity says an MPB breaks the SRP Batcher in URP, so books are probably outside it (unconfirmed in the Frame Debugger).
   Bake the colour into vertex colours or use shared per-colour materials, and check the "Enable GPU Instancing" checkbox state. Measure with the T-006 baseline (batches, SetPass) before and after. About 340 items is probably not a real draw-call problem, so this is hygiene and a prerequisite for a pooled highlighter, not an emergency.
 
-### T-013 One pooled highlighter  **P3, Todo; the outline-renderer-feature variant needs approval (renderer/layers)**
+### T-013 One pooled highlighter  **Done 2026-10-19 for the pooled light and sparks and the page-block hull (see build status); the outline-renderer-feature variant still needs approval (renderer/layers)**
 - File 16: per-book hulls, a light and a particle system are built at runtime and never pooled; `MaterialPropertyBlock` on the x-ray hull also breaks the SRP Batcher. Replace with one shared highlighter that follows the aimed or pulsing book. Picking itself is already right (nearest ray hit equals the visible surface); call `Physics.SyncTransforms()` after piles change.
 
 ### T-014 Pile throws and per-body physics  **P2, Todo, no approval if per body (project-wide changes need approval)**

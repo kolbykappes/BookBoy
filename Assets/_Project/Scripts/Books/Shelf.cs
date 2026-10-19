@@ -14,6 +14,27 @@ public class Shelf : MonoBehaviour
     [Tooltip("Slots in order, index 0 = volume 1. Each is only slightly wider than a book.")]
     public ShelfSlot[] slots;
 
+    /// <summary>The earliest-shelved book on this shelf (the one whose set owns the shelf), or null if it is empty.</summary>
+    public Book ClaimingBook
+    {
+        get
+        {
+            Book best = null;
+            double time = double.MaxValue;
+            foreach (ShelfSlot slot in slots)
+            {
+                Book book = slot.occupant;
+                if (book != null && book.definition != null && book.placedTime < time)
+                {
+                    time = book.placedTime;
+                    best = book;
+                }
+            }
+
+            return best;
+        }
+    }
+
     /// <summary>The series of the earliest-shelved book here, and when it was shelved. False if the shelf is empty.</summary>
     public bool TryGetSeriesClaim(out int series, out double time)
     {

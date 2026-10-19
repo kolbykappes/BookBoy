@@ -159,13 +159,16 @@ def build(bays, name):
             b.box(x0 + k * w + 0.0015, x0 + (k + 1) * w - 0.0015, HD - 0.02, HD, BH, H - BOARD, 1, Z_AXIS)
 
     # ---- shelf boards (the first shelf rests on the plinth cap), nosing, brass plates ----
+    for (x0, x1) in bay_x:                                                                       # the first shelf's claim plate sits on the plinth panel
+        cx0 = (x0 + x1) / 2
+        b.box(cx0 - 0.080, cx0 + 0.080, -HD - 0.0045, -HD, 0.190, 0.228, 2, X_AXIS)
     for bi, (x0, x1) in enumerate(bay_x):
         for r in range(1, ROWS):
             t = tops[r]
             b.box(x0, x1, -HD + 0.004, HD - 0.02, t - BOARD, t, 0, X_AXIS)
             b.box(x0 - 0.004, x1 + 0.004, -HD - 0.014, -HD + 0.004, t - 0.048, t - 0.006, 0, X_AXIS)   # front nosing
             cx = (x0 + x1) / 2
-            b.box(cx - 0.055, cx + 0.055, -HD - 0.0185, -HD - 0.0145, t - 0.040, t - 0.014, 2, X_AXIS)  # brass nameplate
+            b.box(cx - 0.080, cx + 0.080, -HD - 0.0185, -HD - 0.0145, t - 0.046, t - 0.008, 2, X_AXIS)  # brass claim plate (the claiming set's icon and letter go on it)
 
     # ---- top board and cornice ----
     b.box(-W / 2, W / 2, -HD, HD, H - BOARD, H, 0, X_AXIS)

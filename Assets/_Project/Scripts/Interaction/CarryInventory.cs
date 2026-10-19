@@ -24,6 +24,17 @@ public class CarryInventory : MonoBehaviour
     public bool IsFull => _list.IsFull;
     public bool IsEmpty => _list.IsEmpty;
     public Book Current => _list.Current;
+
+    /// <summary>The book's real (un-shrunk) size while it is carried: the size it will have on a shelf. Used to draw the placement ghost.</summary>
+    public Vector3 RealScale(Book book)
+    {
+        if (book == null)
+        {
+            return Vector3.one;
+        }
+
+        return _originalScale.TryGetValue(book, out Vector3 s) ? s : book.transform.localScale / carryScale;
+    }
     public int CurrentIndex => _list.CurrentIndex;
     public IReadOnlyList<Book> Items => _list.Items;
 

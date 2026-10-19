@@ -72,25 +72,65 @@ public class BookOutline : MonoBehaviour
         _xray = MakeHull("GlowXray");
         if (_assets.xrayMaterial != null)
         {
-            _xray.sharedMaterial = _assets.xrayMaterial;
+            _xray.sharedMaterials = Repeat(_assets.xrayMaterial, _bookMesh.sharedMesh.subMeshCount);
         }
 
-        var lightGo = new GameObject("GlowLight") { hideFlags = HideFlags.HideAndDontSave };
-        _light = lightGo.AddComponent<Light>();
-        _light.type = LightType.Point;
-        _light.range = 1.8f;
-        _light.shadows = LightShadows.None;
-        _light.intensity = 0f;
-        _light.enabled = false;
-
-        var sparkGo = new GameObject("GlowSparks") { hideFlags = HideFlags.HideAndDontSave };
-        _sparks = sparkGo.AddComponent<ParticleSystem>();
-        ConfigureSparks(_sparks);
-        _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
+        // The point light and the sparkle particle system are NOT built per book: they are borrowed from a small shared pool while a book actually glows
+        // (see GlowPool), because a room full of loose books would otherwise carry hundreds of idle lights and particle systems.
         _block = new MaterialPropertyBlock();
         _built = true;
         return true;
+    }
+
+    private static Material[] Repeat(Material m, int count)
+    {
+        var all = new Material[Mathf.Max(1, count)];
+        for (int i = 0; i < all.Length; i++)
+        {
+            all[i] = m;
+        }
+
+        return all;
+    }
+
+    private Light AcquireLight()
+    {
+        if (_light == null)
+        {
+            _light = GlowPool.RentLight();
+        }
+
+        return _light;
+    }
+
+    private void ReleaseLight()
+    {
+        if (_light != null)
+        {
+            GlowPool.ReturnLight(_light);
+            _light = null;
+        }
+    }
+
+    private ParticleSystem AcquireSparks()
+    {
+        if (_sparks == null)
+        {
+            _sparks = GlowPool.RentSparks();
+            ConfigureSparks(_sparks);
+            _lastLayer = Layer.None;
+        }
+
+        return _sparks;
+    }
+
+    private void ReleaseSparks()
+    {
+        if (_sparks != null)
+        {
+            GlowPool.ReturnSparks(_sparks);
+            _sparks = null;
+        }
     }
 
     private MeshRenderer MakeHull(string hullName)
@@ -99,7 +139,7 @@ public class BookOutline : MonoBehaviour
         go.transform.SetParent(transform, false);
         go.AddComponent<MeshFilter>().sharedMesh = _bookMesh.sharedMesh;
         var renderer = go.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = _assets.outlineMaterial;
+        renderer.sharedMaterials = Repeat(_assets.outlineMaterial, _bookMesh.sharedMesh.subMeshCount);   // one entry per submesh, so the page block glows too
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         renderer.enabled = false;
@@ -191,14 +231,19 @@ public class BookOutline : MonoBehaviour
             _inner.enabled = false;
             _halo.enabled = false;
             _xray.enabled = false;
-            _light.enabled = false;
             _lastLayer = Layer.None;
-            _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ReleaseLight();
+            if (_sparks != null)
+            {
+                _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                ReleaseSparks();
+            }
         }
     }
 
     private void SparkBurst(Color color, int count)
     {
+        AcquireSparks();
         var main = _sparks.main;
         main.startColor = color;
         FollowBook();
@@ -260,18 +305,34 @@ public class BookOutline : MonoBehaviour
         _inner.enabled = visible;
         _halo.enabled = visible;
         _xray.enabled = strong;
-        _light.enabled = strong;
+        if (strong)
+        {
+            AcquireLight().enabled = true;
+        }
+        else
+        {
+            ReleaseLight();
+        }
 
         if (!visible)
         {
             _lastLayer = Layer.None;
-            if (_sparks.isEmitting)
+            if (_sparks != null)
             {
-                _sparks.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                if (_sparks.isEmitting)
+                {
+                    _sparks.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                }
+                else if (_sparks.particleCount == 0)
+                {
+                    ReleaseSparks();   // nothing left to show: give the particle system back to the pool
+                }
             }
 
             return;
         }
+
+        AcquireSparks();
 
         float boost = strong ? 3.4f : 1f;
         ApplyHull(_inner, InnerWidth * boost, color, alpha);
@@ -334,14 +395,101 @@ public class BookOutline : MonoBehaviour
 
     private void OnDestroy()
     {
+        ReleaseLight();
         if (_sparks != null)
         {
-            Destroy(_sparks.gameObject);
+            _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ReleaseSparks();
+        }
+    }
+}
+
+/// <summary>
+/// A small shared pool of the point lights and sparkle particle systems the book glows borrow. They are created on demand, returned when a glow ends, and never
+/// saved. The statics are cleared at the start of every Play session (the project skips domain reload, so they would otherwise outlive the scene).
+/// </summary>
+public static class GlowPool
+{
+    private static readonly System.Collections.Generic.Stack<Light> Lights = new System.Collections.Generic.Stack<Light>();
+    private static readonly System.Collections.Generic.Stack<ParticleSystem> Sparks = new System.Collections.Generic.Stack<ParticleSystem>();
+
+    // everything the pool ever made: HideAndDontSave objects survive leaving Play Mode, so they are destroyed when the next session starts
+    private static readonly System.Collections.Generic.List<GameObject> All = new System.Collections.Generic.List<GameObject>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Reset()
+    {
+        foreach (GameObject go in All)
+        {
+            if (go != null)
+            {
+                Object.DestroyImmediate(go);
+            }
         }
 
-        if (_light != null)
+        All.Clear();
+        Lights.Clear();
+        Sparks.Clear();
+    }
+
+    public static Light RentLight()
+    {
+        while (Lights.Count > 0)
         {
-            Destroy(_light.gameObject);
+            Light l = Lights.Pop();
+            if (l != null)
+            {
+                l.enabled = true;
+                return l;
+            }
         }
+
+        var go = new GameObject("GlowLight") { hideFlags = HideFlags.HideAndDontSave };
+        All.Add(go);
+        var light = go.AddComponent<Light>();
+        light.type = LightType.Point;
+        light.range = 1.8f;
+        light.shadows = LightShadows.None;
+        light.intensity = 0f;
+        return light;
+    }
+
+    public static void ReturnLight(Light l)
+    {
+        if (l == null)
+        {
+            return;
+        }
+
+        l.enabled = false;
+        Lights.Push(l);
+    }
+
+    public static ParticleSystem RentSparks()
+    {
+        while (Sparks.Count > 0)
+        {
+            ParticleSystem p = Sparks.Pop();
+            if (p != null)
+            {
+                return p;
+            }
+        }
+
+        var go = new GameObject("GlowSparks") { hideFlags = HideFlags.HideAndDontSave };
+        All.Add(go);
+        var ps = go.AddComponent<ParticleSystem>();
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        return ps;
+    }
+
+    public static void ReturnSparks(ParticleSystem p)
+    {
+        if (p == null)
+        {
+            return;
+        }
+
+        Sparks.Push(p);
     }
 }

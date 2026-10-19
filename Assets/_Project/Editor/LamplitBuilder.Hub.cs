@@ -241,6 +241,8 @@ public static partial class LamplitBuilder
             EditorUtility.SetDirty(hl);
         }
 
+        EnsureSlotGhost(player);
+
         var carry = player.GetComponent<CarryInventory>();
         carry.carryScale = CarryScale;
         EditorUtility.SetDirty(carry);

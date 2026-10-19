@@ -149,6 +149,28 @@ public class Book : MonoBehaviour
             return GradeCampaign(shelf, bookcase);
         }
 
+        return GradePrototypeAt(shelf, bookcase, currentSlot.slotIndex, false);
+    }
+
+    /// <summary>How this book would grade if it were placed in <paramref name="slot"/> now (the slot is empty): used by the placement ghost. Finds never grade.</summary>
+    public PlacementResult PreviewGrade(ShelfSlot slot)
+    {
+        if (definition == null || slot == null || slot.shelf == null || slot.shelf.bookcase == null || IsFind)
+        {
+            return PlacementResult.WrongBookcase;
+        }
+
+        Shelf shelf = slot.shelf;
+        Bookcase bookcase = shelf.bookcase;
+        return bookcase.rules != ContainerRules.Prototype
+            ? GradeCampaignAt(shelf, bookcase, slot.slotIndex, true)
+            : GradePrototypeAt(shelf, bookcase, slot.slotIndex, true);
+    }
+
+    /// <summary>The prototype library's grading of this book in <paramref name="shelf"/> at <paramref name="slotIndex"/>. With <paramref name="preview"/> the book is not
+    /// really there yet: an unclaimed case or shelf counts as claimed by this book from now on (later than every placed book).</summary>
+    private PlacementResult GradePrototypeAt(Shelf shelf, Bookcase bookcase, int slotIndex, bool preview)
+    {
         Bookcase[] cases = bookcase.all;
         int myCase = -1;
         var caseValues = new int[cases.Length];
@@ -160,6 +182,12 @@ public class Book : MonoBehaviour
             {
                 myCase = i;
             }
+        }
+
+        if (preview && myCase >= 0 && caseValues[myCase] < 0)
+        {
+            caseValues[myCase] = (int)definition.category;
+            caseTimes[myCase] = double.MaxValue / 2.0;
         }
 
         bool bookcaseOk = PlacementRules.ClaimHolds(myCase, caseValues, caseTimes, (int)definition.category);
@@ -177,14 +205,27 @@ public class Book : MonoBehaviour
             }
         }
 
+        if (preview && myShelf >= 0 && shelfValues[myShelf] < 0)
+        {
+            shelfValues[myShelf] = definition.series;
+            shelfTimes[myShelf] = double.MaxValue / 2.0;
+        }
+
         bool shelfOk = PlacementRules.ClaimHolds(myShelf, shelfValues, shelfTimes, definition.series);
-        return PlacementRules.Evaluate(bookcaseOk, shelfOk, definition.volume, currentSlot.slotIndex);
+        return PlacementRules.Evaluate(bookcaseOk, shelfOk, definition.volume, slotIndex);
     }
+
 
     /// <summary>The Lamplit grading: red if the container's family (or room) does not accept the item, yellow if another group owns
     /// the shelf (or, in an Ordered container, the number is not in its own slot), green otherwise. Group claims are compared across
     /// every shelf in the room, so a group cannot be split over two shelves and still look right.</summary>
     private PlacementResult GradeCampaign(Shelf shelf, Bookcase bookcase)
+    {
+        return GradeCampaignAt(shelf, bookcase, currentSlot.slotIndex, false);
+    }
+
+    /// <summary>The campaign grading of this book on <paramref name="shelf"/> at <paramref name="slotIndex"/>; with <paramref name="preview"/> an unclaimed shelf counts as claimed by this book.</summary>
+    private PlacementResult GradeCampaignAt(Shelf shelf, Bookcase bookcase, int slotIndex, bool preview)
     {
         if (IsFind)
         {
@@ -207,10 +248,16 @@ public class Book : MonoBehaviour
             }
         }
 
+        if (preview && mine >= 0 && values[mine] < 0)
+        {
+            values[mine] = GroupKey;
+            times[mine] = double.MaxValue / 2.0;
+        }
+
         bool groupOk = PlacementRules.ClaimHolds(mine, values, times, GroupKey);
         PlacementMode mode = bookcase.rules == ContainerRules.Ordered ? PlacementMode.Ordered : PlacementMode.Group;
         bool setFits = PlacementRules.SetFitsShelf(definition.setSize, shelf.slots != null ? shelf.slots.Length : 0);
-        return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, currentSlot.slotIndex, setFits);
+        return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, slotIndex, setFits);
     }
 
     public bool IsCorrectlyShelved => currentSlot != null && Grade() == PlacementResult.Correct;
