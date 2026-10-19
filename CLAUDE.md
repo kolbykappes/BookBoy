@@ -116,6 +116,13 @@ lying, and pay the one extra call that tells you.
    makes the Editor read chat-window typing as game input instead (a typed
    letter is a short tap; against a hold interaction it reads as "hold
    began, never completed").
+3a. **Tested 2026-10-18 (Unity 6000.6.6f1, Pipeline 0.8.0-exp.1): `set_autotick` does NOT keep Play frames advancing
+    while the Editor is unfocused**, whether minimised or merely covered, at 16 ms or 1 ms (the vendor docs say it should).
+    Frames sit still, yet `status` says "playing". `editor_play`, `editor_stop` and `set_autotick` do not steal focus;
+    **toggling `EditorApplication.isPaused` does** (it un-minimised the window). `EditorApplication.Step()` advanced exactly one
+    frame while paused. `QueuePlayerLoopUpdate` and `SignalTick` did nothing. So: do Edit Mode work and synchronous checks (they
+    run fine unfocused), render with `LamplitBuilder.Shot` (Camera.Render to a texture), and batch frame-dependent checks (pile
+    drop) for a moment when Kolby says the Editor may be in front. Never use `isPaused` or `editor_focus` unasked. Probe: `tools/focus_probe.ps1`.
 4. **Nothing written during Play Mode persists except assets.** Scene edits
    and ProjectSettings changes report success, read back correctly, then
    revert the instant Play Mode stops. Stop Play Mode before any scene/

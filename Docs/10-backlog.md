@@ -294,7 +294,9 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
 - **Save design:** not now. Kolby will do it as a separate session later (T-007 is deferred; research file 22 is kept).
 - **Sound, controller (F-001) and achievements (F-002):** later. **Aspect ratio:** 16:9 only. **Testing:** the Editor is fine for most checks.
 
-### T-001 Test the no-focus Editor workflow  **P1, Todo, no approval needed**
+### T-001 Test the no-focus Editor workflow  **P1, tested 2026-10-18: autotick does not work here; workaround adopted (see result)**
+- **Result (2026-10-18, Kolby watching):** `set_autotick` (16 ms and 1 ms) did not keep Play frames advancing while the Editor was unfocused, minimised or covered; frames froze and `status` still said playing. `editor_play`, `editor_stop` and `set_autotick` do not steal focus; toggling `isPaused` does. `EditorApplication.Step()` advanced one frame while paused. `QueuePlayerLoopUpdate` and `SignalTick` did nothing. Recorded in CLAUDE.md rule 3a.
+  **Workaround:** Edit Mode builds, synchronous suites and `LamplitBuilder.Shot` renders all work unfocused; frame-dependent checks (pile drop) wait for a moment Kolby allows the Editor in front. Still to try: `capture_game_view --source camera` while frozen, a Player build (T-006) or a separate project copy (file 19) for frame-dependent checks.
 - Goal: stop the Editor window being forced to the front while Kolby works on the same PC.
 - Try (research files 20 and 21): `unity command set_autotick` once per session before Play; prove frames advance with `wait_for Time.frameCount changed` or `status` frame count and `playerLoopTicking`;
   `capture_game_view --source camera` for off-screen captures; never call `editor_focus`. Compare one off-screen capture with a focused Game-view capture (do the Volume effects, tonemapping and vignette appear?).
