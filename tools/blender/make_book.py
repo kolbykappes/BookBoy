@@ -1,6 +1,11 @@
 """Generates the BookBoy tome mesh and exports it as FBX for Unity.
 
-Run:  blender -b --factory-startup -P tools/blender/make_book.py -- <output.fbx>
+Run:  blender -b --factory-startup -P tools/blender/make_book.py -- <output.fbx> [styled]
+
+With the word "styled" after the output path it builds the STYLED variant (Book_TomeStyled.fbx) used by the printed covers and spines
+(tools/covers/make_covers.py): three submeshes in this order: 0 = boards (cover texture: back board u 0..0.5, front board u 0.5..1, v up the
+height; the ends and the inner faces sit on a plain cloth patch), 1 = pages, 2 = the rounded spine (u 0..1 across the spine, v up the height; the
+game picks one of the eight volume cells with a texture offset and scale per book).
 
 The mesh is a hardcover book with a rounded spine, two boards, an inset page block and a small bevel. It is built at real size
 (thickness 4 in, depth 10 in, nominal height 14 in) and then NORMALISED to a 1 x 1 x 1 box, because the game scales every book by
@@ -33,6 +38,8 @@ BEVEL = 0.0015    # board edge bevel
 
 argv = sys.argv
 out_path = argv[argv.index("--") + 1] if "--" in argv else "Book_Tome.fbx"
+STYLED = "styled" in argv[argv.index("--") + 1:] if "--" in argv else False
+PLAIN = (0.25, 0.012)   # styled: a patch of plain cloth in the cover texture, for the ends and the inner faces
 
 # ---- cover profile in the (x, d) plane, counter-clockwise, d = 0 at the spine ----
 pts = []   # (x, d)
@@ -68,6 +75,15 @@ for i in range(n):
 def u_of(i, t):
     """u at parameter t (0 at the edge's start point, 1 at its end) along edge i."""
     kind = lab[i]
+    if STYLED:
+        if kind == "back":
+            return 0.5 * t
+        if kind == "spine":
+            s0, s1 = spine_s[i]
+            return (s0 + (s1 - s0) * t) / spine_len
+        if kind == "front":
+            return 0.5 + 0.5 * t
+        return PLAIN[0]
     if kind == "back":
         return 0.30 * t                      # fore-edge (d = D) -> spine start (d = R)
     if kind == "spine":
@@ -79,6 +95,8 @@ def u_of(i, t):
 
 
 def u_vertex(i):
+    if STYLED:
+        return PLAIN[0]
     return u_of(i, 0.0) if lab[i] != "inner" else 0.005
 
 
@@ -93,11 +111,13 @@ faces_cover = []
 for i in range(n):
     j = (i + 1) % n
     f = bm.faces.new((bot[i], bot[j], top[j], top[i]))
-    f.material_index = 0
+    f.material_index = 2 if (STYLED and lab[i] == "spine") else 0
     ua, ub = u_of(i, 0.0), u_of(i, 1.0)
+    plain = STYLED and lab[i] == "inner"
     for loop in f.loops:
         v = loop.vert
-        if v == bot[i]: loop[uv].uv = (ua, 0.0)
+        if plain: loop[uv].uv = PLAIN
+        elif v == bot[i]: loop[uv].uv = (ua, 0.0)
         elif v == bot[j]: loop[uv].uv = (ub, 0.0)
         elif v == top[j]: loop[uv].uv = (ub, 1.0)
         else: loop[uv].uv = (ua, 1.0)
@@ -109,7 +129,7 @@ for f, vv in ((ftop, 1.0), (fbot, 0.0)):
     f.material_index = 0
     for loop in f.loops:
         idx = (top if f is ftop else bot).index(loop.vert)
-        loop[uv].uv = (u_vertex(idx), vv)
+        loop[uv].uv = PLAIN if STYLED else (u_vertex(idx), vv)
 
 # ---- page block: a box inside the C ----
 px0, px1 = -(T / 2 - BT - GAP), (T / 2 - BT - GAP)
@@ -142,12 +162,14 @@ for q in quads:
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
 bmesh.ops.triangulate(bm, faces=[ftop, fbot], quad_method='BEAUTY', ngon_method='EAR_CLIP')
 
-me = bpy.data.meshes.new("Book_Tome")
+MESH_NAME = "Book_TomeStyled" if STYLED else "Book_Tome"
+MAT_NAMES = ("BookCover", "BookPages", "BookSpine") if STYLED else ("BookCover", "BookPages")
+me = bpy.data.meshes.new(MESH_NAME)
 bm.to_mesh(me)
 bm.free()
-obj = bpy.data.objects.new("Book_Tome", me)
+obj = bpy.data.objects.new(MESH_NAME, me)
 bpy.context.scene.collection.objects.link(obj)
-for name in ("BookCover", "BookPages"):
+for name in MAT_NAMES:
     m = bpy.data.materials.new(name)
     me.materials.append(m)
 
@@ -161,10 +183,10 @@ dg = bpy.context.evaluated_depsgraph_get()
 eval_obj = obj.evaluated_get(dg)
 me2 = bpy.data.meshes.new_from_object(eval_obj)
 bpy.data.objects.remove(obj, do_unlink=True)
-obj = bpy.data.objects.new("Book_Tome", me2)
+obj = bpy.data.objects.new(MESH_NAME, me2)
 bpy.context.scene.collection.objects.link(obj)
-for name in ("BookCover", "BookPages"):
-    obj.data.materials.append(bpy.data.materials[name]) if len(obj.data.materials) < 2 else None
+for name in MAT_NAMES:
+    obj.data.materials.append(bpy.data.materials[name]) if len(obj.data.materials) < len(MAT_NAMES) else None
 
 # ---- smooth shading where the angle is gentle (the rounded spine), flat where it is sharp ----
 bpy.context.view_layer.objects.active = obj

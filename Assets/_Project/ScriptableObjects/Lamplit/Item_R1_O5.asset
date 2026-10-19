@@ -24,5 +24,6 @@ MonoBehaviour:
   number: 5
   room: 1
   iconIndex: 6
+  coverStyle: -1
   symbol: O
   findId: 

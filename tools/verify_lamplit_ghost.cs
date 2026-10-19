@@ -49,7 +49,7 @@ Check("an empty 8-row and an 8-set: the ghost is green", ghost.GradeIndex == 0, 
 Check("the thin highlight bar is off while the ghost shows", slot1.highlight != null && !slot1.highlight.enabled);
 var slotWrongSize = rows4[2].slots[1]; Aim(slotWrongSize);
 Check("a set of 8 aimed at a 4-slot row: the ghost is yellow", ghost.IsShown && ghost.GradeIndex == 1, ghost.GradeIndex.ToString());
-Check("the ghost holds the book's two submeshes (cover and pages)", ghost.GhostTransform.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == 2);
+Check("the ghost holds every submesh of the book (A1 is a printed book: boards, pages and spine)", ghost.GhostTransform.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == held.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length && held.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == 3);
 Aim(slot1); pi.PlaceCurrent(slot1);
 var other = B('C', 1); pi.PickUp(other); var slotSameShelf = rows8[3].slots[6]; Aim(slotSameShelf);
 Check("after set A claims a shelf, a different set aimed at it: the ghost is yellow", ghost.IsShown && ghost.GradeIndex == 1, ghost.GradeIndex.ToString());

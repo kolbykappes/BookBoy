@@ -11,6 +11,7 @@ public class Book : MonoBehaviour
     public static readonly Color CorrectColor = new Color(0.2f, 1f, 0.3f);
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+    private static readonly int BaseMapStId = Shader.PropertyToID("_BaseMap_ST");
     private static readonly int ColorId = Shader.PropertyToID("_Color");
 
     public BookDefinition definition;
@@ -454,6 +455,20 @@ public class Book : MonoBehaviour
         }
 
         _propertyBlock ??= new MaterialPropertyBlock();
+        // A styled tome has three materials (boards, pages, spine): the boards and the spine take the set's colour, and the spine also picks its volume cell
+        // out of the eight-cell spine atlas.
+        if (bookRenderer.sharedMaterials.Length == 3)
+        {
+            int volume = Mathf.Clamp(NumberKey, 1, 8);
+            _propertyBlock.Clear();
+            _propertyBlock.SetColor(BaseColorId, color);
+            _propertyBlock.SetColor(ColorId, color);
+            bookRenderer.SetPropertyBlock(_propertyBlock, 0);
+            _propertyBlock.SetVector(BaseMapStId, new Vector4(1f / 8f, 1f, (volume - 1) / 8f, 0f));
+            bookRenderer.SetPropertyBlock(_propertyBlock, 2);
+            return;
+        }
+
         // A tome has two materials (cover, pages): only the cover (slot 0) takes the set's colour, the pages stay cream.
         int slot = bookRenderer.sharedMaterials.Length > 1 ? 0 : -1;
         if (slot >= 0) bookRenderer.GetPropertyBlock(_propertyBlock, slot); else bookRenderer.GetPropertyBlock(_propertyBlock);

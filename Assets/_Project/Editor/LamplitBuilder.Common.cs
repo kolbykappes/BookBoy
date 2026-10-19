@@ -639,7 +639,73 @@ public static partial class LamplitBuilder
         paper.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(pages));
         EditorUtility.SetDirty(paper);
         AssetDatabase.SaveAssets();
-        return "book assets set up: mesh " + (BookMesh() != null) + ", materials Mat_BookCover and Mat_BookPages";
+        string styled = SetupStyledBookAssets();
+        return "book assets set up: mesh " + (BookMesh() != null) + ", materials Mat_BookCover and Mat_BookPages; " + styled;
+    }
+
+    public const string StyledBookModelPath = "Assets/_Project/Art/Models/Book_TomeStyled.fbx";
+    private const string CoverTexDir = "Assets/_Project/Art/Textures/Books/Covers";
+
+    /// <summary>The six test series of printed covers and spines (tools/covers/make_covers.py). Index = BookDefinition.coverStyle.</summary>
+    public static readonly string[] CoverKeys = { "lamps", "catalogue", "letters", "atlas", "mending", "vault" };
+
+    /// <summary>Imports the styled tome (boards, pages, spine submeshes) and its six series of cover and spine textures, and makes Mat_Cover_* and Mat_Spine_*.
+    /// Missing files are skipped (the styled books then fall back to the plain tome).</summary>
+    public static string SetupStyledBookAssets()
+    {
+        var model = AssetImporter.GetAtPath(StyledBookModelPath) as ModelImporter;
+        if (model == null) return "no styled tome (run tools/blender/make_book.py ... styled)";
+        model.globalScale = 1f;
+        model.useFileScale = true;
+        model.materialImportMode = ModelImporterMaterialImportMode.None;
+        model.importNormals = ModelImporterNormals.Import;
+        model.importTangents = ModelImporterTangents.CalculateMikk;
+        model.isReadable = false;
+        model.addCollider = false;
+        model.meshCompression = ModelImporterMeshCompression.Off;
+        model.importBlendShapes = false;
+        model.importCameras = false;
+        model.importLights = false;
+        model.animationType = ModelImporterAnimationType.None;
+        model.SaveAndReimport();
+
+        int made = 0;
+        foreach (string key in CoverKeys)
+        {
+            foreach (string kind in new[] { "Cover", "Spine" })
+            {
+                string path = CoverTexDir + "/T_" + kind + "_" + key + ".png";
+                var ti = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (ti == null) continue;
+                ti.textureType = TextureImporterType.Default;
+                ti.sRGBTexture = true;
+                ti.wrapMode = TextureWrapMode.Clamp;
+                ti.mipmapEnabled = true;
+                ti.anisoLevel = 8;
+                ti.maxTextureSize = 4096;
+                ti.npotScale = TextureImporterNPOTScale.None;   // the spine atlas is 3072 wide: keep it, the eight cells line up
+                ti.textureCompression = TextureImporterCompression.CompressedHQ;
+                ti.SaveAndReimport();
+                var m = EnsureMat("Mat_" + kind + "_" + key, Color.white, 0.30f);
+                m.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(path));
+                EditorUtility.SetDirty(m);
+                made++;
+            }
+        }
+
+        AssetDatabase.SaveAssets();
+        return "styled tome " + (StyledBookMesh() != null) + ", " + made + " cover and spine materials";
+    }
+
+    /// <summary>The styled tome mesh (three submeshes: boards, pages, spine), or null if it has not been imported.</summary>
+    public static Mesh StyledBookMesh()
+    {
+        foreach (var o in AssetDatabase.LoadAllAssetsAtPath(StyledBookModelPath))
+        {
+            if (o is Mesh m) return m;
+        }
+
+        return null;
     }
 
     /// <summary>The tome mesh (a unit box scaled by each item's thickness, height and depth), or null if it has not been imported.</summary>
@@ -662,7 +728,20 @@ public static partial class LamplitBuilder
         go.transform.SetParent(parent, false);
         go.transform.localScale = size;
         var mesh = useBookMesh ? BookMesh() : null;
-        if (mesh != null)
+        Mesh styledMesh = useBookMesh && def.coverStyle >= 0 && def.coverStyle < CoverKeys.Length ? StyledBookMesh() : null;
+        string styleKey = styledMesh != null ? CoverKeys[def.coverStyle] : null;
+        if (styledMesh != null && AssetDatabase.LoadAssetAtPath<Material>(MatDir + "/Mat_Cover_" + styleKey + ".mat") == null)
+        {
+            styledMesh = null;
+        }
+
+        if (styledMesh != null)
+        {
+            mesh = styledMesh;
+            go.GetComponent<MeshFilter>().sharedMesh = styledMesh;
+            go.GetComponent<MeshRenderer>().sharedMaterials = new[] { LoadMat("Mat_Cover_" + styleKey), LoadMat("Mat_BookPages"), LoadMat("Mat_Spine_" + styleKey) };
+        }
+        else if (mesh != null)
         {
             go.GetComponent<MeshFilter>().sharedMesh = mesh;
             go.GetComponent<MeshRenderer>().sharedMaterials = new[] { LoadMat("Mat_BookCover"), LoadMat("Mat_BookPages") };
@@ -679,6 +758,11 @@ public static partial class LamplitBuilder
         book.ApplyColor();
 
         // the spine has three plates (tools/blender/make_book_textures.py): icon on top, the set letter in the middle, the volume number at the bottom
+        if (styledMesh != null)
+        {
+            return book;   // the printed spine carries the icon, the title and the volume number; no pixel labels
+        }
+
         Color text = TextColorFor(def.spineColor);
         bool plates = mesh != null;
         if (!string.IsNullOrEmpty(def.symbol))

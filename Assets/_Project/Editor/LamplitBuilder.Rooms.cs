@@ -209,6 +209,7 @@ public static partial class LamplitBuilder
                 var def = Definition("Item_R1_" + letter + n);
                 def.setSize = setSize;
                 def.iconIndex = g % PixelDigit.IconCount;
+                def.coverStyle = g < CoverKeys.Length ? g : -1;   // sets A to F carry the printed test covers; the rest keep the pixel-label tome
                 def.bookId = "r1_" + char.ToLowerInvariant(letter) + n;
                 def.displayName = "Book " + letter;
                 def.family = 0;

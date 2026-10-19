@@ -36,6 +36,9 @@ public class BookDefinition : ScriptableObject
     [Tooltip("Set icon (0 to 7: disc, triangle, diamond, square, star, heart, moon, cross) shown at the top of the spine, a second cue next to the letter. -1 = none.")]
     public int iconIndex = -1;
 
+    [Tooltip("Printed cover and spine style (0 to 5: the six test series in tools/covers/make_covers.py). -1 = the plain tome with the pixel labels. Needs the styled tome mesh (three submeshes); the number on the spine is picked from the set's volume.")]
+    public int coverStyle = -1;
+
     [Tooltip("A letter shown on the item: the group's symbol, so colour never decides alone.")]
     public string symbol = "";
 

@@ -34,6 +34,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Six printed cover and spine designs (LAMPS, CATALOGUE, LETTERS, ATLAS, MENDING, VAULT; tintable, high resolution, eight volume cells per spine) on a styled tome mesh with a separate spine submesh; Room 1 sets A to F use them. The held books are now a Librarian-style flat stack at the lower right that rises into view when looking down and pulls back near bookcases (T-004, T-010).
 - Placement ghost (a translucent copy of the held book in the aimed slot, tinted by how it would grade), brass claim plates showing each shelf's set (icon and letter), and a pooled glow whose hull covers the page block (L-022, L-023, T-013).
 - Lighting pass (scene-level): brighter orbs (5.0, range 9), measured before and after with post-processing on; pipeline-setting changes proposed, not applied (T-003).
 - Palette: 24 colours solved for contrast against the wood and for colour-blind separation (BookBoy.Rules.Palette, tested); spines now carry a set icon, a letter and a volume number on three plates (T-010).

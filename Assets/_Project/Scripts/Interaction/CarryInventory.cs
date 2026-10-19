@@ -4,15 +4,20 @@ using BookBoy.Rules;
 using UnityEngine;
 
 /// <summary>
-/// The books the player is carrying. Shown as a small fan at the carry point with the "current" book in front; cycling
+/// The books the player is carrying, shown as a stack of flat books at the lower right (after Librarian) with the "current" book on top; cycling
 /// swaps which one is current. The logic (capacity, cycling) lives in the engine-free CarryList.
 /// </summary>
 public class CarryInventory : MonoBehaviour
 {
     public Transform carryPoint;
 
-    [Tooltip("Carried books are shown at this fraction of their real size so they don't occlude as much of the view.")]
-    public float carryScale = 0.6f;
+    [Tooltip("Carried books are shown at this fraction of their real size (1 = the size they have on a shelf).")]
+    public float carryScale = 1f;
+
+    [Tooltip("Half the length of the stack's footprint along the player's forward (half a book's height).")]
+    public float stackHalfLength = 0.19f;
+
+    private float _pull;
 
     private readonly CarryList<Book> _list = new CarryList<Book>(UpgradeCatalog.BaseCarryCapacity);
     private readonly Dictionary<Book, Vector3> _originalScale = new Dictionary<Book, Vector3>();
@@ -125,15 +130,66 @@ public class CarryInventory : MonoBehaviour
         Changed?.Invoke();
     }
 
+    /// <summary>Puts every carried book at its place in the stack at once (tests and tools; in play the books glide there).</summary>
+    public void SnapStack()
+    {
+        _pull = ComputePull();
+        ArrangeStack(1f);
+    }
+
     private void LateUpdate()
     {
-        int n = _list.Count;
-        if (n == 0)
+        if (_list.Count == 0)
         {
             return;
         }
 
         float blend = 1f - Mathf.Exp(-16f * Time.unscaledDeltaTime);
+        _pull = Mathf.Lerp(_pull, ComputePull(), 1f - Mathf.Exp(-10f * Time.unscaledDeltaTime));
+        ArrangeStack(blend);
+    }
+
+    /// <summary>How far the stack is pulled back toward the body so it does not poke through a bookcase or wall in front of the player (0 = fully out).</summary>
+    private float ComputePull()
+    {
+        Transform anchor = carryPoint;
+        if (anchor == null || anchor.parent == null)
+        {
+            return 0f;
+        }
+
+        // a ray from the body, level with the stack and in line with it, along the player's forward: the stack's far edge must stop short of the first obstacle
+        Transform body = anchor.parent;
+        Vector3 local = anchor.localPosition;
+        Vector3 origin = body.TransformPoint(new Vector3(local.x, local.y, 0f));
+        var hits = Physics.RaycastAll(origin, body.forward, 1.5f, ~0, QueryTriggerInteraction.Ignore);
+        float nearest = float.MaxValue;
+        Transform root = anchor.root;
+        foreach (RaycastHit h in hits)
+        {
+            if (h.collider.transform.IsChildOf(root))
+            {
+                continue;
+            }
+
+            nearest = Mathf.Min(nearest, h.distance);
+        }
+
+        if (nearest == float.MaxValue)
+        {
+            return 0f;
+        }
+
+        float farEdge = local.z + stackHalfLength;
+        return Mathf.Clamp(farEdge - (nearest - 0.04f), 0f, local.z + stackHalfLength);
+    }
+
+    /// <summary>The Librarian-style stack: the books lie flat, their spines toward the player's left, the current book on top and the others hanging below
+    /// it. The anchor (carryPoint) is a child of the player root, so it turns with the player but not with the camera pitch: the stack sits out of the
+    /// bottom of the view at a level gaze and rises into it when the player looks down.</summary>
+    private void ArrangeStack(float blend)
+    {
+        int n = _list.Count;
         for (int i = 0; i < n; i++)
         {
             Book book = _list.Items[i];
@@ -142,15 +198,16 @@ public class CarryInventory : MonoBehaviour
                 continue;
             }
 
-            int order = (i - _list.CurrentIndex + n) % n;   // 0 = current book
+            int order = (i - _list.CurrentIndex + n) % n;   // 0 = current book, on top
             Transform t = book.transform;
-            Vector3 real = _originalScale.TryGetValue(book, out Vector3 s) ? s : t.localScale;
-            float size = carryScale * (order == 0 ? 1f : 0.82f);
-            Vector3 targetPos = order == 0 ? Vector3.zero : new Vector3(0.08f * order, -0.02f * order, 0.025f * order);
-            Quaternion targetRot = order == 0 ? Quaternion.identity : Quaternion.Euler(0f, -10f * order, 0f);
+            Vector3 real = _originalScale.TryGetValue(book, out Vector3 s) ? s : t.localScale / carryScale;
+            Vector3 scale = real * carryScale;
+            float sign = order % 2 == 0 ? 1f : -1f;
+            Vector3 targetPos = new Vector3(0.012f * sign * Mathf.Min(order, 3), -order * scale.x * 1.04f, -_pull);
+            Quaternion targetRot = Quaternion.Euler(0f, 3.5f * sign * Mathf.Min(order, 3), 0f) * Quaternion.LookRotation(Vector3.right, Vector3.forward);
             t.localPosition = Vector3.Lerp(t.localPosition, targetPos, blend);
             t.localRotation = Quaternion.Slerp(t.localRotation, targetRot, blend);
-            t.localScale = Vector3.Lerp(t.localScale, real * size, blend);
+            t.localScale = Vector3.Lerp(t.localScale, scale, blend);
         }
     }
 }

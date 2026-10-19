@@ -24,5 +24,6 @@ MonoBehaviour:
   number: 3
   room: 1
   iconIndex: 7
+  coverStyle: -1
   symbol: P
   findId: 

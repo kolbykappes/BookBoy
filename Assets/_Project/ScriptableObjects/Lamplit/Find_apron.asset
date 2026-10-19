@@ -24,5 +24,6 @@ MonoBehaviour:
   number: 1
   room: 0
   iconIndex: -1
+  coverStyle: -1
   symbol: 
   findId: apron
