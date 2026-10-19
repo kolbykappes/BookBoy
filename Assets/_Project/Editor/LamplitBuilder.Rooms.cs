@@ -147,10 +147,10 @@ public static partial class LamplitBuilder
 
     // ---------------------------------------------------------------- Room 1: the Reading Room
 
-    // thickness, height, depth in metres: spines 1.8 to 2.4 in, books 9.4 to 11.8 in tall (the 0.30 m limit is the shelf clearance), pages 6 to 7.5 in deep
+    // thickness, height, depth in metres: tomes, 4 in thick, 10 in deep, 12 to 15 in tall (the 15 in limit is what the bookcases are sized for)
     private static readonly Vector3[] ReadingScales =
     {
-        new Vector3(0.050f, 0.24f, 0.16f), new Vector3(0.045f, 0.28f, 0.18f), new Vector3(0.060f, 0.30f, 0.15f), new Vector3(0.055f, 0.26f, 0.19f)
+        new Vector3(BookSpine, BookMinHeight, BookDepth), new Vector3(BookSpine, 0.330f, BookDepth), new Vector3(BookSpine, 0.356f, BookDepth), new Vector3(BookSpine, BookMaxHeight, BookDepth)
     };
 
     /// <summary>Room 1: 96 books in 16 sets (even letters A, C, ... are sets of 8, odd letters are sets of 4) on two pieces of furniture along the
@@ -164,10 +164,10 @@ public static partial class LamplitBuilder
         var zone = root.GetComponent<RoomZone>();
         var wood = LoadMat("Mat_Wood");
 
-        // the furniture: triple centred 1.2 m before the middle of the wall, solo 1.6 m after it (the group is centred on the wall)
+        // the furniture: triple 1.45 m before the middle of the wall, solo 1.85 m after it (the group is centred on the wall)
         var holder = FreshChild(root, "Containers");
         float zc = (s.Z0 + s.Z1) / 2f;
-        float tripleZ = zc - 1.2f, soloZ = zc + 1.6f;
+        float tripleZ = zc - 1.45f, soloZ = zc + 1.85f;
         float edge = (CaseWidth(8) + CaseWidth(4)) / 2f + 0.005f;
         var containers = new List<Bookcase>
         {

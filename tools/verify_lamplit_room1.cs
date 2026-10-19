@@ -30,7 +30,7 @@ Check("every set has its own letter (colour never decides alone)", symbols.Count
 Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 1.0f));
 Check("each bookcase uses the Group rule and accepts any family", System.Linq.Enumerable.All(zone.shelves, s => s.bookcase.rules == ContainerRules.Group && s.bookcase.containerFamily == -1));
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
-Check("books are 9 to 12 in tall and fit their shelf (0.23 to 0.30 m tall, spine under the 0.07 m slot pitch)", System.Linq.Enumerable.All(zone.items, b => b.transform.localScale.y >= 0.229f && b.transform.localScale.y <= 0.301f && b.transform.localScale.x < 0.07f));
+Check("books are tomes: 12 to 15 in tall, 4 in thick, 10 in deep, and fit their shelf (spine under the slot pitch)", System.Linq.Enumerable.All(zone.items, b => b.transform.localScale.y >= 0.3047f && b.transform.localScale.y <= 0.3811f && System.Math.Abs(b.transform.localScale.x - 0.1016f) < 0.0005f && System.Math.Abs(b.transform.localScale.z - 0.254f) < 0.0005f && b.transform.localScale.x < LamplitBuilder.SlotPitch));
 
 // ---- Group grading: the first set claims the row, any slot is fine ----
 ClearAll();

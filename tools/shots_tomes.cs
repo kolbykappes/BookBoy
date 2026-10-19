@@ -1,0 +1,11 @@
+var d = "C:/Users/angry/AppData/Local/Temp/claude/C--Code-BookBoy/f093f5b7-069b-4f91-9e47-626a41770065/scratchpad/";
+var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
+var sb = new System.Text.StringBuilder(); float fov = 58.7f;
+sb.AppendLine(LamplitBuilder.Shot(d + "t_door.png", V(-2.2f, 1.65f, 3.56f), V(-9f, 1.3f, 3.56f), fov, 1386, 719));
+var zone = UnityEngine.GameObject.Find("Room1").GetComponent<RoomZone>();
+zone.PlaceAllHome();
+sb.AppendLine(LamplitBuilder.Shot(d + "t_wide.png", V(-5.0f, 1.65f, 3.56f), V(-9f, 1.2f, 3.56f), fov, 1386, 719));
+sb.AppendLine(LamplitBuilder.Shot(d + "t_triple_4ft.png", V(-7.35f, 1.65f, 2.11f), V(-8.7f, 1.1f, 2.11f), fov, 1386, 719));
+sb.AppendLine(LamplitBuilder.Shot(d + "t_triple_5ft.png", V(-7.0f, 1.65f, 2.11f), V(-8.7f, 1.0f, 2.11f), fov, 1386, 719));
+sb.AppendLine(LamplitBuilder.Shot(d + "t_solo_4ft.png", V(-7.35f, 1.65f, 5.41f), V(-8.7f, 1.1f, 5.41f), fov, 1386, 719));
+return sb.ToString();

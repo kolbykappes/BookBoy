@@ -31,20 +31,25 @@ public static partial class LamplitBuilder
     public const float DoorWidth = 0.91f;       // 3'0"
     public const float DoorHeight = 2.13f;      // 7'0"
     public const float OrbHeight = 2.1f;        // magelights float above head height, under the ceiling
-    public const float SignHeight = 2.2f;       // family signs: above the cases (1.65 m), below the ceiling
+    public const float SignHeight = 2.45f;      // family signs: above the cases (2.14 m), below the ceiling
     public const float HubHalf = 1.5f;          // hub wall centres are at x = +-HubHalf (a 10 ft hall)
     public const float HubLength = 24.8f * LayoutK;
 
-    // A bookcase: slots 0.07 m apart (the thickest item is 0.064 m), 0.09 m of frame per case, 0.30 m deep, four shelves 0.33 m apart on
-    // an 0.28 m plinth, 1.65 m tall (the top is at eye level). Books are 0.23 to 0.30 m tall.
-    public const float SlotPitch = 0.07f;
+    // Tomes (Kolby, 2026-10-18): books are 12 to 15 in tall, 10 in deep and 4 in thick (a spine of 0.1016 m). A bookcase is sized around the
+    // tallest (15 in = 0.381 m): slots 4.25 in apart, 0.09 m of frame per case, 13 in deep, four shelves 0.43 m (17 in) apart on a 15 in (0.38 m)
+    // plinth, so the top shelf is at 5'6" and the case is about 7 ft tall.
+    public const float BookSpine = 0.1016f;     // 4 in
+    public const float BookDepth = 0.254f;      // 10 in
+    public const float BookMinHeight = 0.3048f; // 12 in
+    public const float BookMaxHeight = 0.381f;  // 15 in
+    public const float SlotPitch = 0.108f;      // 4.25 in
     public const float CaseMargin = 0.09f;
-    public const float CaseDepth = 0.30f;
+    public const float CaseDepth = 0.33f;       // 13 in
     public const int ShelfRows = 4;
-    public const float BaseHeight = 0.28f;
-    public const float ShelfSpacing = 0.33f;
-    public const float ContainerHeight = 1.65f;
-    public const float FrontLine = -0.14f;
+    public const float BaseHeight = 0.38f;      // 15 in plinth under the first shelf
+    public const float ShelfSpacing = 0.43f;    // 17 in: a 15 in book, the 2 in board and a little air
+    public const float ContainerHeight = 2.14f; // top shelf at 1.67 m plus 0.381 m of book and 0.09 m of clearance and top board
+    public const float FrontLine = -0.15f;
     private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing, BaseHeight + 2f * ShelfSpacing, BaseHeight + 3f * ShelfSpacing };
 
     public static float CaseWidth(int slots) { return slots * SlotPitch + CaseMargin; }
@@ -326,8 +331,8 @@ public static partial class LamplitBuilder
             shelf.bookcase = bookcase;
             var box = shelfGo.AddComponent<BoxCollider>();
             box.isTrigger = true;
-            box.center = new Vector3(0f, 0.16f, 0f);
-            box.size = new Vector3(w - 0.08f, 0.32f, d - 0.02f);   // the aim volume of one row, a little under the 0.33 m shelf spacing
+            box.center = new Vector3(0f, (ShelfSpacing - 0.01f) / 2f, 0f);
+            box.size = new Vector3(w - 0.08f, ShelfSpacing - 0.01f, d - 0.02f);   // the aim volume of one row, a little under the shelf spacing
 
             var slotList = new ShelfSlot[slots];
             for (int k = 0; k < slots; k++)
@@ -343,8 +348,8 @@ public static partial class LamplitBuilder
                 bar.name = "Highlight";
                 Object.DestroyImmediate(bar.GetComponent<Collider>());
                 bar.transform.SetParent(slotGo.transform, false);
-                bar.transform.localPosition = new Vector3(0f, 0.002f, 0.1f);
-                bar.transform.localScale = new Vector3(SlotPitch - 0.008f, 0.004f, 0.2f);
+                bar.transform.localPosition = new Vector3(0f, 0.002f, BookDepth / 2f);
+                bar.transform.localScale = new Vector3(SlotPitch - 0.008f, 0.004f, BookDepth);
                 var mr = bar.GetComponent<MeshRenderer>();
                 mr.sharedMaterial = highlightMat;
                 mr.shadowCastingMode = ShadowCastingMode.Off;
@@ -420,12 +425,12 @@ public static partial class LamplitBuilder
         Color text = TextColorFor(def.spineColor);
         if (!string.IsNullOrEmpty(def.symbol))
         {
-            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.040f * WorldScale, text);
+            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.055f * WorldScale, text);
         }
 
         if (showNumber)
         {
-            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.036f * WorldScale, text);
+            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.048f * WorldScale, text);
         }
 
         return book;

@@ -522,3 +522,9 @@ Kolby decided the storybook rescale was a wrong turn and asked for a normal adul
 - **Verified:** 112 Edit Mode tests; hub, Room 1, finds, Rooms 2 and 3 (old layout), admin, campaign, activity and pile part 1 suites pass (the suites for the hub, Room 1, admin, campaign, activity and piles were updated for the new geometry; Room 1's is rewritten). Offscreen renders of the hub, Room 1 and the cases.
   Not run: the live pile drop (part 2 needs running frames, which need the Editor in front).
 - **Not done:** Rooms 2 and 3 are still the old layout and are not at the new scale (they do not line up with the narrower hub, so do not open them yet); decor or blocked rows; lighting retune; Game-view playtest.
+
+### Lamplit: tomes (2026-10-19)
+
+Kolby: the books look like normal books and should be tomes. Books are now **12 to 15 in tall, 10 in deep and 4 in thick** (all spines 4 in; heights 12, 13, 14 and 15 in by set). The bookcases were resized around a 15 in book: slot pitch 4.25 in,
+shelves 17 in apart, a taller 15 in plinth so the top shelf sits at 5'5.7" (it was 4'2"), case 13 in deep and 7'0" tall; solo case about 37.6 in wide, triple about 6'6.7". Spine letters are bigger (2.2 in). Room 1 rebuilt; the suites were
+re-run: 112 unit tests and the hub, Room 1, finds, Rooms 2 and 3 (old layout), admin, campaign, activity and pile part 1 suites pass. Table in [09-scale-reference.md](09-scale-reference.md). Not run: the live pile drop (needs the Editor in front).

@@ -106,12 +106,12 @@ The 1.6x storybook rescale and the child eye height made the rooms feel like a g
 | Ceiling, door | 9'0"; 3'0" x 7'0" | 2.74 m; 0.91 x 2.13 m |
 | Hub hallway | 10 ft wide, 51 ft long | 3.0 m, 15.5 m |
 | Room 1 | about 25 x 23 ft | 7.5 x 7.1 m |
-| Bookcase | four shelves 13 in apart, 11 in plinth, 12 in deep, 5'5" tall (top at eye level) | 0.33 m spacing, shelf tops 0.28 / 0.61 / 0.94 / 1.27 m, 0.30 m deep, 1.65 m |
-| Slot pitch | 2.75 in | 0.07 m |
-| Solo case (8 books wide) | about 25.5 in wide | 0.65 m |
-| Wing (4 books wide) / triple (4 + 8 + 4) | 14.5 in / 4'6.5" wide | 0.37 m / 1.39 m |
-| Books | 9.4 to 11.8 in tall, spines 1.8 to 2.4 in, pages 6 to 7.5 in | 0.24 to 0.30 m, 0.045 to 0.060 m, 0.15 to 0.19 m |
+| Bookcase | four shelves 17 in apart on a 15 in plinth (shelf tops 15 in, 2'8", 4'0.8", 5'5.7"), 13 in deep, 7'0" tall | 0.43 m spacing, shelf tops 0.38 / 0.81 / 1.24 / 1.67 m, 0.33 m deep, 2.14 m |
+| Slot pitch | 4.25 in | 0.108 m |
+| Solo case (8 books wide) | about 37.6 in wide | 0.95 m |
+| Wing (4 books wide) / triple (4 + 8 + 4) | 20.6 in / 6'6.7" wide | 0.52 m / 2.0 m |
+| Books (tomes, Kolby 2026-10-19) | 12 to 15 in tall, spine 4 in, 10 in deep | 0.305 to 0.381 m, 0.1016 m, 0.254 m |
 | Magelights | about 6'11" | 2.1 m |
 
-Book screen fraction at 90 horizontal (computed, not yet measured live): a 0.28 m book fills 20% of the screen height at 4 ft (1.2 m) and 16% at 5 ft (1.5 m); the reference band is 16 to 23%.
+Book screen fraction at 90 horizontal (computed, not yet measured live): a 14 in (0.356 m) tome fills about 26% of the screen height at 4 ft (1.2 m) and 21% at 5 ft (1.5 m) (12 in: 22% and 18%; 15 in: 28% and 22%); the reference band is 16 to 23%, so tomes read a little bigger than the references, on purpose.
 Rooms 2 and 3 have not been converted yet (they still hold the old 5-slot, 5-set layout at the storybook size).
