@@ -42,22 +42,23 @@ namespace BookBoy.Rules
         public const int MinPiles = 3;
         public const int MaxPiles = 7;
 
-        /// <summary>About one pile per 18 items, between 3 and 7 (never more piles than items).</summary>
-        public static int PileCountFor(int items)
+        /// <summary>About one pile per <paramref name="itemsPerPile"/> items (18 by default), between 3 and <paramref name="maxPiles"/> (7 by default,
+        /// raised for the big performance test room), never more piles than items.</summary>
+        public static int PileCountFor(int items, int maxPiles = MaxPiles, int itemsPerPile = 18)
         {
             if (items <= 0)
             {
                 return 0;
             }
 
-            int piles = (int)Math.Round(items / 18.0);
-            piles = Math.Max(MinPiles, Math.Min(MaxPiles, piles));
+            int piles = (int)Math.Round(items / (double)Math.Max(1, itemsPerPile));
+            piles = Math.Max(MinPiles, Math.Min(Math.Max(MinPiles, maxPiles), piles));
             return Math.Min(piles, items);
         }
 
-        public static PilePlan Plan(int items, float minX, float minZ, float maxX, float maxZ, int seed, float minSeparation = 1.3f)
+        public static PilePlan Plan(int items, float minX, float minZ, float maxX, float maxZ, int seed, float minSeparation = 1.3f, int maxPiles = MaxPiles, int itemsPerPile = 18)
         {
-            int piles = PileCountFor(items);
+            int piles = PileCountFor(items, maxPiles, itemsPerPile);
             var rng = new Random(seed);
             var cx = new float[piles];
             var cz = new float[piles];

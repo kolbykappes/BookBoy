@@ -32,6 +32,12 @@ public class RoomZone : MonoBehaviour
     [Tooltip("How much bigger than life size the items are: piles are planned wider (spacing and radius) by this factor.")]
     public float pileSpread = 1f;
 
+    [Tooltip("The most piles a pile-up makes (7 for the game's rooms; the performance test room raises it).")]
+    public int maxPiles = PilePlanner.MaxPiles;
+
+    [Tooltip("About how many items go in one pile.")]
+    public int itemsPerPile = 18;
+
     [Header("Room bounds, used to tell which room the player is in")]
     public Vector3 boundsCenter;
     public Vector3 boundsSize;
@@ -153,7 +159,7 @@ public class RoomZone : MonoBehaviour
             b.transform.SetParent(null, true);
         }
 
-        LastPlan = PilePlanner.Plan(list.Count, scatterMin.x, scatterMin.y, scatterMax.x, scatterMax.y, seed, 1.3f * Mathf.Max(1f, pileSpread));
+        LastPlan = PilePlanner.Plan(list.Count, scatterMin.x, scatterMin.y, scatterMax.x, scatterMax.y, seed, 1.3f * Mathf.Max(1f, pileSpread), maxPiles, itemsPerPile);
         var rng = new System.Random(seed * 31 + 7);
         var rounds = new int[LastPlan.PileCount];
         var drops = new System.Collections.Generic.List<PileDrop>();

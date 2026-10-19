@@ -18,6 +18,30 @@ namespace BookBoy.Tests
             Assert.AreEqual(expected, PilePlanner.PileCountFor(items));
         }
 
+        [TestCase(1000, 60, 25, 40)]
+        [TestCase(3000, 60, 25, 60)]
+        [TestCase(1000, 7, 18, 7)]
+        [TestCase(10, 60, 25, 3)]
+        public void PileCount_CanBeRaisedForABigTestRoom(int items, int maxPiles, int perPile, int expected)
+        {
+            Assert.AreEqual(expected, PilePlanner.PileCountFor(items, maxPiles, perPile));
+        }
+
+        [Test]
+        public void ABigPlan_PutsEveryItemInOnePile()
+        {
+            var plan = PilePlanner.Plan(1000, -11f, -11f, 11f, 11f, 7, 1.3f, 60, 25);
+            Assert.AreEqual(40, plan.PileCount);
+            int sum = 0;
+            for (int p = 0; p < plan.PileCount; p++)
+            {
+                Assert.GreaterOrEqual(plan.ItemsIn(p), 1);
+                sum += plan.ItemsIn(p);
+            }
+
+            Assert.AreEqual(1000, sum);
+        }
+
         [Test]
         public void EveryItemIsInOnePile_AndEveryPileHasAtLeastOneItem()
         {
