@@ -14,7 +14,7 @@ int LiveBooks() { return UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.
 // ---- at the start: only the hub and Room 1 are alive ----
 Check("Room 1 is on (its door is open); Rooms 2 and 3 are switched off", cc.IsRoomActive(1) && !cc.IsRoomActive(2) && !cc.IsRoomActive(3));
 int books0 = LiveBooks(), rend0 = LiveRenderers(), col0 = LiveColliders(), light0 = LiveLights();
-Check("only Room 1's 100 items (and its 2 finds) are live books: 102, not 345", books0 == 102, books0.ToString());
+Check("only Room 1's 96 items (and its 2 finds) are live books: 98, not the whole scene", books0 == 98, books0.ToString());
 Check("Rooms 2 and 3 objects are not live: renderers, colliders and lights are well below the whole-scene totals", rend0 < 650 && col0 < 400 && light0 < 12, "renderers=" + rend0 + " colliders=" + col0 + " lights=" + light0);
 sb.Append("live at the start: books=" + books0 + " renderers=" + rend0 + " colliders=" + col0 + " lights=" + light0 + "\n");
 Check("a switched-off room's items are not found by the abilities (they search live books only)", System.Array.IndexOf(UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.FindObjectsInactive.Exclude), cc.Room(2).items[0]) < 0);
@@ -22,7 +22,7 @@ Check("a switched-off room's items are not found by the abilities (they search l
 // ---- finishing Room 1 opens Room 2's door and switches the room on ----
 cc.CompleteRoom(1); cc.Recompute();
 Check("tidying Room 1 opens Room 2's door AND switches Room 2 on; Room 3 stays off", cc.State.IsDoorOpen(2) && cc.IsRoomActive(2) && !cc.IsRoomActive(3));
-Check("Room 2's items are live now (102 + 122)", LiveBooks() == 102 + 122, LiveBooks().ToString());
+Check("Room 2's items are live now (98 + 122)", LiveBooks() == 98 + 122, LiveBooks().ToString());
 cc.CompleteRoom(2); cc.Recompute();
 Check("tidying Room 2 switches Room 3 on", cc.State.IsDoorOpen(3) && cc.IsRoomActive(3));
 

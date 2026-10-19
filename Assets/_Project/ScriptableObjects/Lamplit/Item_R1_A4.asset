@@ -20,6 +20,7 @@ MonoBehaviour:
   spineColor: {r: 0.85, g: 0.3825, b: 0.3825, a: 1}
   family: 0
   group: 0
+  setSize: 8
   number: 4
   room: 1
   symbol: A

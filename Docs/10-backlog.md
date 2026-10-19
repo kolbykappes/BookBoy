@@ -306,7 +306,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
 - Fallback if it does not work: a separate clone of the project with its own Library (file 19), or a Player build (T-006).
 - Done when: the workflow is in CLAUDE.md and the unity-editor-ops skill, rule 2 is corrected, and a full suite run happens with Unity in the background.
 
-### T-002 Back to an adult-sized player and cozy rooms  **P1, Todo, plan first, no approval (builder and scene only)**
+### T-002 Back to an adult-sized player and cozy rooms  **P1, In progress: hub and Room 1 done 2026-10-18, Rooms 2 and 3 to do; Kolby to playtest**
 - Kolby's call: the storybook rescale (world 1.6x, eye 1.15 m, FOV 75, held book 0.55) was a wrong turn. The rooms feel like a giants' hall. Want an **adult-sized actor** and rooms that feel cozy.
 - Research: the ceiling is 2.6x the eye height (engine defaults about 1.9 to 2.0, a real house 1.45); no source supports exaggerating more than about 1.33x; readability comes from the **screen fraction** of a book
   (16 to 23% of screen height, spines 5.3 to 5.7% thick), not from world size (files 1, 3, 27). The player collider is still the adult prefab one (2.0 m, radius 0.5; confirmed from the prefab, no scene override), so it must be set explicitly.
@@ -316,7 +316,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
   (3) capsule height, radius and centre on the player (scene override, not the Starter Assets prefab); (4) rebuild the hub and rooms, re-run all suites; (5) render and measure the book's screen fraction at 1.2 and 1.5 m and the spine thickness fraction;
   (6) check held-book clipping against shelves (pull the held book back near surfaces first if it clips); (7) update `09-scale-reference.md` and `04-build-status.md`.
 
-### T-017 Two bookcase types and sets of 4 or 8  **P1, Todo, design agreed in outline 2026-10-18, rules to confirm; do together with T-002**
+### T-017 Two bookcase types and sets of 4 or 8  **P1, In progress: rule and Room 1 done 2026-10-18; decor or blocked rows and Rooms 2 and 3 to do**
 - Kolby: the prototype's narrow 5-slot cabinets are part of the problem. New designs: **(A) solo: 8 books wide**; **(B) triple: an 8-wide centre with a 4-wide wing on each side**. Book sets (series) are **4 or 8** books; no more sets of 5.
 - Proposed dimensions (adult scale, T-002): slot pitch 2.75 in (0.07 m); frame about 3.5 in (0.09 m) in total; **solo about 25.5 in wide (0.65 m); wing about 14.5 in (0.37 m); triple about 54.5 in (1.38 m)**; depth 12 in (0.30 m). **Four shelves per case (Kolby, 2026-10-18; the references have 3 to 4 boards: Witch Cabin four, Shelves and Sorcery three above a base, Librarian several; the earlier two came from the prototype, not from references):** 8 in riser, shelf tops at 11 in, 2'0", 3'1" and 4'2" (0.28 / 0.61 / 0.94 / 1.27 m, 13 in pitch), books 9 to 12 in tall, case about 5'5" (1.65 m, top at eye level). Solo = 32 slots, triple = 64 slots. Supersedes the two boards at 0.95 / 1.40 m in T-002. Wings flush with the centre (an optional slight inward angle later).
 - Build impact is small: the builder's container function already takes the slot count, so a solo is one 8-slot container and a triple is three containers (4, 8, 4) placed side by side; each row is still a Shelf.

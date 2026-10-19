@@ -17,26 +17,37 @@ public static partial class LamplitBuilder
     private const string MatDir = "Assets/_Project/Art/Materials";
     private const string DefDir = "Assets/_Project/ScriptableObjects/Lamplit";
 
-    /// <summary>Everything the player handles (containers, items, finds, desk props) is built this many times life size, so books are chunky and
-    /// readable at a glance; rooms, doors and the hub are sized to hold them. Change this one number and rebuild the hub and the three rooms.</summary>
-    public const float WorldScale = 1.6f;
+    /// <summary>Real size (1 unit = 1 m). The storybook build used 1.6 here to make books chunky; that made the rooms feel like a giants' hall
+    /// next to a child-height eye, so (2026-10-18, backlog T-002) everything is back to adult scale and readability comes from the FOV.</summary>
+    public const float WorldScale = 1.0f;
 
-    public const float WallHeight = 3.0f;      // ceiling: about 2.6x the eye height (was 4.2, which read as a giants' hall)
+    /// <summary>The storybook layout numbers (room sizes, door positions, light and table offsets) divided by 1.6, so they can be written
+    /// in the old units and converted: LayoutK * 11.4 m = the 7.1 m depth of Room 1.</summary>
+    public const float LayoutK = 0.625f;
+
+    // Adult scale (see Docs/unity-practices/27-adult-scale-cozy-rooms-and-readable-items.md and backlog T-002 / T-017).
+    public const float WallHeight = 2.74f;      // ceiling 9'0"
     public const float WallThickness = 0.2f;
-    public const float DoorWidth = 1.5f;
-    public const float DoorHeight = 2.2f;
-    public const float OrbHeight = 2.55f;       // magelights float just under the ceiling
-    public const float SignHeight = 2.65f;      // family signs: above the containers (2.34 m), below the ceiling
-    public const float HubHalf = 2.4f;          // hub wall centres are at x = +-HubHalf
-    public const float HubLength = 24.8f;
-    // Slots are packed: the thickest item is 0.06 m (local, before WorldScale), so the pitch only just clears it (was 0.072, which left
-    // visible gaps). Shelves sit low so the eye line is inside the shelf band: base cabinet 0.6 m, the two boards 0.45 m apart (local).
-    public const float SlotPitch = 0.095f;
-    public const float BaseHeight = 0.6f;
-    public const float ShelfSpacing = 0.45f;
-    public const float ContainerHeight = 1.46f;
+    public const float DoorWidth = 0.91f;       // 3'0"
+    public const float DoorHeight = 2.13f;      // 7'0"
+    public const float OrbHeight = 2.1f;        // magelights float above head height, under the ceiling
+    public const float SignHeight = 2.2f;       // family signs: above the cases (1.65 m), below the ceiling
+    public const float HubHalf = 1.5f;          // hub wall centres are at x = +-HubHalf (a 10 ft hall)
+    public const float HubLength = 24.8f * LayoutK;
+
+    // A bookcase: slots 0.07 m apart (the thickest item is 0.064 m), 0.09 m of frame per case, 0.30 m deep, four shelves 0.33 m apart on
+    // an 0.28 m plinth, 1.65 m tall (the top is at eye level). Books are 0.23 to 0.30 m tall.
+    public const float SlotPitch = 0.07f;
+    public const float CaseMargin = 0.09f;
+    public const float CaseDepth = 0.30f;
+    public const int ShelfRows = 4;
+    public const float BaseHeight = 0.28f;
+    public const float ShelfSpacing = 0.33f;
+    public const float ContainerHeight = 1.65f;
     public const float FrontLine = -0.14f;
-    private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing };
+    private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing, BaseHeight + 2f * ShelfSpacing, BaseHeight + 3f * ShelfSpacing };
+
+    public static float CaseWidth(int slots) { return slots * SlotPitch + CaseMargin; }
 
     // ---------------------------------------------------------------- scene and materials
 
@@ -278,10 +289,11 @@ public static partial class LamplitBuilder
 
     // ---------------------------------------------------------------- containers
 
-    /// <summary>One container: a wooden unit with two shelves of five slots. yaw rotates it about Y (0 = front faces -Z).</summary>
+    /// <summary>One bookcase: a wooden unit with ShelfRows shelves of <paramref name="slots"/> slots (8 for a main case, 4 for a wing). yaw rotates it
+    /// about Y (0 = front faces -Z).</summary>
     public static Bookcase Container(Transform parent, string name, Vector3 pos, float yaw, ContainerRules rules, int family, RoomZone room, Material wood, int slots = 5)
     {
-        float w = slots * SlotPitch + 0.152f, d = 0.36f, h = ContainerHeight;
+        float w = CaseWidth(slots), d = CaseDepth, h = ContainerHeight;
         var root = new GameObject(name);
         root.transform.SetParent(parent, false);
         root.transform.position = pos;
@@ -296,12 +308,16 @@ public static partial class LamplitBuilder
         Cube("SideL", root.transform, new Vector3(-(w / 2f - 0.02f), BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
         Cube("SideR", root.transform, new Vector3(w / 2f - 0.02f, BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
         Cube("Back", root.transform, new Vector3(0f, BaseHeight + upper / 2f, d / 2f - 0.01f), new Vector3(w - 0.08f, upper, 0.02f), wood);
-        Cube("ShelfBoard", root.transform, new Vector3(0f, ShelfTops[1] - 0.025f, 0f), new Vector3(w - 0.08f, 0.05f, d - 0.02f), wood);
+        for (int b = 1; b < ShelfRows; b++)
+        {
+            Cube("ShelfBoard_" + b, root.transform, new Vector3(0f, ShelfTops[b] - 0.025f, 0f), new Vector3(w - 0.08f, 0.05f, d - 0.02f), wood);
+        }
+
         Cube("Top", root.transform, new Vector3(0f, h - 0.02f, 0f), new Vector3(w, 0.04f, d), wood);
 
         var highlightMat = LoadMat("Mat_SlotHighlight");
         var shelfList = new List<Shelf>();
-        for (int s = 0; s < 2; s++)
+        for (int s = 0; s < ShelfRows; s++)
         {
             var shelfGo = new GameObject("Shelf_" + (s + 1));
             shelfGo.transform.SetParent(root.transform, false);
@@ -310,8 +326,8 @@ public static partial class LamplitBuilder
             shelf.bookcase = bookcase;
             var box = shelfGo.AddComponent<BoxCollider>();
             box.isTrigger = true;
-            box.center = new Vector3(0f, 0.2f, 0f);
-            box.size = new Vector3(w - 0.08f, 0.40f, d - 0.02f);
+            box.center = new Vector3(0f, 0.16f, 0f);
+            box.size = new Vector3(w - 0.08f, 0.32f, d - 0.02f);   // the aim volume of one row, a little under the 0.33 m shelf spacing
 
             var slotList = new ShelfSlot[slots];
             for (int k = 0; k < slots; k++)
@@ -404,12 +420,12 @@ public static partial class LamplitBuilder
         Color text = TextColorFor(def.spineColor);
         if (!string.IsNullOrEmpty(def.symbol))
         {
-            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.032f * WorldScale, text);
+            Label(go.transform, "Label_Symbol", PixelDigit.LetterValue(def.symbol[0]), showNumber ? 0.30f : 0.05f, 0.040f * WorldScale, text);
         }
 
         if (showNumber)
         {
-            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.030f * WorldScale, text);
+            Label(go.transform, "Label_Number", Mathf.Clamp(def.number, 0, 9), -0.30f, 0.036f * WorldScale, text);
         }
 
         return book;

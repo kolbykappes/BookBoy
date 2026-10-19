@@ -20,6 +20,7 @@ MonoBehaviour:
   spineColor: {r: 0.18, g: 0.25, b: 0.55, a: 1}
   family: 99
   group: 99
+  setSize: 0
   number: 1
   room: 0
   symbol: 

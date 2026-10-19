@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public static partial class LamplitBuilder
 {
-    // Hub: a hallway about 4.8 m wide and 24.8 m long (x -HubHalf..HubHalf, z 0..HubLength). The desk is at the z = 0 end. Doors: Room 1 and
+    // Hub: a hallway 3 m (10 ft) wide and 15.5 m long (x -HubHalf..HubHalf, z 0..HubLength). The desk is at the z = 0 end. Doors: Room 1 and
     // Room 3 on the left wall, Room 2 on the right wall, each at the middle of its room.
-    public static readonly float[] DoorZ = { 5.7f, 12.4f, 18.1f };
+    public static readonly float[] DoorZ = { 5.7f * LayoutK, 12.4f * LayoutK, 18.1f * LayoutK };
 
     /// <summary>A copy of the floor tile material whose tiling fits a floor of w x d metres (0.8 m tiles).</summary>
     public static Material FloorMat(string name, float w, float d)
@@ -63,21 +63,21 @@ public static partial class LamplitBuilder
             door.blocker = leaf.GetComponent<Collider>();
             door.openHeight = DoorHeight + 0.1f;
             float signX = left ? -(HubHalf - 0.12f) : HubHalf - 0.12f;
-            var text = Sign(root.transform, "DoorSign", new Vector3(signX, (DoorHeight + WallHeight) / 2f, DoorZ[i]), left ? Vector3.right : Vector3.left, new Vector2(1.8f, 0.7f),
+            var text = Sign(root.transform, "DoorSign", new Vector3(signX, (DoorHeight + WallHeight) / 2f, DoorZ[i]), left ? Vector3.right : Vector3.left, new Vector2(1.2f, 0.42f),
                 CampaignCatalog.RoomName(room).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 80);
             door.label = text;
             doors.Add(door);
         }
 
         // lights: warm orbs down the hallway
-        Orb(hub, "MageLight_Hub_1", new Vector3(0f, OrbHeight, HubLength * 0.17f), 4.6f, false, 10f);
-        Orb(hub, "MageLight_Hub_2", new Vector3(0f, OrbHeight, HubLength * 0.5f), 4.4f, false, 10f);
-        Orb(hub, "MageLight_Hub_3", new Vector3(0f, OrbHeight, HubLength * 0.83f), 4.4f, false, 10f);
+        Orb(hub, "MageLight_Hub_1", new Vector3(0f, OrbHeight, HubLength * 0.17f), OrbIntensity, false, OrbRange);
+        Orb(hub, "MageLight_Hub_2", new Vector3(0f, OrbHeight, HubLength * 0.5f), OrbIntensity, false, OrbRange);
+        Orb(hub, "MageLight_Hub_3", new Vector3(0f, OrbHeight, HubLength * 0.83f), OrbIntensity, false, OrbRange);
 
         // player start: at the desk, looking at it
         var spawn = new GameObject("HubSpawn").transform;
         spawn.SetParent(hub, false);
-        spawn.SetPositionAndRotation(new Vector3(0f, 1f, 3.6f), Quaternion.Euler(0f, 180f, 0f));
+        spawn.SetPositionAndRotation(new Vector3(0f, 1f, 3.6f * LayoutK), Quaternion.Euler(0f, 180f, 0f));
         var player = GameObject.Find("Player");
         if (player != null)
         {
@@ -99,14 +99,14 @@ public static partial class LamplitBuilder
         float deskWidth = HubHalf * 2f - 0.1f;
         Cube("Top", desk, new Vector3(0f, 0.875f, 0.6f), new Vector3(deskWidth, 0.05f, 1.0f), wood);
         Cube("Body", desk, new Vector3(0f, 0.425f, 0.6f), new Vector3(deskWidth - 0.1f, 0.85f, 0.9f), wood);
-        Sign(desk, "DeskSign", new Vector3(0f, 2.55f, 0.14f), Vector3.forward, new Vector2(2.8f, 0.8f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 80);
+        Sign(desk, "DeskSign", new Vector3(0f, 2.4f, 0.14f), Vector3.forward, new Vector2(2.2f, 0.5f), "LAMPLIT\nthe librarian's desk", new Color(0.84f, 0.70f, 0.40f), 80);
 
         // six spots in a row on the desk top; each accepts one find. The last is locked for now.
         var spotRoot = FreshChild(desk, "Spots");
         string[] ids = { "apron_hook", "shoe_rack", "glasses_stand", "shelf_list_board", "clipboard", CampaignCatalog.DumbwaiterSpot };
         string[] labels = { "Apron hook", "Shoe rack", "Glasses stand", "Shelf-list board", "Clipboard", "Dumbwaiter hatch" };
         string[] signs = { "APRON\nHOOK", "SHOE\nRACK", "GLASSES\nSTAND", "SHELF-LIST\nBOARD", "CLIP-\nBOARD", "DUMB-\nWAITER" };
-        float[] xs = { 1.75f, 1.05f, 0.35f, -0.35f, -1.05f, -1.75f };   // the player looks toward -Z, so +X is on the left
+        float[] xs = { 1.2f, 0.72f, 0.24f, -0.24f, -0.72f, -1.2f };   // the player looks toward -Z, so +X is on the left
         const float top = 0.9f;
         for (int i = 0; i < ids.Length; i++)
         {
@@ -154,7 +154,7 @@ public static partial class LamplitBuilder
                     break;
             }
 
-            Sign(spotRoot, "Label_" + ids[i], new Vector3(xs[i], 2.15f, 0.85f), Vector3.forward, new Vector2(0.62f, 0.36f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
+            Sign(spotRoot, "Label_" + ids[i], new Vector3(xs[i], 1.75f, 0.85f), Vector3.forward, new Vector2(0.44f, 0.28f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
         }
     }
 
@@ -184,16 +184,18 @@ public static partial class LamplitBuilder
 {
     // The "storybook" view: a wider lens and a smaller player, so books, shelves and rooms feel big and close (see Docs/09-scale-reference.md).
     // Eye height 1.7 m -> 1.15 m is a player about two thirds the size; speed and reach shrink with it.
-    public const float FieldOfView = 75f;
-    public const float EyeHeight = 1.15f;
-    public const float MoveSpeed = 3.2f;
-    public const float SprintSpeed = 4.8f;
-    public const float InteractionRange = 2.8f;
+    public const float FieldOfView = 58.7f;      // vertical: 90 degrees horizontal at 16:9 (backlog T-002, research files 2, 23, 27)
+    public const float EyeHeight = 1.65f;       // 5'5"
+    public const float MoveSpeed = 4.0f;
+    public const float SprintSpeed = 6.0f;
+    public const float InteractionRange = 3.0f;
     public const float MaxAimRange = 12f;
+    public const float CapsuleHeight = 1.8f;    // 5'11"
+    public const float CapsuleRadius = 0.3f;    // 1'0"
     public const float HandLightIntensity = 0.6f;
     public const float HandLightRange = 2.8f;
     public static readonly Vector3 HandLightPosition = new Vector3(0f, 0.25f, -0.25f);
-    public const float CarryScale = 0.55f;   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
+    public const float CarryScale = 0.6f;   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
     public static string ApplyPlayerScale()
@@ -209,6 +211,12 @@ public static partial class LamplitBuilder
         var root = player.transform.Find("PlayerCameraRoot");
         root.localPosition = new Vector3(0f, EyeHeight - 0.09f, 0f);   // the capsule settles 0.09 m above the floor
         EditorUtility.SetDirty(root);
+
+        var cc = player.GetComponent<CharacterController>();
+        cc.height = CapsuleHeight;
+        cc.radius = CapsuleRadius;
+        cc.center = new Vector3(0f, CapsuleHeight / 2f - 0.07f, 0f);   // the same 0.07 m below the player origin as the Starter Assets capsule, so the 0.09 m settle offset still holds
+        EditorUtility.SetDirty(cc);
 
         var fpc = player.GetComponent<StarterAssets.FirstPersonController>();
         fpc.MoveSpeed = MoveSpeed;

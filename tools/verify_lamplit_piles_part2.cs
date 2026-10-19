@@ -13,12 +13,12 @@ int[] Clusters(Book[] items) {
 Check("the pile-up has finished", !z.IsPiling);
 var sizes = Clusters(z.items);
 int big = 0; foreach (var s in sizes) if (s >= 5) big++;
-Check("the 100 books landed in several piles (3 or more with 5+ books each), not one heap and not a grid", big >= 3 && sizes[0] < 70, string.Join(",", sizes));
+Check("the 96 books landed in several piles (3 or more with 5+ books each), not one heap and not a grid", big >= 3 && sizes[0] < 70, string.Join(",", sizes));
 int air = 0, bodies = 0, solid = 0, shelved = 0, outside = 0; float maxY = 0;
 foreach (var b in z.items) { maxY = System.Math.Max(maxY, b.transform.position.y); if (b.transform.position.y > 1.4f) air++; if (b.GetComponent<UnityEngine.Rigidbody>() != null) bodies++; if (!b.GetComponent<UnityEngine.Collider>().isTrigger) solid++; if (b.currentSlot != null) shelved++; if (!z.Contains(b.transform.position)) outside++; }
 Check("everything came to rest on the floor inside the room (highest " + maxY.ToString("F2") + " m)", air == 0 && outside == 0, air + " in the air, " + outside + " outside");
 Check("every item settled back into a normal pick-up-able book (no rigidbody, trigger collider)", bodies == 0 && solid == 0, bodies + " bodies, " + solid + " solid");
-Check("none of them is on a shelf, and the room scores 0 of 100", shelved == 0 && z.CountCorrect() == 0);
+Check("none of them is on a shelf, and the room scores 0 of 96", shelved == 0 && z.CountCorrect() == 0);
 var pl = UnityEngine.GameObject.Find("Player"); var pi = pl.GetComponent<PlayerInteractor>();
 var pickMe = z.items[37]; bool picked = pi.PickUp(pickMe);
 Check("a book from a pile can be picked up", picked && pi.Carry.Contains(pickMe));

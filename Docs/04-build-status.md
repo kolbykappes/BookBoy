@@ -510,3 +510,15 @@ Kolby's playtest of the lowered-board build: the books do not look wider, the ga
   `tools/verify_lamplit_piles.cs` no longer requires at most 10 clusters (flat sheets slide into singles); it requires at least 3 real piles and at most 12% strays.
   Renders: hub, Room 1 wall and close-up with all books shelved.
 - **Not verified:** how it feels live in the Game view (no new Game-view capture was possible from here; the renders use the same lighting and camera settings).
+
+### Lamplit: adult scale, four-shelf bookcases, Room 1 rebuilt (2026-10-18)
+
+Kolby decided the storybook rescale was a wrong turn and asked for a normal adult in a cozy room, with Room 1 rebuilt first to test (backlog T-002, T-017).
+
+- **Scale back to 1.0x** (`WorldScale`, `LayoutK` = 1/1.6 converts the old layout numbers): eye 5'5" (1.65 m), capsule 5'11" x 1'0" radius, FOV 90 horizontal (58.7 vertical), ceiling 9 ft, door 3 x 7 ft, hub 10 ft wide, Room 1 about 25 x 23 ft. Full table in [09-scale-reference.md](09-scale-reference.md).
+- **Two bookcase types:** a solo 8-wide case and a triple (4-wide wing, 8-wide centre, 4-wide wing), each with four shelves; the builder's `Container(..., slots)` takes the slot count.
+- **Sets of 4 or 8:** a set belongs on a row of its own size (engine-free `PlacementRules.SetFitsShelf`, `BookDefinition.setSize`; wrong size grades yellow, never overriding red).
+- **Room 1:** 96 books in 16 sets (8 of 8, 8 of 4) on a triple and a solo; hub desk and doors resized. The orbs are provisionally dimmer (2.0 at 6 m) for the lower ceiling; the lighting pass (T-003) retunes them.
+- **Verified:** 112 Edit Mode tests; hub, Room 1, finds, Rooms 2 and 3 (old layout), admin, campaign, activity and pile part 1 suites pass (the suites for the hub, Room 1, admin, campaign, activity and piles were updated for the new geometry; Room 1's is rewritten). Offscreen renders of the hub, Room 1 and the cases.
+  Not run: the live pile drop (part 2 needs running frames, which need the Editor in front).
+- **Not done:** Rooms 2 and 3 are still the old layout and are not at the new scale (they do not line up with the narrower hub, so do not open them yet); decor or blocked rows; lighting retune; Game-view playtest.

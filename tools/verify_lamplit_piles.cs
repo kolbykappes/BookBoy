@@ -32,12 +32,12 @@ foreach (var z in cc.rooms)
 cc.ResetAll();
 cc.JumpTo(1); cc.CompleteRoom(1); cc.Recompute();
 var z1 = cc.Room(1);
-Check("setup: Room 1 is tidy, every item on a shelf", z1.CountCorrect() == 100 && cc.State.IsRoomFinished(1));
+Check("setup: Room 1 is tidy, every item on a shelf", z1.CountCorrect() == 96 && cc.State.IsRoomFinished(1));
 ui.OpenAdmin();
 Check("the admin row says 'pile'", ui.RowText(2).Contains("Pile"), ui.RowText(2));
 bool did = ui.Activate(2);
 Check("'Pile this room's books up' starts the pile-up: every item is off its shelf at once", did && z1.IsPiling && System.Linq.Enumerable.All(z1.items, b => b.currentSlot == null) && z1.LastPlan != null && z1.LastPlan.PileCount >= 3, "piling=" + z1.IsPiling);
-Check("the plan has 3-7 uneven piles that hold all 100 items", z1.LastPlan.PileCount >= 3 && z1.LastPlan.PileCount <= 7 && System.Linq.Enumerable.Sum(System.Linq.Enumerable.Range(0, z1.LastPlan.PileCount), p => z1.LastPlan.ItemsIn(p)) == 100);
+Check("the plan has 3-7 uneven piles that hold all 96 items", z1.LastPlan.PileCount >= 3 && z1.LastPlan.PileCount <= 7 && System.Linq.Enumerable.Sum(System.Linq.Enumerable.Range(0, z1.LastPlan.PileCount), p => z1.LastPlan.ItemsIn(p)) == 96);
 Check("it stays tidy in the record (a room once finished stays finished)", cc.State.IsRoomFinished(1));
 UnityEngine.Time.timeScale = 1f;
 sb.Append("started; run verify_lamplit_piles_part2 in ~10 s\n");

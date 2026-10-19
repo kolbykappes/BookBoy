@@ -12,7 +12,7 @@ cc.ResetAll();
 float baseSpeed = fpc.MoveSpeed;
 var apron = cc.FindBook("apron"); var shoes = cc.FindBook("shoes");
 var apronSpot = cc.SpotFor("apron_hook"); var shoeSpot = cc.SpotFor("shoe_rack");
-void Aim(UnityEngine.Vector3 target) { var c = pi.interactionCamera.transform; var from = new UnityEngine.Vector3(target.x, 1.15f, 3.6f); c.position = from; c.rotation = UnityEngine.Quaternion.LookRotation((target - from).normalized); UnityEngine.Physics.SyncTransforms(); }
+void Aim(UnityEngine.Vector3 target) { var c = pi.interactionCamera.transform; var from = new UnityEngine.Vector3(target.x, 1.65f, 2.25f); c.position = from; c.rotation = UnityEngine.Quaternion.LookRotation((target - from).normalized); UnityEngine.Physics.SyncTransforms(); }
 UnityEngine.Vector3 AboveSpot(FindSpot s) { return s.transform.position + new UnityEngine.Vector3(0f, 0.25f, 0f); }
 
 Check("fresh: capacity 4, normal speed, nothing found or installed", carry.Capacity == 4 && cc.State.InstalledCount == 0 && cc.State.FoundCount == 0 && gp.Upgrades.CarryCapacity == 4);

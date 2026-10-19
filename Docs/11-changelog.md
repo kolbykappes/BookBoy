@@ -34,6 +34,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Lamplit adult scale: hub and Room 1 rebuilt at real size (eye 5'5", ceiling 9 ft, FOV 90 horizontal) with a solo 8-wide and a triple (4+8+4) four-shelf bookcase, 96 books in sets of 8 and 4 that belong on a row of their own size; Rooms 2 and 3 not yet converted (T-002, T-017).
 - Lamplit: the head light that washed out close views is dimmer and set back from the lens; rooms get ceilings and are scaled to the player (ceiling 3.0 m, doors 1.5 x 2.2 m);
   book spines about 1.45 times thicker with wider slots.
 - Lamplit shelves: boards lowered so the eye line is inside the shelf band (lower board 0.96 m, upper 1.68 m), slots packed (pitch 0.10 m), containers closer together;

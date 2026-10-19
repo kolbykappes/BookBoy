@@ -7,8 +7,10 @@ public static partial class LamplitBuilder
 {
     // Rooms sit beside the hub. Left of the hub: Room 1 (z 0..11.4) and Room 3 (z 11.4..24.8). Right of the hub: Room 2 (z 5.7..19.1).
     // Each is RoomWidth wide with the containers (at world scale) along the far wall and the piles of loose items in the middle.
-    private static float ContainerPitch => 0.68f * WorldScale;   // container width 0.46 m (local) plus a small gap
-    private const float RoomWidth = 12f;
+    private static float ContainerPitch => CaseWidth(5) + 0.08f;   // legacy 5-slot rows (Rooms 2 and 3 are not converted yet)
+    private const float RoomWidth = 12f * LayoutK;   // 7.5 m (24'7")
+    private const float OrbIntensity = 2.0f;   // provisional: the lamps are lower (2.1 m) and the rooms smaller, so the storybook 4.4 to 5 is too bright; retune in the lighting pass (T-003)
+    private const float OrbRange = 6f;
 
     public struct RoomSpec
     {
@@ -21,7 +23,7 @@ public static partial class LamplitBuilder
         public float DoorZ => (Z0 + Z1) / 2f;
         public float InnerX => Left ? -(HubHalf + 0.1f) : HubHalf + 0.1f;   // the hub-side edge of the room
         public float FarWallX => Left ? -(HubHalf + RoomWidth) : HubHalf + RoomWidth;
-        public float ContainerX => FarWallX + (Left ? 1f : -1f) * (0.1f + 0.36f * WorldScale / 2f);   // container centre: back against the far wall
+        public float ContainerX => FarWallX + (Left ? 1f : -1f) * (0.1f + CaseDepth * WorldScale / 2f);   // container centre: back against the far wall
         public float ContainerYaw => Left ? -90f : 90f;                     // front faces into the room
         public Vector3 Inward => Left ? Vector3.left * -1f : Vector3.left;  // from the far wall towards the hub (+X for Left rooms)
     }
@@ -30,9 +32,9 @@ public static partial class LamplitBuilder
     {
         switch (room)
         {
-            case 1: return new RoomSpec { Number = 1, Left = true, Z0 = 0f, Z1 = 11.4f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.40f, 0.48f, 0.38f) };
-            case 2: return new RoomSpec { Number = 2, Left = false, Z0 = 5.7f, Z1 = 19.1f, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.34f, 0.46f, 0.50f) };
-            default: return new RoomSpec { Number = 3, Left = true, Z0 = 11.4f, Z1 = 24.8f, BuildLowWall = false, BuildHighWall = true, Wall = new Color(0.36f, 0.40f, 0.55f) };
+            case 1: return new RoomSpec { Number = 1, Left = true, Z0 = 0f, Z1 = 11.4f * LayoutK, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.40f, 0.48f, 0.38f) };
+            case 2: return new RoomSpec { Number = 2, Left = false, Z0 = 5.7f * LayoutK, Z1 = 19.1f * LayoutK, BuildLowWall = true, BuildHighWall = true, Wall = new Color(0.34f, 0.46f, 0.50f) };
+            default: return new RoomSpec { Number = 3, Left = true, Z0 = 11.4f * LayoutK, Z1 = 24.8f * LayoutK, BuildLowWall = false, BuildHighWall = true, Wall = new Color(0.36f, 0.40f, 0.55f) };
         }
     }
 
@@ -54,29 +56,29 @@ public static partial class LamplitBuilder
 
         // the room-side sign over the doorway and the entry point just inside it
         float sx = s.Left ? -(HubHalf + 0.12f) : HubHalf + 0.12f;
-        Sign(shell, "DoorSignInside", new Vector3(sx, (DoorHeight + WallHeight) / 2f, s.DoorZ), s.Left ? Vector3.left : Vector3.right, new Vector2(1.8f, 0.7f),
+        Sign(shell, "DoorSignInside", new Vector3(sx, (DoorHeight + WallHeight) / 2f, s.DoorZ), s.Left ? Vector3.left : Vector3.right, new Vector2(1.2f, 0.42f),
             CampaignCatalog.RoomName(s.Number).ToUpperInvariant(), new Color(0.84f, 0.70f, 0.40f), 80);
 
         var entry = new GameObject("Entry").transform;
         entry.SetParent(root, false);
-        entry.SetPositionAndRotation(new Vector3(s.Left ? -(HubHalf + 1.2f) : HubHalf + 1.2f, 1f, s.DoorZ), Quaternion.Euler(0f, s.Left ? 270f : 90f, 0f));
+        entry.SetPositionAndRotation(new Vector3(s.Left ? -(HubHalf + 0.8f) : HubHalf + 0.8f, 1f, s.DoorZ), Quaternion.Euler(0f, s.Left ? 270f : 90f, 0f));
 
         float cx = (x0 + x1) / 2f, cz = (s.Z0 + s.Z1) / 2f;
         var zone = root.gameObject.AddComponent<RoomZone>();
         zone.roomNumber = s.Number;
         zone.displayName = CampaignCatalog.RoomName(s.Number);
         zone.entryPoint = entry;
-        zone.boundsCenter = new Vector3(cx, 2.1f, cz);
-        zone.boundsSize = new Vector3(x1 - x0 - 0.2f, 5f, s.Z1 - s.Z0 - 0.2f);
+        zone.boundsCenter = new Vector3(cx, 1.4f, cz);
+        zone.boundsSize = new Vector3(x1 - x0 - 0.2f, 3f, s.Z1 - s.Z0 - 0.2f);
         float sgn = s.Left ? 1f : -1f;   // from the far wall toward the hub
-        zone.scatterMin = new Vector2(Mathf.Min(s.FarWallX + sgn * 3.2f, s.FarWallX + sgn * 9.4f), s.Z0 + 1.4f);
-        zone.scatterMax = new Vector2(Mathf.Max(s.FarWallX + sgn * 3.2f, s.FarWallX + sgn * 9.4f), s.Z1 - 1.4f);
+        zone.scatterMin = new Vector2(Mathf.Min(s.FarWallX + sgn * 3.2f * LayoutK, s.FarWallX + sgn * 9.4f * LayoutK), s.Z0 + 1.4f * LayoutK);
+        zone.scatterMax = new Vector2(Mathf.Max(s.FarWallX + sgn * 3.2f * LayoutK, s.FarWallX + sgn * 9.4f * LayoutK), s.Z1 - 1.4f * LayoutK);
         zone.pileSpread = WorldScale;
 
         // lights: two near the middle, one near the containers casting soft shadows
-        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f), OrbHeight, s.Z0 + 2.8f), 4.6f, false, 10f);
-        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f), OrbHeight, s.Z1 - 2.8f), 4.6f, false, 10f);
-        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 4.0f, OrbHeight, cz), 5.0f, true, 10f);
+        Orb(root, "MageLight_R" + s.Number + "_1", new Vector3(cx + (s.Left ? 2.5f : -2.5f) * LayoutK, OrbHeight, s.Z0 + 2.8f * LayoutK), OrbIntensity, false, OrbRange);
+        Orb(root, "MageLight_R" + s.Number + "_2", new Vector3(cx + (s.Left ? 2.5f : -2.5f) * LayoutK, OrbHeight, s.Z1 - 2.8f * LayoutK), OrbIntensity, false, OrbRange);
+        Orb(root, "MageLight_R" + s.Number + "_3", new Vector3(s.FarWallX + sgn * 4.0f * LayoutK, OrbHeight, cz), OrbIntensity * 1.1f, true, OrbRange);
         return root;
     }
 
@@ -103,12 +105,12 @@ public static partial class LamplitBuilder
     {
         var table = FreshChild(room, "FindTable");
         var wood = LoadMat("Mat_Wood");
-        float x = s.FarWallX + (s.Left ? 1f : -1f) * 2.4f;
-        float z = s.Z1 - 1.3f;
+        float x = s.FarWallX + (s.Left ? 1f : -1f) * 2.4f * LayoutK;
+        float z = s.Z1 - 1.3f * LayoutK;
         float len = 0.55f * count * WorldScale + 0.5f;
         Cube("Top", table, new Vector3(x, 0.9f, z), new Vector3(len, 0.06f, 1.0f), wood);
         Cube("Legs", table, new Vector3(x, 0.44f, z), new Vector3(len - 0.15f, 0.88f, 0.85f), wood);
-        Sign(table, "Label", new Vector3(x, 2.0f, z + 0.5f), Vector3.back, new Vector2(1.0f, 0.38f), "LOST &\nFOUND", new Color(0.84f, 0.70f, 0.40f), 70);
+        Sign(table, "Label", new Vector3(x, 1.7f, z + 0.5f), Vector3.back, new Vector2(0.8f, 0.3f), "LOST &\nFOUND", new Color(0.84f, 0.70f, 0.40f), 70);
 
         var spots = new List<Transform>();
         for (int i = 0; i < count; i++)
@@ -145,12 +147,15 @@ public static partial class LamplitBuilder
 
     // ---------------------------------------------------------------- Room 1: the Reading Room
 
+    // thickness, height, depth in metres: spines 1.8 to 2.4 in, books 9.4 to 11.8 in tall (the 0.30 m limit is the shelf clearance), pages 6 to 7.5 in deep
     private static readonly Vector3[] ReadingScales =
     {
-        new Vector3(0.065f, 0.24f, 0.16f), new Vector3(0.060f, 0.28f, 0.18f), new Vector3(0.072f, 0.32f, 0.15f), new Vector3(0.078f, 0.22f, 0.19f)
+        new Vector3(0.050f, 0.24f, 0.16f), new Vector3(0.045f, 0.28f, 0.18f), new Vector3(0.060f, 0.30f, 0.15f), new Vector3(0.055f, 0.26f, 0.19f)
     };
 
-    /// <summary>Room 1: 100 books in 20 groups of 5 on 20 five-slot shelves (10 containers). Rule: Group (the first book on a shelf claims it).</summary>
+    /// <summary>Room 1: 96 books in 16 sets (even letters A, C, ... are sets of 8, odd letters are sets of 4) on two pieces of furniture along the
+    /// far wall: a triple (a 4-wide wing, an 8-wide case, a 4-wide wing) and an 8-wide solo case, each with four shelves. A set belongs on a row of
+    /// its own size. Rule: Group (the first set on a row claims it). Backlog T-017.</summary>
     public static string BuildRoom1()
     {
         RequireLamplitScene();
@@ -159,21 +164,43 @@ public static partial class LamplitBuilder
         var zone = root.GetComponent<RoomZone>();
         var wood = LoadMat("Mat_Wood");
 
-        var containers = PlaceContainers(root, s, zone, 10, ContainerRules.Group, i => PlacementRules.AnyFamily, i => wood);
+        // the furniture: triple centred 1.2 m before the middle of the wall, solo 1.6 m after it (the group is centred on the wall)
+        var holder = FreshChild(root, "Containers");
+        float zc = (s.Z0 + s.Z1) / 2f;
+        float tripleZ = zc - 1.2f, soloZ = zc + 1.6f;
+        float edge = (CaseWidth(8) + CaseWidth(4)) / 2f + 0.005f;
+        var containers = new List<Bookcase>
+        {
+            Container(holder, "Triple_WingA", new Vector3(s.ContainerX, 0f, tripleZ - edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4),
+            Container(holder, "Triple_Main", new Vector3(s.ContainerX, 0f, tripleZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8),
+            Container(holder, "Triple_WingB", new Vector3(s.ContainerX, 0f, tripleZ + edge), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 4),
+            Container(holder, "Solo", new Vector3(s.ContainerX, 0f, soloZ), s.ContainerYaw, ContainerRules.Group, PlacementRules.AnyFamily, zone, wood, 8),
+        };
+        var allShelves = new List<Shelf>();
+        foreach (var c in containers) allShelves.AddRange(c.shelves);
+        zone.shelves = allShelves.ToArray();
 
-        // 20 groups of 5 books: a colour and a letter per group
+        // rows by size, in shelf order
+        var rows8 = new List<Shelf>();
+        var rows4 = new List<Shelf>();
+        foreach (var sh in zone.shelves) (sh.slots.Length == 8 ? rows8 : rows4).Add(sh);
+
+        // 16 sets: a colour and a letter per set
         var itemsRoot = FreshChild(root, "Items");
         var items = new List<Book>();
         var homes = new List<ShelfSlot>();
-        const int groups = 20;
+        const int groups = 16;
+        int next8 = 0, next4 = 0;
         for (int g = 0; g < groups; g++)
         {
             char letter = (char)('A' + g);
             Color color = GroupColor(g, groups);
-            var shelf = zone.shelves[g];
-            for (int n = 1; n <= 5; n++)
+            int setSize = g % 2 == 0 ? 8 : 4;
+            var shelf = setSize == 8 ? rows8[next8++] : rows4[next4++];
+            for (int n = 1; n <= setSize; n++)
             {
                 var def = Definition("Item_R1_" + letter + n);
+                def.setSize = setSize;
                 def.bookId = "r1_" + char.ToLowerInvariant(letter) + n;
                 def.displayName = "Book " + letter;
                 def.family = 0;
@@ -207,7 +234,7 @@ public static partial class LamplitBuilder
         RemoveOrphanItems();
         RegisterCampaign();
         MarkDirty();
-        return "room 1 built: " + containers.Count + " containers, " + zone.shelves.Length + " shelves, " + items.Count + " items, " + zone.finds.Length + " finds";
+        return "room 1 built: " + containers.Count + " cases, " + zone.shelves.Length + " shelves (" + rows8.Count + " of 8, " + rows4.Count + " of 4), " + items.Count + " items in " + groups + " sets, " + zone.finds.Length + " finds";
     }
 }
 

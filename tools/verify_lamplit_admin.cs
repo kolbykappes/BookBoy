@@ -26,8 +26,8 @@ Check("jump back to the hub", Do(4) && cc.CurrentRoom == 0 && System.Math.Abs(pl
 // ---- complete / scatter / reset this room ----
 cc.JumpTo(1); cc.Recompute();
 bool completed = Do(3); cc.Recompute();
-Check("complete this room: all 100 items home and the room is tidy, Room 2's door opens", completed && cc.Room(1).CountCorrect() == 100 && cc.State.IsRoomFinished(1) && cc.State.IsDoorOpen(2));
-Check("the counts line reflects it (R1 100/100 tidy)", ui.RowText(0) != null && cc.Counts().Contains("R1 100/100 tidy"), cc.Counts());
+Check("complete this room: all 96 items home and the room is tidy, Room 2's door opens", completed && cc.Room(1).CountCorrect() == 96 && cc.State.IsRoomFinished(1) && cc.State.IsDoorOpen(2));
+Check("the counts line reflects it (R1 96/96 tidy)", ui.RowText(0) != null && cc.Counts().Contains("R1 96/96 tidy"), cc.Counts());
 Check("scatter this room: items loose again, but it stays tidy", Do(2) && Loose(cc.Room(1)) && cc.State.IsRoomFinished(1));
 Check("reset this room: items loose and the room is no longer tidy (door 2 shuts)", Do(0) && Loose(cc.Room(1)) && !cc.State.IsRoomFinished(1) && !cc.State.IsDoorOpen(2));
 

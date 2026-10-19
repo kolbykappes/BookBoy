@@ -1,4 +1,5 @@
-// Play Mode check for Lamplit Room 1 (the Reading Room): 100 books, 20 groups of 5, Group grading, claims across shelves, completion.
+// Play Mode check for Lamplit Room 1 (the Reading Room) at adult scale: 96 books in 16 sets (8 sets of 8, 8 sets of 4) on a triple bookcase (4 + 8 + 4
+// slots wide) and a solo 8-wide bookcase, four shelves each. A set belongs on a row of its own size; Group grading; claims across shelves; completion.
 // Run with Lamplit.unity open and playing. Everything it changes is scene state that the Editor restores on leaving Play Mode.
 if (!UnityEditor.EditorApplication.isPlaying) return "REFUSED: enter Play Mode first";
 if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().path != "Assets/Scenes/Lamplit.unity") return "REFUSED: Lamplit.unity must be the active scene";
@@ -10,58 +11,74 @@ var cc = UnityEngine.Object.FindFirstObjectByType<CampaignController>(); var zon
 if (zone == null) return "FAIL: Room 1 is not built";
 var pl = UnityEngine.GameObject.Find("Player"); var pi = pl.GetComponent<PlayerInteractor>(); var carry = pi.Carry;
 Book B(char g, int n) { return UnityEngine.GameObject.Find("R1_" + g + n).GetComponent<Book>(); }
-ShelfSlot Slot(int shelf, int k) { return zone.shelves[shelf].slots[k]; }
+var rows8 = new System.Collections.Generic.List<Shelf>(); var rows4 = new System.Collections.Generic.List<Shelf>();
+foreach (var s in zone.shelves) (s.slots.Length == 8 ? rows8 : rows4).Add(s);
 BookBoy.Rules.PlacementResult Put(Book b, ShelfSlot s) { if (b.currentSlot != null) b.currentSlot.Release(); return s.Accept(b, b.transform.localScale); }
 void ClearAll() { foreach (var b in zone.items) if (b.currentSlot != null) b.currentSlot.Release(); }
+// letters A, C, E, ... are sets of 8; B, D, F, ... are sets of 4
 
 // ---- the room as built ----
-Check("100 items in 20 groups of 5, 20 shelves of 5 slots, 10 containers", zone.items.Length == 100 && zone.shelves.Length == 20 && System.Linq.Enumerable.All(zone.shelves, s => s.slots.Length == 5) && System.Linq.Enumerable.Count(System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Select(zone.shelves, sh => sh.bookcase))) == 10);
+var cases = System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Select(zone.shelves, sh => sh.bookcase));
+Check("96 items in 16 sets, 16 shelves (8 of 8 slots, 8 of 4), 4 bookcases", zone.items.Length == 96 && zone.shelves.Length == 16 && rows8.Count == 8 && rows4.Count == 8 && System.Linq.Enumerable.Count(cases) == 4,
+    zone.items.Length + " items, " + zone.shelves.Length + " shelves (" + rows8.Count + "/" + rows4.Count + "), " + System.Linq.Enumerable.Count(cases) + " cases");
+Check("each bookcase has four shelves", System.Linq.Enumerable.All(cases, c => c.shelves.Length == 4));
 var perGroup = new System.Collections.Generic.Dictionary<int, int>(); foreach (var b in zone.items) { int g = b.GroupKey; perGroup[g] = perGroup.ContainsKey(g) ? perGroup[g] + 1 : 1; }
-Check("exactly 20 groups with 5 books each", perGroup.Count == 20 && System.Linq.Enumerable.All(perGroup.Values, c => c == 5));
+Check("16 sets: 8 of 8 books and 8 of 4 books", perGroup.Count == 16 && System.Linq.Enumerable.Count(perGroup.Values, c => c == 8) == 8 && System.Linq.Enumerable.Count(perGroup.Values, c => c == 4) == 8);
+Check("every item knows its set size and it matches its set", System.Linq.Enumerable.All(zone.items, b => b.definition.setSize == perGroup[b.GroupKey]));
 var symbols = new System.Collections.Generic.HashSet<string>(); foreach (var b in zone.items) symbols.Add(b.definition.symbol);
-Check("every group has its own letter (colour never decides alone)", symbols.Count == 20);
-Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 1.4f));
-Check("each container uses the Group rule and accepts any family", System.Linq.Enumerable.All(zone.shelves, s => s.bookcase.rules == ContainerRules.Group && s.bookcase.containerFamily == -1));
+Check("every set has its own letter (colour never decides alone)", symbols.Count == 16);
+Check("all items start loose on the floor, inside the room", System.Linq.Enumerable.All(zone.items, b => b.currentSlot == null && zone.Contains(b.transform.position) && b.transform.position.y < 1.0f));
+Check("each bookcase uses the Group rule and accepts any family", System.Linq.Enumerable.All(zone.shelves, s => s.bookcase.rules == ContainerRules.Group && s.bookcase.containerFamily == -1));
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
+Check("books are 9 to 12 in tall and fit their shelf (0.23 to 0.30 m tall, spine under the 0.07 m slot pitch)", System.Linq.Enumerable.All(zone.items, b => b.transform.localScale.y >= 0.229f && b.transform.localScale.y <= 0.301f && b.transform.localScale.x < 0.07f));
 
-// ---- Group grading: the first book claims the shelf, any slot is fine ----
+// ---- Group grading: the first set claims the row, any slot is fine ----
 ClearAll();
-Check("first book on an empty shelf, middle slot: green", Put(B('A', 1), Slot(0, 2)) == R);
-Check("the same group in any other slot is green (order does not matter)", Put(B('A', 2), Slot(0, 0)) == R && Put(B('A', 3), Slot(0, 4)) == R);
-Check("a different group on that shelf: yellow", Put(B('B', 1), Slot(0, 1)) == Y);
-Check("that other group on an empty shelf claims it: green", Put(B('B', 1), Slot(1, 3)) == R);
-Check("a book already shelved is regraded live (group A books still green)", B('A', 1).Grade() == R && B('A', 2).Grade() == R);
-// a group cannot be split over two shelves
-Check("the same group on a second shelf: yellow (the earlier shelf owns the group)", Put(B('A', 4), Slot(2, 0)) == Y);
+Check("first book of an 8-set on an empty 8-row, middle slot: green", Put(B('A', 1), rows8[0].slots[2]) == R);
+Check("the same set in any other slot is green (order does not matter)", Put(B('A', 2), rows8[0].slots[0]) == R && Put(B('A', 3), rows8[0].slots[7]) == R);
+Check("a different set on that row: yellow", Put(B('C', 1), rows8[0].slots[1]) == Y);
+Check("that other 8-set on an empty 8-row claims it: green", Put(B('C', 1), rows8[1].slots[3]) == R);
+Check("a book already shelved is regraded live (set A books still green)", B('A', 1).Grade() == R && B('A', 2).Grade() == R);
+Check("the same set on a second 8-row: yellow (the earlier row owns the set)", Put(B('A', 4), rows8[2].slots[0]) == Y);
+
+// ---- set size must match the row ----
+ClearAll();
+Check("a set of 4 on an empty 8-row: yellow (this row is for sets of 8)", Put(B('B', 1), rows8[0].slots[0]) == Y);
+Check("a set of 8 on an empty 4-row: yellow (this row is for sets of 4)", Put(B('A', 1), rows4[0].slots[0]) == Y);
+Check("a set of 4 on an empty 4-row: green", Put(B('B', 1), rows4[1].slots[1]) == R);
+Check("a set of 8 on an empty 8-row: green", Put(B('A', 1), rows8[0].slots[4]) == R);
+
 // removing the earliest book moves the claim
 ClearAll();
-Put(B('C', 1), Slot(3, 0)); Put(B('D', 1), Slot(3, 1));
-Check("two groups on one shelf: the earlier book's group is green, the later one yellow", B('C', 1).Grade() == R && B('D', 1).Grade() == Y);
+Put(B('C', 1), rows8[3].slots[0]); Put(B('E', 1), rows8[3].slots[1]);
+Check("two sets on one row: the earlier book's set is green, the later one yellow", B('C', 1).Grade() == R && B('E', 1).Grade() == Y);
 B('C', 1).currentSlot.Release();
-Check("remove the earliest and the claim passes to the next book", B('D', 1).Grade() == R);
+Check("remove the earliest and the claim passes to the next book", B('E', 1).Grade() == R);
 
-// ---- finishing a shelf ----
+// ---- finishing a row ----
 ClearAll();
-for (int n = 1; n <= 5; n++) Put(B('E', n), Slot(4, 5 - n));   // reverse order: any order is fine
-Check("five of one group on one shelf (any order) is a finished shelf", zone.CountFinishedShelves() == 1 && zone.CountCorrect() == 5, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
-Put(B('F', 1), Slot(5, 0));
-Check("a half-filled shelf is not finished", zone.CountFinishedShelves() == 1);
+for (int n = 1; n <= 8; n++) Put(B('G', n), rows8[4].slots[8 - n]);   // reverse order: any order is fine
+Check("eight of one 8-set on an 8-row (any order) is a finished row", zone.CountFinishedShelves() == 1 && zone.CountCorrect() == 8, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
+for (int n = 1; n <= 4; n++) Put(B('H', n), rows4[1].slots[4 - n]);
+Check("four of one 4-set on a 4-row is a finished row", zone.CountFinishedShelves() == 2 && zone.CountCorrect() == 12, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
+Put(B('I', 1), rows8[5].slots[0]);
+Check("a half-filled row is not finished", zone.CountFinishedShelves() == 2);
 
 // ---- the finds are in the room ----
 Check("the apron and the shoes are hidden in this room, on the table", zone.finds.Length == 2 && zone.finds[0].IsFind && zone.finds[1].IsFind && zone.Contains(zone.finds[0].transform.position) && zone.finds[0].definition.findId == "apron" && zone.finds[1].definition.findId == "shoes");
-Check("a find cannot be put on a shelf", (carry.Items.Count == 0 || true) && pi.PickUp(zone.finds[0]) && !pi.PlaceCurrent(Slot(6, 0)) && Slot(6, 0).occupant == null);
+Check("a find cannot be put on a shelf", (carry.Items.Count == 0 || true) && pi.PickUp(zone.finds[0]) && !pi.PlaceCurrent(zone.shelves[6].slots[0]) && zone.shelves[6].slots[0].occupant == null);
 Check("picking a find up marks it found", cc.State.IsFound("apron"));
 carry.Release(zone.finds[0], out _);
 
 // ---- HUD in the room ----
 cc.JumpTo(1);
 cc.Recompute();
-Check("standing in Room 1 the HUD says so (items, shelves)", cc.CurrentRoom == 1 && cc.StatsText().Contains("READING ROOM") && cc.StatsText().Contains("ITEMS") && cc.StatsText().Contains("/ 100"), cc.StatsText());
+Check("standing in Room 1 the HUD says so (items, shelves)", cc.CurrentRoom == 1 && cc.StatsText().Contains("READING ROOM") && cc.StatsText().Contains("ITEMS") && cc.StatsText().Contains("/ 96"), cc.StatsText());
 
 // ---- completion: every item home -> the room is tidy and the next door opens ----
 ClearAll();
 cc.CompleteRoom(1);
-Check("all 100 items in their homes are green", zone.CountCorrect() == 100 && zone.CountFinishedShelves() == 20, zone.CountCorrect() + " correct, " + zone.CountFinishedShelves() + " finished");
+Check("all 96 items in their homes are green, all 16 rows finished", zone.CountCorrect() == 96 && zone.CountFinishedShelves() == 16, zone.CountCorrect() + " correct, " + zone.CountFinishedShelves() + " finished");
 cc.Recompute();
 Check("the room is tidy, and Room 2's door opens (when Room 2 exists)", cc.State.IsRoomFinished(1) && cc.State.IsDoorOpen(2));
 cc.PileRoom(1);
