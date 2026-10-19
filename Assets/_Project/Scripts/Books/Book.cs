@@ -209,7 +209,8 @@ public class Book : MonoBehaviour
 
         bool groupOk = PlacementRules.ClaimHolds(mine, values, times, GroupKey);
         PlacementMode mode = bookcase.rules == ContainerRules.Ordered ? PlacementMode.Ordered : PlacementMode.Group;
-        return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, currentSlot.slotIndex);
+        bool setFits = PlacementRules.SetFitsShelf(definition.setSize, shelf.slots != null ? shelf.slots.Length : 0);
+        return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, currentSlot.slotIndex, setFits);
     }
 
     public bool IsCorrectlyShelved => currentSlot != null && Grade() == PlacementResult.Correct;

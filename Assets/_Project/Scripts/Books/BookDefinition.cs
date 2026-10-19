@@ -24,6 +24,9 @@ public class BookDefinition : ScriptableObject
     [Tooltip("Group within the room (a set of five). -1 = use 'series'. One shelf holds one group.")]
     public int group = -1;
 
+    [Tooltip("How many items are in this item's set (4 or 8). The set belongs on a shelf row with that many slots. 0 = any shelf size.")]
+    public int setSize;
+
     [Tooltip("Number in an ordered set, 1-based. 0 = use 'volume'.")]
     public int number;
 

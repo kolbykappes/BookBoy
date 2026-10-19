@@ -17,6 +17,36 @@ namespace BookBoy.Tests
         }
 
         [Test]
+        public void SetFitsShelf_OnlyWhenTheSetIsTheSizeOfTheRow_OrNothingIsSpecified()
+        {
+            Assert.IsTrue(PlacementRules.SetFitsShelf(8, 8));
+            Assert.IsTrue(PlacementRules.SetFitsShelf(4, 4));
+            Assert.IsFalse(PlacementRules.SetFitsShelf(4, 8), "a set of 4 does not belong on a row of 8");
+            Assert.IsFalse(PlacementRules.SetFitsShelf(8, 4), "a set of 8 does not belong on a row of 4");
+            Assert.IsTrue(PlacementRules.SetFitsShelf(0, 8), "no set size means any shelf");
+            Assert.IsTrue(PlacementRules.SetFitsShelf(8, 0), "unknown shelf size means any set");
+        }
+
+        [Test]
+        public void SetOfTheWrongSizeForTheRow_IsYellow_InBothModes_ButNeverOverridesRed()
+        {
+            Assert.AreEqual(PlacementResult.RightBookcaseWrongSpot, PlacementRules.EvaluateCampaign(Group, true, true, 1, 0, false));
+            Assert.AreEqual(PlacementResult.RightBookcaseWrongSpot, PlacementRules.EvaluateCampaign(Ordered, true, true, 1, 0, false));
+            Assert.AreEqual(PlacementResult.WrongBookcase, PlacementRules.EvaluateCampaign(Group, false, true, 1, 0, false), "wrong family stays red");
+            Assert.AreEqual(PlacementResult.Correct, PlacementRules.EvaluateCampaign(Group, true, true, 1, 0, true));
+        }
+
+        [Test]
+        public void Ordered_NumbersOneToEightFillARowOfEight_InTheirOwnSlots()
+        {
+            for (int n = 1; n <= 8; n++)
+            {
+                Assert.AreEqual(PlacementResult.Correct, PlacementRules.EvaluateCampaign(Ordered, true, true, n, n - 1, true), "number " + n);
+                Assert.AreEqual(PlacementResult.RightBookcaseWrongSpot, PlacementRules.EvaluateCampaign(Ordered, true, true, n, n % 8, true), "number " + n + " in the next slot");
+            }
+        }
+
+        [Test]
         public void Group_AnySlotIsGreen_WhenTheShelfIsOwnedByTheGroup()
         {
             for (int slot = 0; slot < 5; slot++)

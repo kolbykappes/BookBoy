@@ -35,17 +35,31 @@ namespace BookBoy.Rules
             return containerFamily == AnyFamily || containerFamily == itemFamily;
         }
 
+        /// <summary>True if a set of <paramref name="setSize"/> items belongs on a shelf with <paramref name="shelfSlots"/> slots: a set of 8
+        /// on a row of 8, a set of 4 on a row of 4. A set size or shelf size of 0 or less means "not specified", which always fits.</summary>
+        public static bool SetFitsShelf(int setSize, int shelfSlots)
+        {
+            return setSize <= 0 || shelfSlots <= 0 || setSize == shelfSlots;
+        }
+
         /// <summary>Grades a placed item in the Lamplit rooms. Red: the container's family does not accept the item. Yellow: right
         /// kind of container, but another group owns the shelf (or, in Ordered mode, the number is not in its own slot). Green: all
         /// right. <paramref name="groupClaimHolds"/> comes from <see cref="ClaimHolds"/> over the room's shelves.</summary>
         public static PlacementResult EvaluateCampaign(PlacementMode mode, bool familyAccepted, bool groupClaimHolds, int number, int slotIndex)
+        {
+            return EvaluateCampaign(mode, familyAccepted, groupClaimHolds, number, slotIndex, true);
+        }
+
+        /// <summary>As above, plus the shelf size: <paramref name="setFitsShelf"/> (from <see cref="SetFitsShelf"/>) is false when the item's set is
+        /// not the size of this row, which grades yellow (right container, wrong shelf) but never overrides red.</summary>
+        public static PlacementResult EvaluateCampaign(PlacementMode mode, bool familyAccepted, bool groupClaimHolds, int number, int slotIndex, bool setFitsShelf)
         {
             if (!familyAccepted)
             {
                 return PlacementResult.WrongBookcase;
             }
 
-            if (!groupClaimHolds)
+            if (!groupClaimHolds || !setFitsShelf)
             {
                 return PlacementResult.RightBookcaseWrongSpot;
             }
