@@ -533,3 +533,13 @@ re-run: 112 unit tests and the hub, Room 1, finds, Rooms 2 and 3 (old layout), a
 
 Kolby could not pick anything up. Cause (reproduced): the aim ray starts at the camera, which sits inside the player's own colliders (the character controller and the capsule mesh); from the new eye height (1.65 m, in the capsule's top hemisphere) every downward ray reported the player's own collider at about 1 cm as the first hit, and the interactor treats a first hit that is not a book, shelf or desk spot as "nothing here". Why it worked at the old eye height is not established (probably the old 1.15 m eye sat in the straight part of the capsule). Fix: `PlayerInteractor.UpdateFocus` skips colliders that belong to the player. Regression check: `tools/verify_lamplit_pickup.cs` (aims from the real eye position at books placed around the player; it failed 0 of 5 before the fix and passes 5 of 5 after). All other suites still pass.
 Lesson: the earlier suites aimed from points outside the capsule, so they could not see this; the new check aims from the true eye position.
+
+### Lamplit: tome mesh, sample cover material, heavier bookcases (2026-10-19)
+
+Following the Librarian comparison (Kolby: book size is close enough; do the rest):
+- **Blender pipeline:** Blender 5.2 is now installed; `tools/blender/make_book.py` builds the tome mesh headless and exports FBX, `make_book_textures.py` generates the textures (see `tools/blender/README.md`). The mesh is a unit box so the existing item scale, slot code and box collider are unchanged. Verified in Unity by `tools/verify_book_mesh.cs`.
+- **Sample material:** `Mat_BookCover` (URP Lit: tintable cloth-weave albedo with embossed borders and a cartouche on the boards, raised bands, rules and a label plate on the spine, plus a normal map; smoothness 0.30) and `Mat_BookPages` (cream with page lines). Each book's set colour tints only the cover (material slot 0 through the property block), so pages stay cream.
+- **Bookcases:** slots packed (4.1 in pitch for a 4 in spine), boards and sides 2.4 in thick (they were 0.8 in and 1.6 in), a lip on the plinth and a crown, 1 in of headroom above the 15 in books on every row (shelf spacing 18.5 in; top shelf at 5'10.5", case 7'5" plus the crown).
+- **Held books** at full size (carry scale 1.0, was 0.6).
+- Verified: 112 unit tests; all suites (hub, Room 1, finds, Rooms 2 and 3 old layout, admin, campaign, activity, pickup, pile part 1) pass. Not run: the live pile drop and a Game-view playtest.
+- Not done: spine icons and numbers (with the palette work, T-010), lighting retune, Rooms 2 and 3 conversion, glow outline of the page block (the glow hull covers the cover submesh only).

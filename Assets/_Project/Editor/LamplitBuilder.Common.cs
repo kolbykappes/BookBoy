@@ -31,24 +31,27 @@ public static partial class LamplitBuilder
     public const float DoorWidth = 0.91f;       // 3'0"
     public const float DoorHeight = 2.13f;      // 7'0"
     public const float OrbHeight = 2.1f;        // magelights float above head height, under the ceiling
-    public const float SignHeight = 2.45f;      // family signs: above the cases (2.14 m), below the ceiling
+    public const float SignHeight = 2.5f;      // family signs: above the cases (2.31 m with the crown), below the ceiling
     public const float HubHalf = 1.5f;          // hub wall centres are at x = +-HubHalf (a 10 ft hall)
     public const float HubLength = 24.8f * LayoutK;
 
     // Tomes (Kolby, 2026-10-18): books are 12 to 15 in tall, 10 in deep and 4 in thick (a spine of 0.1016 m). A bookcase is sized around the
-    // tallest (15 in = 0.381 m): slots 4.25 in apart, 0.09 m of frame per case, 13 in deep, four shelves 0.43 m (17 in) apart on a 15 in (0.38 m)
-    // plinth, so the top shelf is at 5'6" and the case is about 7 ft tall.
+    // tallest (15 in = 0.381 m): slots 4.1 in apart (packed: the spine is 4 in), boards and sides 2.4 in thick, 13 in deep, four shelves 0.47 m (18.5 in)
+    // apart on a 15 in (0.38 m) plinth, so the top shelf is at 5'10.5" and the case is about 7'7" tall with its crown. Headroom: 0.47 - 0.06 (the board) - 0.381
+    // = 0.029 m, just over 1 in above the tallest book, on every row including the top one.
     public const float BookSpine = 0.1016f;     // 4 in
     public const float BookDepth = 0.254f;      // 10 in
     public const float BookMinHeight = 0.3048f; // 12 in
     public const float BookMaxHeight = 0.381f;  // 15 in
-    public const float SlotPitch = 0.108f;      // 4.25 in
-    public const float CaseMargin = 0.09f;
+    public const float SlotPitch = 0.104f;      // 4.1 in
+    public const float BoardThickness = 0.06f;  // shelf boards, top and base cap (2.4 in: a solid, library-weight board)
+    public const float SideThickness = 0.06f;
+    public const float CaseMargin = 2f * SideThickness + 0.01f;
     public const float CaseDepth = 0.33f;       // 13 in
     public const int ShelfRows = 4;
     public const float BaseHeight = 0.38f;      // 15 in plinth under the first shelf
-    public const float ShelfSpacing = 0.43f;    // 17 in: a 15 in book, the 2 in board and a little air
-    public const float ContainerHeight = 2.14f; // top shelf at 1.67 m plus 0.381 m of book and 0.09 m of clearance and top board
+    public const float ShelfSpacing = 0.47f;    // 18.5 in: a 15 in book, the 2.4 in board and 1 in of headroom
+    public const float ContainerHeight = 2.26f; // top shelf at 1.79 m plus the 0.381 m book, 1 in of headroom and the 0.06 m top board
     public const float FrontLine = -0.15f;
     private static readonly float[] ShelfTops = { BaseHeight, BaseHeight + ShelfSpacing, BaseHeight + 2f * ShelfSpacing, BaseHeight + 3f * ShelfSpacing };
 
@@ -310,15 +313,17 @@ public static partial class LamplitBuilder
 
         Cube("Base", root.transform, new Vector3(0f, BaseHeight / 2f, 0f), new Vector3(w, BaseHeight, d), wood);
         float upper = h - BaseHeight;
-        Cube("SideL", root.transform, new Vector3(-(w / 2f - 0.02f), BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
-        Cube("SideR", root.transform, new Vector3(w / 2f - 0.02f, BaseHeight + upper / 2f, 0f), new Vector3(0.04f, upper, d), wood);
-        Cube("Back", root.transform, new Vector3(0f, BaseHeight + upper / 2f, d / 2f - 0.01f), new Vector3(w - 0.08f, upper, 0.02f), wood);
+        Cube("BaseCap", root.transform, new Vector3(0f, BaseHeight - 0.025f, -0.015f), new Vector3(w + 0.03f, 0.05f, d + 0.03f), wood);   // a lip on the plinth
+        Cube("SideL", root.transform, new Vector3(-(w / 2f - SideThickness / 2f), BaseHeight + upper / 2f, 0f), new Vector3(SideThickness, upper, d), wood);
+        Cube("SideR", root.transform, new Vector3(w / 2f - SideThickness / 2f, BaseHeight + upper / 2f, 0f), new Vector3(SideThickness, upper, d), wood);
+        Cube("Back", root.transform, new Vector3(0f, BaseHeight + upper / 2f, d / 2f - 0.01f), new Vector3(w - 2f * SideThickness, upper, 0.02f), wood);
         for (int b = 1; b < ShelfRows; b++)
         {
-            Cube("ShelfBoard_" + b, root.transform, new Vector3(0f, ShelfTops[b] - 0.025f, 0f), new Vector3(w - 0.08f, 0.05f, d - 0.02f), wood);
+            Cube("ShelfBoard_" + b, root.transform, new Vector3(0f, ShelfTops[b] - BoardThickness / 2f, 0f), new Vector3(w - 2f * SideThickness, BoardThickness, d - 0.02f), wood);
         }
 
-        Cube("Top", root.transform, new Vector3(0f, h - 0.02f, 0f), new Vector3(w, 0.04f, d), wood);
+        Cube("Top", root.transform, new Vector3(0f, h - BoardThickness / 2f, 0f), new Vector3(w, BoardThickness, d), wood);
+        Cube("Crown", root.transform, new Vector3(0f, h + 0.025f, -0.01f), new Vector3(w + 0.04f, 0.05f, d + 0.04f), wood);   // a cornice on top
 
         var highlightMat = LoadMat("Mat_SlotHighlight");
         var shelfList = new List<Shelf>();
@@ -332,7 +337,7 @@ public static partial class LamplitBuilder
             var box = shelfGo.AddComponent<BoxCollider>();
             box.isTrigger = true;
             box.center = new Vector3(0f, (ShelfSpacing - 0.01f) / 2f, 0f);
-            box.size = new Vector3(w - 0.08f, ShelfSpacing - 0.01f, d - 0.02f);   // the aim volume of one row, a little under the shelf spacing
+            box.size = new Vector3(w - 2f * SideThickness, ShelfSpacing - 0.01f, d - 0.02f);   // the aim volume of one row, a little under the shelf spacing
 
             var slotList = new ShelfSlot[slots];
             for (int k = 0; k < slots; k++)
@@ -397,7 +402,7 @@ public static partial class LamplitBuilder
     {
         var go = new GameObject(name);
         go.transform.SetParent(item, false);
-        go.transform.localPosition = new Vector3(0f, localY, -0.5f - 0.02f);
+        go.transform.localPosition = new Vector3(0f, localY, -0.5f - 0.006f);   // just in front of the spine's flat (the tome's spine apex is at -0.5)
         var ps = item.lossyScale;
         go.transform.localScale = new Vector3(1f / ps.x, 1f / ps.y, 1f / ps.z) * height;
         var pd = go.AddComponent<PixelDigit>();
@@ -407,14 +412,84 @@ public static partial class LamplitBuilder
         pd.Rebuild();
     }
 
-    /// <summary>One sortable item: a cube-shaped Book with a letter (the group's symbol) and, for numbered sets, a number on its spine.</summary>
-    public static Book Item(Transform parent, string name, BookDefinition def, Vector3 size, bool showNumber)
+    public const string BookModelPath = "Assets/_Project/Art/Models/Book_Tome.fbx";
+    private const string BookTexDir = "Assets/_Project/Art/Textures/Books";
+
+    /// <summary>Imports the tome mesh and its textures with the right settings and (re)creates the cover and page materials. Safe to run repeatedly
+    /// (assets are mutated in place). The mesh and textures come from tools/blender/make_book.py and make_book_textures.py.</summary>
+    public static string SetupBookAssets()
+    {
+        var model = AssetImporter.GetAtPath(BookModelPath) as ModelImporter;
+        if (model == null) throw new System.InvalidOperationException("Missing " + BookModelPath + " (run tools/blender/make_book.py)");
+        model.globalScale = 1f;
+        model.useFileScale = true;   // Blender writes centimetres; convert to metres
+        model.materialImportMode = ModelImporterMaterialImportMode.None;
+        model.importNormals = ModelImporterNormals.Import;
+        model.importTangents = ModelImporterTangents.CalculateMikk;
+        model.isReadable = false;
+        model.addCollider = false;
+        model.meshCompression = ModelImporterMeshCompression.Off;
+        model.importBlendShapes = false;
+        model.importCameras = false;
+        model.importLights = false;
+        model.animationType = ModelImporterAnimationType.None;
+        model.SaveAndReimport();
+
+        string albedo = BookTexDir + "/T_BookCover_Albedo.png", normal = BookTexDir + "/T_BookCover_Normal.png", pages = BookTexDir + "/T_BookPages_Albedo.png";
+        foreach (var path in new[] { albedo, normal, pages })
+        {
+            var ti = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (ti == null) throw new System.InvalidOperationException("Missing " + path + " (run tools/blender/make_book_textures.py)");
+            ti.textureType = path == normal ? TextureImporterType.NormalMap : TextureImporterType.Default;
+            ti.wrapMode = path == pages ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            ti.mipmapEnabled = true;
+            ti.anisoLevel = 4;
+            ti.textureCompression = TextureImporterCompression.CompressedHQ;
+            ti.SaveAndReimport();
+        }
+
+        var cover = EnsureMat("Mat_BookCover", Color.white, 0.30f);
+        cover.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedo));
+        cover.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(normal));
+        cover.SetFloat("_BumpScale", 1.0f);
+        cover.EnableKeyword("_NORMALMAP");
+        EditorUtility.SetDirty(cover);
+        var paper = EnsureMat("Mat_BookPages", Color.white, 0.05f);
+        paper.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(pages));
+        EditorUtility.SetDirty(paper);
+        AssetDatabase.SaveAssets();
+        return "book assets set up: mesh " + (BookMesh() != null) + ", materials Mat_BookCover and Mat_BookPages";
+    }
+
+    /// <summary>The tome mesh (a unit box scaled by each item's thickness, height and depth), or null if it has not been imported.</summary>
+    public static Mesh BookMesh()
+    {
+        foreach (var o in AssetDatabase.LoadAllAssetsAtPath(BookModelPath))
+        {
+            if (o is Mesh m) return m;
+        }
+
+        return null;
+    }
+
+    /// <summary>One sortable item: a Book (the tome mesh: a hardcover with a rounded spine and a page block) with a letter (the group's symbol) and,
+    /// for numbered sets, a number on its spine. useBookMesh = false keeps a plain cube (the finds are not books).</summary>
+    public static Book Item(Transform parent, string name, BookDefinition def, Vector3 size, bool showNumber, bool useBookMesh = true)
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
         go.transform.SetParent(parent, false);
         go.transform.localScale = size;
-        go.GetComponent<MeshRenderer>().sharedMaterial = LoadMat("Mat_BookSpine");
+        var mesh = useBookMesh ? BookMesh() : null;
+        if (mesh != null)
+        {
+            go.GetComponent<MeshFilter>().sharedMesh = mesh;
+            go.GetComponent<MeshRenderer>().sharedMaterials = new[] { LoadMat("Mat_BookCover"), LoadMat("Mat_BookPages") };
+        }
+        else
+        {
+            go.GetComponent<MeshRenderer>().sharedMaterial = LoadMat("Mat_BookSpine");
+        }
         go.GetComponent<BoxCollider>().isTrigger = true;
         var book = go.AddComponent<Book>();
         book.definition = def;

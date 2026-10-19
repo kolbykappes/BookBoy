@@ -140,7 +140,7 @@ public static partial class LamplitBuilder
         def.spineColor = color;
         EditorUtility.SetDirty(def);
         size *= WorldScale;
-        var book = Item(parent, "Find_" + findId, def, size, false);
+        var book = Item(parent, "Find_" + findId, def, size, false, false);
         book.transform.SetPositionAndRotation(hideSpot.position + Vector3.up * (size.y * 0.5f), Quaternion.Euler(0f, 180f, 0f));
         return book;
     }
@@ -159,15 +159,16 @@ public static partial class LamplitBuilder
     public static string BuildRoom1()
     {
         RequireLamplitScene();
+        SetupBookAssets();
         var s = Spec(1);
         var root = BuildShell(s);
         var zone = root.GetComponent<RoomZone>();
         var wood = LoadMat("Mat_Wood");
 
-        // the furniture: triple 1.45 m before the middle of the wall, solo 1.85 m after it (the group is centred on the wall)
+        // the furniture: triple 1.5 m before the middle of the wall, solo 1.9 m after it (the group is centred on the wall)
         var holder = FreshChild(root, "Containers");
         float zc = (s.Z0 + s.Z1) / 2f;
-        float tripleZ = zc - 1.45f, soloZ = zc + 1.85f;
+        float tripleZ = zc - 1.5f, soloZ = zc + 1.9f;
         float edge = (CaseWidth(8) + CaseWidth(4)) / 2f + 0.005f;
         var containers = new List<Bookcase>
         {

@@ -34,6 +34,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Lamplit: books are now a Blender-built tome mesh (rounded spine, boards, page block) with a sample cloth cover material (Mat_BookCover and Mat_BookPages); bookcases have 2.4 in boards, packed slots, 1 in of headroom, a plinth lip and a crown; held books at full size (T-004, T-017).
 - Fixed: nothing could be picked up at the new eye height (the aim ray hit the player's own collider first); the interactor now ignores the player's colliders; new check tools/verify_lamplit_pickup.cs.
 - Lamplit tomes: books 12 to 15 in tall, 10 in deep, 4 in thick; bookcases resized (17 in shelf spacing, 15 in plinth, 7 ft tall, solo 37.6 in, triple 6'6.7" wide), top shelf at 5'5.7".
 - Lamplit adult scale: hub and Room 1 rebuilt at real size (eye 5'5", ceiling 9 ft, FOV 90 horizontal) with a solo 8-wide and a triple (4+8+4) four-shelf bookcase, 96 books in sets of 8 and 4 that belong on a row of their own size; Rooms 2 and 3 not yet converted (T-002, T-017).

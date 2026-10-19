@@ -182,3 +182,7 @@ Acceptance criteria (thresholds are my proposals, **UNSOURCED GUESS**):
 7. **Cost:** Stats "Batches" and "Set Pass Calls" for the 3-book scene recorded and compared with the same count of cubes; texture memory per cover at or under 0.35 MB (512 BC7 with mips). Note whether the books appear under "SRP Batcher" or "Non-SRP Compatible".
 
 Pass = all seven; the output of the experiment is also a measured tint-handling decision (point 5) and a provenance table row for each cover (even if "not AI"), which exercises the recording habit before any AI asset exists.
+
+## Addendum 2026-10-19: Blender is installed, so the mesh is built in Blender, not C#
+
+Kolby installed Blender 5.2. The recommendation in section 7 (a C# generator, no Blender) assumed it was not available. Built instead: `tools/blender/make_book.py` (bmesh profile extruded, page block, bevel modifier, normalised to a unit box, FBX export) and `make_book_textures.py` (numpy procedural textures, PNG written directly). Facts found while doing it (verified in Unity): Blender writes centimetres, so the importer needs Convert Units (`useFileScale = true`); export `axis_forward='Z'`, `axis_up='Y'` puts the spine at -z; the bevel modifier is applied through the evaluated depsgraph; bmesh.ops.bevel was not needed. The mesh is a unit box scaled by the item size, so the slot code did not change. Not done yet: cover art from CC0 or AI sources, spine icons.

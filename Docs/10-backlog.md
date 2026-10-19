@@ -332,7 +332,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
   Bloom Clamp about 3 to 6 (default 65472); motion blur off or low; keep Neutral tonemapping and Post Exposure for brightness (files 6 to 8).
 - Measure before and after on rendered frames (luminance of books and wood, hotspot size). Do not judge by eye alone.
 
-### T-004 Procedural book mesh and cover materials (AI for placeholders)  **P2, Todo**
+### T-004 Book mesh and cover materials  **P2, first version done 2026-10-19 (Blender mesh and procedural sample material); spine icons and AI/CC0 cover art still to do**
 - Per file 26: generate the book mesh in C# with an editor generator (about 60 to 300 triangles, authored at real size with a **bottom pivot**, which means changing `ShelfSlot.Accept`, which assumes a centre pivot); CC0 or procedural cover patterns first (ambientCG, Poly Haven);
   AI only for neutral tileable base patterns or placeholders. Spine letters and numbers stay drawn by the game. Avoid AI 3D meshes for books. 512 px covers (about 0.33 MB with BC7 and mips) are enough.
 - First experiment: one procedural book, 3 cover variants, checked by rendered screenshot and the Stats window (acceptance criteria are at the end of file 26). Log tool, prompt and date per AI asset. Related: L-015. Do after T-002 (book sizes) and together with T-012.

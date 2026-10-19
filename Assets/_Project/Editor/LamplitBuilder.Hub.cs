@@ -195,7 +195,7 @@ public static partial class LamplitBuilder
     public const float HandLightIntensity = 0.6f;
     public const float HandLightRange = 2.8f;
     public static readonly Vector3 HandLightPosition = new Vector3(0f, 0.25f, -0.25f);
-    public const float CarryScale = 0.6f;   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
+    public const float CarryScale = 1.0f;   // held tomes at full size (Librarian's carried book fills 30 to 35 percent of the screen width)   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
     public static string ApplyPlayerScale()

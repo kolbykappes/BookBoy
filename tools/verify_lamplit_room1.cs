@@ -32,6 +32,11 @@ Check("each bookcase uses the Group rule and accepts any family", System.Linq.En
 Check("the room's door and controller are wired (room 1 registered)", cc.RoomCount >= 1 && cc.Room(1) == zone);
 Check("books are tomes: 12 to 15 in tall, 4 in thick, 10 in deep, and fit their shelf (spine under the slot pitch)", System.Linq.Enumerable.All(zone.items, b => b.transform.localScale.y >= 0.3047f && b.transform.localScale.y <= 0.3811f && System.Math.Abs(b.transform.localScale.x - 0.1016f) < 0.0005f && System.Math.Abs(b.transform.localScale.z - 0.254f) < 0.0005f && b.transform.localScale.x < LamplitBuilder.SlotPitch));
 
+// headroom: the tallest book clears the board above it by at least 1 in, on every row including the top one
+float board = LamplitBuilder.BoardThickness, inch = 0.0254f;
+Check("every row has at least 1 in of headroom above the tallest (15 in) book", LamplitBuilder.ShelfSpacing - board - LamplitBuilder.BookMaxHeight >= inch - 0.0005f && LamplitBuilder.ContainerHeight - board - (LamplitBuilder.BaseHeight + 3f * LamplitBuilder.ShelfSpacing) - LamplitBuilder.BookMaxHeight >= inch - 0.0005f,
+    (LamplitBuilder.ShelfSpacing - board - LamplitBuilder.BookMaxHeight).ToString("F3") + " m between rows, " + (LamplitBuilder.ContainerHeight - board - (LamplitBuilder.BaseHeight + 3f * LamplitBuilder.ShelfSpacing) - LamplitBuilder.BookMaxHeight).ToString("F3") + " m on top");
+
 // ---- Group grading: the first set claims the row, any slot is fine ----
 ClearAll();
 Check("first book of an 8-set on an empty 8-row, middle slot: green", Put(B('A', 1), rows8[0].slots[2]) == R);

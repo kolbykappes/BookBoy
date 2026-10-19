@@ -407,11 +407,13 @@ public class Book : MonoBehaviour
         }
 
         _propertyBlock ??= new MaterialPropertyBlock();
-        bookRenderer.GetPropertyBlock(_propertyBlock);
+        // A tome has two materials (cover, pages): only the cover (slot 0) takes the set's colour, the pages stay cream.
+        int slot = bookRenderer.sharedMaterials.Length > 1 ? 0 : -1;
+        if (slot >= 0) bookRenderer.GetPropertyBlock(_propertyBlock, slot); else bookRenderer.GetPropertyBlock(_propertyBlock);
         // Set both property names so this works whether the shared material uses URP
         // ("_BaseColor") or a legacy/Standard shader ("_Color").
         _propertyBlock.SetColor(BaseColorId, color);
         _propertyBlock.SetColor(ColorId, color);
-        bookRenderer.SetPropertyBlock(_propertyBlock);
+        if (slot >= 0) bookRenderer.SetPropertyBlock(_propertyBlock, slot); else bookRenderer.SetPropertyBlock(_propertyBlock);
     }
 }

@@ -43,6 +43,106 @@ Screenshots: [img/librarian/](img/librarian/) (six files, listed at the end).
 - Top left: "2 row(s) left to level up", a row counter (0/400) and a book counter (0/3072). Top right: a translucent parchment panel
   with a tutorial hint and ornate corners.
 
+## Librarian, second batch: measured proportions (seven more frames, 2026-10-19)
+
+Screenshots 07 to 13 in [img/librarian/](img/librarian/), captured on a 16:9 monitor (frames are 1858 x 1080). I read pixel
+coordinates off gridded copies of frames 09, 11, 12 and 13 (frame numbers as in the table at the end). **There is still no
+object of known size and the field of view is not known, so everything is in two forms: ratios (reliable, because they compare
+things inside one frame), and metres under a stated assumption (a guess).** Pixel values are +/- 3 to 5 px.
+
+### Ratios (solid, within one frame)
+
+| Measure | Value | From |
+|---|---|---|
+| Book height on screen | **172 to 197 px, 16 to 18% of screen height** at the standing distance of the bookcase shots (22 to 23% in the closer frames 03/04) | frames 09, 11 |
+| Book thickness / book height | **0.21 to 0.24** (spines 36 to 44 px thick, 172 to 197 px tall) | frames 09, 11 |
+| Slot pitch / book thickness | **about 1.05** (10 slots span about 432 px, 43 px each; books 41 px): books are **packed, almost touching** | frame 11 |
+| Compartment clear height / board pitch | **about 0.77** (176 px clear, 230 px board to board, boards about 40 to 54 px thick on screen) | frames 09, 11 |
+| Book height / compartment clear height | **0.96 to 1.0**: books nearly touch the board above | frames 09, 11 |
+| Compartment width / book height | **about 2.3** (10 volumes = 2.3 book heights wide) | frame 11 |
+| Volumes per compartment | **10** in the small case; the large case has narrower side bays (about 3 books) and wide centre bays (about 8) | frames 09, 12, 13 |
+| Large bookcase, overall | **about 6.5 book heights wide and 6 tall**, 5 board levels in the centre bays, bays divided by vertical posts, arched tops, a plinth, and a carved name plate ("1A", "1C") above | frame 13 |
+| Ghost of the held book in its slot | 38 x 168 px, thickness / height 0.23 (same as a real book), a **translucent green slab with a bright outline** | frame 11 |
+
+### Spine legibility (the numbers that matter at 1080p)
+
+| Element | Size | Notes |
+|---|---|---|
+| Series icon (cat head, paw prints) | **about 28 to 32 px wide, 13 to 16% of spine height**, one at the top and one at the bottom of every spine | Reads from across the room; the main identifier |
+| Volume digit | **about 10 to 13 px tall, 6 to 7% of spine height, about 1% of screen height** | The smallest thing on the book; fine for confirming, not for finding |
+| Vertical title | letters about 6 to 8 px across | Readable only up close; not needed because of the icon |
+| Spine thickness | 36 to 44 px | The icon fills about 70% of the spine's width |
+| Top-edge cap | a pale page-block strip shows at the top of every shelved book | Helps read each book's edge against the dark shelf |
+
+### What screen fraction means for Lamplit (derived; assumes a book 0.30 m tall, so treat as an example)
+
+Book height as a fraction of screen height is 0.30 / (2 x distance x tan(vertical FOV / 2)).
+
+| Vertical FOV | Distance for 17% (Librarian's standing view) | For 22% (the closer view) |
+|---|---|---|
+| 50 degrees | 1.9 m | 1.5 m |
+| 60 degrees | 1.5 m | 1.2 m |
+| 75 degrees | 1.15 m | 0.9 m |
+
+So **a 0.30 m book at Librarian's 17% sits at about 1.5 m with a 60 degree lens**, which is a normal standing distance in a
+cozy room. That is the combination to test in Lamplit instead of scaling the world.
+
+### Absolute size, with the assumption stated
+
+If the books are about 0.30 m tall (typical large hardback; a guess), then the numbers above give:
+
+| Item | If book height = 0.30 m |
+|---|---|
+| Book thickness | **0.065 to 0.07 m** (chunky; a real hardback of that height is about 0.035 to 0.045) |
+| Slot pitch | **about 0.07 m** |
+| Compartment clear height | **about 0.31 m** |
+| Board to board | **about 0.40 m** (a real library shelf pitch is about 0.33 m) |
+| Compartment width, 10 volumes | **about 0.70 m** |
+| Large bookcase | **about 1.9 m wide x 1.8 m tall**, five levels |
+
+These land close to real furniture sizes, which suggests Librarian's world is roughly **real scale with exaggerated book
+thickness**, not a giants' hall. That agrees with Kolby's adult-scale decision. If the real books are 0.25 m the whole set
+scales by 0.83 and nothing else changes.
+
+### Eye height and field of view: not recoverable
+
+- The game's own **Field of View setting defaults to 90** (frame 08), and the slider knob sits at the midpoint of its track, so
+  the range is probably **60 to 120**. The axis is not stated. At 16:9 a 90 degree **vertical** lens is a 122 degree horizontal one
+  and a 90 degree **horizontal** lens is a 59 degree vertical one, a very different look. The ratios above hold either way, but I
+  cannot say which Librarian uses.
+- Frame 13 puts the crosshair at 45% of the large bookcase's height (counting from the top). If the player looked level, the eye
+  would be about 1.0 m high (assuming that 1.8 m bookcase). The player could easily be pitched slightly down, so this is a
+  low-confidence number, not a measurement.
+- **A cheap way to settle both:** in Librarian, stand in front of a bookcase, then take one screenshot at FOV 60 and one at 120,
+  from the same spot. I can solve the axis and the distance from the change in book size. Tell me if you want that.
+
+### The held stack (the thing Kolby likes)
+
+- The carried books are drawn as a **real stack beside the player, fully modelled**, each book about **3 times the on-screen
+  thickness of a shelved one** (120 to 150 px against about 41 px), so each is a big, readable object, not an icon.
+- **It moves with the view.** Looking level (frames 09 and 11) the stack sits low at the right and only the nearest corner is in
+  frame. **Looking down (frame 10) the whole stack rises** into the right third of the screen (about 34% of the width and about
+  80% of the height), showing six spines and the top cover. This reads like books resting on a forearm that you glance at, and it
+  means the player can **check what they are carrying just by looking down**, with no extra HUD.
+- The count (such as 6 / 10) is at the bottom right corner, and the top book's full title is under the counters at the top left.
+- The cost: when the stack is in view it covers about a third of the screen's width, so it must stay out of the way when you are
+  aiming at shelves (and it does: level, only the corner shows).
+
+### Settings and HUD (frames 07 and 08)
+
+- **Settings screen:** eight tabs across the top (Game Settings, Video, Audio, Keyboard, Controller, Language, Layout, Tutorial),
+  each setting a row **about 46 px tall on a 52 px pitch (about 4.8% of screen height)**, a left and right arrow on every value, and
+  a bar under the value showing which choice is selected. **Game Settings:** Day/Night Cycle (four stops, "Sunset" selected), Time
+  Display, **Head Bobbing (Off)**, Auto Save, Display Tutorial, **Field Of View (90)**, and a HUD section with Display HUD. Buttons:
+  Reset, Apply and Cancel. **A selectable time of day is notable**: it lets players choose the room's light (the screenshots show
+  warm, evenly lit rooms).
+- **HUD:** a row counter and a book counter at the top left (digits about 24 px tall, about 2.2% of screen height), the held
+  book's title under them, the aimed book's title in two lines at the bottom center, and the carry count at the bottom right.
+  Interaction prompts are one line at the center ("Press E To Action"), and a tutorial panel sits at the top right.
+- **The pile (frame 07):** about 60 books heaped against a panelled wall, many lying at angles on top of one another, a lectern
+  with a notice behind them. Cover art is large and varied (a purple sunset, striped bands, gold borders), so each lying book
+  is a distinct object you can pick by looking down. The aimed book gets a white outline and its title appears at the bottom.
+
 ## Shelves and Sorcery: what the three screenshots show (2026-10-18)
 
 Screenshots: [img/shelves-and-sorcery/](img/shelves-and-sorcery/) (three files, listed at the end). Kolby's verdict: **the books are too
@@ -134,7 +234,7 @@ current items reported the same family), so other item types may differ.
    have fixed slots, so keep them.
 7. **Show the held stack large at the screen edge** so the carry count reads at a glance.
 
-## Screenshots (Librarian)
+## Screenshots (Librarian, thirteen frames)
 
 | # | File | Shows |
 |---|---|---|
@@ -144,6 +244,13 @@ current items reported the same family), so other item types may differ.
 | 4 | [04-row-vol-1-3-5-7-8-9-aimed-vol-7](img/librarian/04-row-vol-1-3-5-7-8-9-aimed-vol-7.webp) | The same row with 7, 8 and 9 added; the held cat-face cover at the lower right |
 | 5 | [05-tall-bookcase-from-standing-distance](img/librarian/05-tall-bookcase-from-standing-distance.webp) | A bookcase and a cluttered floor from a standing distance; an aimed book outlined |
 | 6 | [06-floor-corner-covers-legible-looking-down](img/librarian/06-floor-corner-covers-legible-looking-down.webp) | A corner of the floor looking steeply down: covers readable, books at many angles |
+| 7 | [07-floor-pile-aimed-book-lectern-wainscot](img/librarian/07-floor-pile-aimed-book-lectern-wainscot.webp) | A large floor pile against a panelled wall with a lectern; the aimed book outlined; the title at the bottom |
+| 8 | [08-settings-game-settings-head-bobbing-fov-90](img/librarian/08-settings-game-settings-head-bobbing-fov-90.webp) | Settings, Game Settings tab: Day/Night Cycle, Head Bobbing, Auto Save, Field Of View 90, Display HUD |
+| 9 | [09-bookcase-three-boards-held-stack-3-of-10](img/librarian/09-bookcase-three-boards-held-stack-3-of-10.webp) | A three-board bookcase, rows of 7 and 3 books with gaps; held stack at the lower right, 3 / 10 |
+| 10 | [10-looking-down-held-stack-covers-and-plinth](img/librarian/10-looking-down-held-stack-covers-and-plinth.webp) | Looking down: the held stack rises into the right third of the screen, six spines visible, 6 / 10 |
+| 11 | [11-bookcase-1A-green-ghost-held-stack-6-of-10](img/librarian/11-bookcase-1A-green-ghost-held-stack-6-of-10.webp) | The 1A bookcase with the green ghost in the top compartment; ten-slot rows |
+| 12 | [12-large-bookcase-close-compartments](img/librarian/12-large-bookcase-close-compartments.webp) | A large multi-bay bookcase close up: a side bay with three books, a wide centre bay |
+| 13 | [13-large-bookcase-1C-two-windows-floor-pile](img/librarian/13-large-bookcase-1C-two-windows-floor-pile.webp) | The 1C large bookcase between two arched windows, with a floor pile in front |
 
 ## Screenshots (Shelves and Sorcery)
 

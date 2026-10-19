@@ -106,12 +106,14 @@ The 1.6x storybook rescale and the child eye height made the rooms feel like a g
 | Ceiling, door | 9'0"; 3'0" x 7'0" | 2.74 m; 0.91 x 2.13 m |
 | Hub hallway | 10 ft wide, 51 ft long | 3.0 m, 15.5 m |
 | Room 1 | about 25 x 23 ft | 7.5 x 7.1 m |
-| Bookcase | four shelves 17 in apart on a 15 in plinth (shelf tops 15 in, 2'8", 4'0.8", 5'5.7"), 13 in deep, 7'0" tall | 0.43 m spacing, shelf tops 0.38 / 0.81 / 1.24 / 1.67 m, 0.33 m deep, 2.14 m |
-| Slot pitch | 4.25 in | 0.108 m |
-| Solo case (8 books wide) | about 37.6 in wide | 0.95 m |
-| Wing (4 books wide) / triple (4 + 8 + 4) | 20.6 in / 6'6.7" wide | 0.52 m / 2.0 m |
+| Bookcase | four shelves 18.5 in apart on a 15 in plinth (shelf tops 15 in, 2'9.5", 4'4", 5'10.5"), boards and sides 2.4 in thick, 13 in deep, 7'5" tall (7'7" with the crown), 1 in of headroom above a 15 in book | 0.47 m spacing, shelf tops 0.38 / 0.85 / 1.32 / 1.79 m, 0.06 m boards, 0.33 m deep, 2.26 m (2.31 m with crown) |
+| Slot pitch (packed: the spine is 4 in) | 4.1 in | 0.104 m |
+| Solo case (8 books wide) | about 37.9 in wide | 0.96 m |
+| Wing (4 books wide) / triple (4 + 8 + 4) | 21.5 in / 6'9" wide | 0.55 m / 2.05 m |
 | Books (tomes, Kolby 2026-10-19) | 12 to 15 in tall, spine 4 in, 10 in deep | 0.305 to 0.381 m, 0.1016 m, 0.254 m |
 | Magelights | about 6'11" | 2.1 m |
 
 Book screen fraction at 90 horizontal (computed, not yet measured live): a 14 in (0.356 m) tome fills about 26% of the screen height at 4 ft (1.2 m) and 21% at 5 ft (1.5 m) (12 in: 22% and 18%; 15 in: 28% and 22%); the reference band is 16 to 23%, so tomes read a little bigger than the references, on purpose.
 Rooms 2 and 3 have not been converted yet (they still hold the old 5-slot, 5-set layout at the storybook size).
+
+**The tome (2026-10-19):** a hardcover with a rounded spine (radius 1 in), 0.24 in boards, an inset cream page block visible at the top, a 0.06 in bevel, 224 vertices and 440 triangles, built in Blender (`tools/blender/`) as a unit box scaled by each item's thickness, height and depth. Held books are drawn at full size (carry scale 1.0).
