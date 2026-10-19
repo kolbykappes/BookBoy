@@ -83,6 +83,13 @@ public class PlayerInteractor : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
+            // The camera sits inside the player's own colliders (the character controller and the capsule mesh); a ray that starts there can
+            // report them at ~1 cm, and as the first hit they would hide everything behind them. They are never a target.
+            if (hit.collider.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
             FindSpot spot = hit.collider.GetComponentInParent<FindSpot>();
             if (spot != null)
             {
