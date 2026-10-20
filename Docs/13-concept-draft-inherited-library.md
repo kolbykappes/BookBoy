@@ -37,17 +37,19 @@ stand.
   1950s or later; the wars are never shown, only felt as thrift and patience. Full period rules and the art direction are in
   [15-art-direction.md](15-art-direction.md).
 - You worked there **from age nine to fourteen**, helping light the reading-room lamps, shelving the returns, and so on.
-- **Uncle Rufus**, head librarian for over thirty years, wanted to retire, but nobody was trained to take over
+- **Uncle Wilfred** (renamed from Rufus, 2026-10-19), known to you as **Ned**, head librarian for over thirty years, wanted to retire, but nobody was trained to take over
   and nobody knew his systems. He didn't think you would be interested. He wrote you a letter (it arrives about
   seven days before Lamplight Night; the exact timing is open to change).
-- **Rufus has passed away** by the time you arrive. The tone should be warm and quiet (a Stardew grandfather), with
+- **Naming [confirm]:** "Ned" is the player's name for him and how he signs notes to you; "Wilfred" is what the town, the
+  door notice and the brass plaque call him.
+- **Wilfred has passed away** by the time you arrive. The tone should be warm and quiet (a Stardew grandfather), with
   the grief carried by objects and notes, not scenes.
 - The town's leaders will **sell or condemn** the run-down library after Lamplight Night. The only outside
   pressure is **a notice on the door with a checklist** (for example: lamp lit, shelves in order, building safe, a
   librarian named). No inspector, no villain.
-- The library is in disarray **on purpose**: Rufus left it as a **test and training**. Putting it back in order
+- The library is in disarray **on purpose**: Wilfred left it as a **test and training**. Putting it back in order
   teaches you his systems. His personal belongings are gone (cleared out).
-- **The test was meant for you.** Rufus knew he was sick, and this was his last wish: that you learn his systems
+- **The test was meant for you.** Wilfred knew he was sick, and this was his last wish: that you learn his systems
   and take over. His illness is part of the story, not hidden.
 - **Ending:** pass the checklist, light the lamp, and accept the keys. (The earlier "the town sees itself in what
   the library holds" beat was dropped as too much for a small game.)
@@ -58,7 +60,7 @@ stand.
   plants by the Lamplight calendar) and an optional answer drawer as a hint tier.
 - The exact timing of the letter and the countdown (seven days is the working number).
 - The checklist items on the door and how they map to the days.
-- The wording of Rufus's last note.
+- The wording of Wilfred's last note.
 
 ## The concept in brief (proposal)
 

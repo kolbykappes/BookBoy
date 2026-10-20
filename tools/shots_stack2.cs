@@ -5,7 +5,7 @@ var sb = new System.Text.StringBuilder();
 var pl = UnityEngine.GameObject.Find("Player"); var carry = pl.GetComponent<CarryInventory>(); carry.SetCapacity(8);
 pl.transform.position = V(-4.0f, 0f, 3.56f); pl.transform.rotation = UnityEngine.Quaternion.Euler(0f, 270f, 0f); UnityEngine.Physics.SyncTransforms();
 var eye = pl.transform.position + V(0f, 1.65f, 0f); var fwd = pl.transform.forward;
-var names = new[] { "A1", "A2", "A3", "B1", "B2", "C1" };
+var names = new[] { "A1", "B1", "C1", "D1" };
 for (int i = 0; i < names.Length; i++)
 {
     carry.TryPickUp(UnityEngine.GameObject.Find("R1_" + names[i]).GetComponent<Book>()); carry.SnapStack();

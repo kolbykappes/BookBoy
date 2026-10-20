@@ -381,7 +381,7 @@ public class PlayerInteractor : MonoBehaviour
 
         if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
         {
-            Carry.Cycle(+1);
+            Carry.Cycle(-1);   // the top book goes to the bottom, the next one comes up
         }
 
         if (mouse != null)

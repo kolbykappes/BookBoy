@@ -12,9 +12,12 @@ pl.transform.position = V(-4.0f, 0f, 3.56f); pl.transform.rotation = UnityEngine
 
 Check("the carry point is the CarryStack child of the player root (turns with the player, not with the camera pitch)", carry.carryPoint != null && carry.carryPoint.name == "CarryStack" && carry.carryPoint.parent == pl.transform);
 Check("books are carried at their shelf size", UnityEngine.Mathf.Approximately(carry.carryScale, 1f), carry.carryScale.ToString());
+string TopToBottom() { var l = new System.Collections.Generic.List<Book>(carry.Items); l.Sort((x, y) => y.transform.position.y.CompareTo(x.transform.position.y)); var t = ""; foreach (var b in l) t += b.name.Substring(3) + " "; return t.Trim(); }
 var names = new[] { "A1", "A2", "A3", "B1" };
-foreach (var n in names) carry.TryPickUp(B(n));
-carry.SnapStack();
+var expectAfter = new[] { "A1", "A2 A1", "A3 A2 A1", "B1 A3 A2 A1" };
+bool buildOk = true; string buildLog = "";
+for (int pk = 0; pk < names.Length; pk++) { carry.TryPickUp(B(names[pk])); carry.SnapStack(); string got = TopToBottom(); buildLog += "[" + got + "] "; if (got != expectAfter[pk]) buildOk = false; }
+Check("picking up four in a row builds the stack newest on top, then each earlier pick in order (B1 A3 A2 A1), the second book moving down each time", buildOk, buildLog);
 Check("four books in hand", carry.Count == 4, carry.Count.ToString());
 var top = carry.Current;
 bool flat = true; string badFlat = "";
@@ -25,12 +28,12 @@ Check("the spine of the top book points to the player's left (fore-edge to the r
 bool descending = true; float lastY = float.MaxValue;
 for (int o = 0; o < carry.Count; o++)
 {
-    var b = carry.Items[(carry.CurrentIndex + o) % carry.Count];
+    var b = carry.Items[(carry.CurrentIndex - o + carry.Count) % carry.Count];
     float y = b.transform.position.y;
     if (y >= lastY) descending = false; lastY = y;
 }
 Check("the current book is on top and the others hang below it in order", descending);
-var below = carry.Items[(carry.CurrentIndex + 1) % carry.Count];
+var below = carry.Items[(carry.CurrentIndex - 1 + carry.Count) % carry.Count];
 float gap = top.transform.position.y - below.transform.position.y;
 Check("the books sit one thickness apart vertically (no overlap)", gap >= top.transform.localScale.x * 1.0f - 0.003f && gap <= top.transform.localScale.x * 1.06f, gap.ToString());
 var fan = top.transform.position - below.transform.position;
@@ -51,16 +54,21 @@ camGo.transform.rotation = UnityEngine.Quaternion.Euler(40f, 270f, 0f);
 var cvp = Center(top);
 Check("looking down 40 degrees the stack is in the right half of the view", InView(top) && cvp.x > 0.55f && cvp.y > 0.1f && cvp.y < 0.9f, cvp.ToString());
 camGo.transform.rotation = UnityEngine.Quaternion.Euler(40f, 270f, 0f);
-float sep = 9f; for (int k = 1; k < carry.Count; k++) { var bk = carry.Items[(carry.CurrentIndex + k) % carry.Count]; var prev = carry.Items[(carry.CurrentIndex + k - 1) % carry.Count]; sep = UnityEngine.Mathf.Min(sep, UnityEngine.Mathf.Abs(Center(bk).y - Center(prev).y) + UnityEngine.Mathf.Abs(Center(bk).x - Center(prev).x)); }
+float sep = 9f; for (int k = 1; k < carry.Count; k++) { var bk = carry.Items[(carry.CurrentIndex - k + carry.Count) % carry.Count]; var prev = carry.Items[(carry.CurrentIndex - k + 1 + carry.Count) % carry.Count]; sep = UnityEngine.Mathf.Min(sep, UnityEngine.Mathf.Abs(Center(bk).y - Center(prev).y) + UnityEngine.Mathf.Abs(Center(bk).x - Center(prev).x)); }
 Check("looking down 40 degrees every book in the stack sits visibly apart from the one above it", sep > 0.03f, sep.ToString());
 camGo.transform.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f);
 Check("looking away (turned round) the stack is behind the camera", !InView(top));
 UnityEngine.Object.DestroyImmediate(camGo);
 
-// cycling puts another book on top
-var second = carry.Items[(carry.CurrentIndex + 1) % carry.Count];
-carry.Cycle(1); carry.SnapStack();
-Check("cycling brings the next book to the top", carry.Current == second || carry.Current != top);
+// cycling: the top book goes to the bottom and the next one comes up (and the other way round)
+string orderBefore = TopToBottom();   // B1 A3 A2 A1
+carry.Cycle(-1); carry.SnapStack();
+Check("one step (R or wheel down) sends the top book to the bottom and brings the next one up", orderBefore == "B1 A3 A2 A1" && TopToBottom() == "A3 A2 A1 B1", orderBefore + " -> " + TopToBottom());
+carry.Cycle(+1); carry.SnapStack();
+Check("one step the other way (wheel up) brings the bottom book back to the top", TopToBottom() == orderBefore, TopToBottom());
+carry.Cycle(+1); carry.SnapStack();
+Check("wheel up again brings the bottom book (A1) to the top with the old top second", TopToBottom() == "A1 B1 A3 A2", TopToBottom());
+carry.Cycle(-1); carry.SnapStack();
 float yTop = carry.Current.transform.position.y; bool allBelow = true;
 foreach (var b in carry.Items) if (b != carry.Current && b.transform.position.y >= yTop) allBelow = false;
 Check("after cycling the new current book is the highest", allBelow);

@@ -71,7 +71,7 @@ Furry of Dracula, Sherlock Gnomes, Crawzotopia, Jar Wars). The page invites play
 ## Why it matters to us
 
 1. **The nearest match to Lamplit's frame in this wave: an inherited shop, a departing older relative, a letter that sets the
-   task.** It spends one letter on the story and moves to shelving. Lamplit's Uncle Rufus does the same with more substance.
+   task.** It spends one letter on the story and moves to shelving. Lamplit's Uncle Wilfred does the same with more substance.
    Worth noting how little narrative the competition currently carries: **one letter**.
 2. **Set-completion celebration.** A cascade of boxes when a 12-copy set is completed, the per-game "games finished" counter
    (30/318) and the per-box counter: two progress layers. Compare our green/yellow/red grading and shelf glow.

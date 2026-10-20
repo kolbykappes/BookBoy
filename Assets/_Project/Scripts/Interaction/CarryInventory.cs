@@ -223,7 +223,7 @@ public class CarryInventory : MonoBehaviour
                 continue;
             }
 
-            int order = (i - _list.CurrentIndex + n) % n;   // 0 = current book, on top
+            int order = (_list.CurrentIndex - i + n) % n;   // 0 = current book, on top; then the books picked up before it, newest first (the stack as it was built)
             Transform t = book.transform;
             Vector3 real = _originalScale.TryGetValue(book, out Vector3 s) ? s : t.localScale / carryScale;
             Vector3 scale = real * carryScale;

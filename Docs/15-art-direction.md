@@ -8,7 +8,7 @@ Kolby is generating **proxy art** with an image generator. Proxy means placehold
 
 - AI art is fine for **placeholders and mood**. Real art comes later.
 - Every AI image gets a row in the **provenance log** ([asset-provenance.csv](asset-provenance.csv)): tool, model, prompt, date, what a human changed. Steam asks for disclosure of AI content that ships, and a "no AI" claim backfires if any visible asset looks generated (DinoBones, [competitive/15](competitive/15-refresh-2026-10-17.md)).
-- **Text is never drawn by the image tool.** Titles, letters, numbers, the checklist and Rufus's notes are drawn by the game or set in a font, because generators garble small text and the set letter is a sorting key.
+- **Text is never drawn by the image tool.** Titles, letters, numbers, the checklist and Wilfred's notes are drawn by the game or set in a font, because generators garble small text and the set letter is a sorting key.
 - No AI 3D meshes for books (file 26). 3D shapes come from Blender; AI helps with flat 2D pictures and neutral surface patterns only.
 - US copyright: raw prompt-only output is probably not protectable (file 26). Edit, crop, paint over or composite by hand so the shipped version has a human author, or keep AI work out of anything you want to own exclusively (the logo, the capsule).
 - Store page screenshots and key art must match the shipped game (Witch Cabin lost goodwill to mismatched trailer images).
@@ -17,9 +17,9 @@ Kolby is generating **proxy art** with an image generator. Proxy means placehold
 
 **The story takes place in 1947** **[confirm: whether the year is ever printed; I suggest it is not, and the game just says "after the war"]**. The building is an Edwardian town library, built about 1905. The town has little money, so the library was fitted out in the 1910s and 1920s and has run on those fittings, mended again and again, ever since. **Nothing in the frame may be newer than about 1930.** Nothing from the 1950s, and no postwar tech or design.
 
-Why 1947, and why old things: Rufus has been head librarian for over thirty years (since about 1915), so the library is the world he built before and through both wars. A town that kept the Lamp going through thrift, rationing and patience is the right place for a story about mending, patience and passing a craft on. The wars are never shown. They are felt only as thrift: string saved, wrapping reused, spines mended, things kept going.
+Why 1947, and why old things: Wilfred has been head librarian for over thirty years (since about 1915), so the library is the world he built before and through both wars. A town that kept the Lamp going through thrift, rationing and patience is the right place for a story about mending, patience and passing a craft on. The wars are never shown. They are felt only as thrift: string saved, wrapping reused, spines mended, things kept going.
 
-**Timeline for consistency (derived from the story; adjust freely):** Rufus is born about 1875, becomes head librarian about 1915, and dies in 1947 aged about 72. The first portrait is a studio photograph from about 1936 to 1938, when he was in his early 60s. The player's childhood job (age nine to fourteen) was in the 1930s or early 1940s.
+**Timeline for consistency (derived from the story; adjust freely):** Wilfred is born about 1875, becomes head librarian about 1915, and dies in 1947 aged about 72. The first portrait is a studio photograph from about 1936 to 1938, when he was in his early 60s. The player's childhood job (age nine to fourteen) was in the 1930s or early 1940s.
 
 ### 2.1 Period rules: what may and may not appear
 
@@ -73,7 +73,7 @@ Use a different medium per channel, but keep the same palette, light and period 
 |---|---|---|
 | **A. Game surfaces** (flat, neutral) | Book cover and spine textures, wood, plaster, floor tiles, paper, brass | Flat front-on swatches, tileable, even lighting, no perspective, no baked shadows, **light neutral tones that the game tints** (cover textures are MULTIPLY textures: light cloth about 0.94 with dark ink, per `tools/covers/README.md`) |
 | **B1. Mood and scene art** | Key art, room mood boards, menu and loading backgrounds, the ending image | Muted illustrated realism in the manner of mid-century book illustration: gouache and ink on textured paper, visible grain, soft but grounded, limited warm palette, aged paper tone. Not storybook-soft and not photographic |
-| **B2. Portraits** | Rufus, framed on the desk or wall | A period studio photograph: soft focus, sepia or silver-print tones, a painted backdrop, slight vignette, some cracking at the edge. **Riskier with AI** (faces show AI tells), so generate several and compare; the fallback is an ink-and-wash portrait with a sepia photo tone **[confirm]** |
+| **B2. Portraits** | Wilfred, framed on the desk or wall | A period studio photograph: soft focus, sepia or silver-print tones, a painted backdrop, slight vignette, some cracking at the edge. **Riskier with AI** (faces show AI tells), so generate several and compare; the fallback is an ink-and-wash portrait with a sepia photo tone **[confirm]** |
 | **B3. Emblems, bookplates, diagrams** | Series emblems, bookplates, handbook diagrams, the notice header | Copperplate engraving: fine cross-hatching, ink on cream paper. Engraving was still the standard for bookplates and trade ephemera, so it is period-correct |
 | **C. UI and icons** | Find icons, title cards, handbook pages, door-notice paper | Same engraving and typewritten language, flat, one dark ink on cream, readable at 64 px |
 
@@ -125,7 +125,7 @@ Each series has a cover and a spine design (`tools/covers/`). A new series must 
 | MENDING | Repair and conservation | A needle, thread and bone folder |
 | VAULT | Rare and locked-away | A key and keyhole plate |
 
-### 7.3 The six finds (Rufus's working tools, installed at the desk)
+### 7.3 The six finds (Wilfred's working tools, installed at the desk)
 
 | Find | What it does | Where it goes | Period object |
 |---|---|---|---|
@@ -156,29 +156,29 @@ Every prompt below starts with the **master style block** from section 6. Paste 
 
 Run 8.1 to 8.3, choose the three best, then use them as style references below.
 
-### 8.4 Rufus: the portrait you knew (studio photograph)
+### 8.4 Wilfred: the portrait you knew (studio photograph)
 
-**Proposed design [confirm all]:** Rufus, early 60s in this portrait (taken about 1937), head librarian since 1915. Tall and long-limbed with a slight stoop from years leaning to low shelves. Silver-white hair, a bit untidy; thick white eyebrows; a neat white moustache, no beard. Round wire-rimmed spectacles, a pencil behind one ear. A grey wool waistcoat with a watch chain over a collarless shirt with sleeves rolled and held by sleeve garters, and a worn brown knit shawl-collar cardigan over the top; wool trousers held with braces. A ring of brass keys at his belt and a brass lamp-lighting taper tucked in his waistcoat pocket. His look is gentle, amused and a little shy, eyes crinkled, looking just off-camera as if listening. He is warm and quiet, not grand.
+**Proposed design [confirm all]:** Wilfred, early 60s in this portrait (taken about 1937), head librarian since 1915. Tall and long-limbed with a slight stoop from years leaning to low shelves. Silver-white hair, a bit untidy; thick white eyebrows; a neat white moustache, no beard. Round wire-rimmed spectacles, a pencil behind one ear. A grey wool waistcoat with a watch chain over a collarless shirt with sleeves rolled and held by sleeve garters, and a worn brown knit shawl-collar cardigan over the top; wool trousers held with braces. A ring of brass keys at his belt and a brass lamp-lighting taper tucked in his waistcoat pocket. His look is gentle, amused and a little shy, eyes crinkled, looking just off-camera as if listening. He is warm and quiet, not grand.
 
 > Vintage studio portrait photograph from the late 1930s, soft focus, sepia-toned silver print, painted studio backdrop, slight vignette, small cracks and wear at the edges. Half-length portrait of an elderly librarian: tall, kind face, silver-white untidy hair, thick white eyebrows, neat white moustache, round wire-rimmed spectacles, a pencil behind one ear, a worn knit cardigan over a grey wool waistcoat with a watch chain and a collarless shirt with sleeve garters, a ring of brass keys at his belt. Gentle, amused expression, eyes crinkled, looking slightly off to the side. No text, no caption. 4:5.
 >
 > Fallback if the faces look wrong: *Pen-and-ink and wash portrait with a sepia photograph tone, same subject, cream paper, vignette frame.*
 
-### 8.5 Rufus: the later portrait (he was ill)
+### 8.5 Wilfred: the later portrait (he was ill)
 
 > Vintage amateur snapshot photograph from the mid-1940s, slightly faded sepia print, a soft deckle edge. Same man as before: tall elderly librarian, now thinner and frailer, silver-white hair soft and thin, white moustache, round wire-rimmed spectacles, a scarf and the same worn cardigan loose on him, a pencil behind his ear, a thin tired smile. He sits in a worn leather armchair beside a small lamp, a book open on his knee. Tender and quiet, no hospital imagery, no dramatics. No text. 4:5.
 
 (One reference portrait on the desk or in the staff room can be the first image; the second belongs to the last note near the end, if the story uses it **[confirm]**.)
 
-### 8.6 Rufus: character reference sheet (for any later 2D or 3D work)
+### 8.6 Wilfred: character reference sheet (for any later 2D or 3D work)
 
 > Character reference sheet, three views (front, three-quarter, side) of the same elderly man, full body, neutral standing pose, plain cream background, muted gouache and ink illustration: tall, slight stoop, silver-white untidy hair, white moustache, round wire-rimmed spectacles, brown knit shawl-collar cardigan over a grey wool waistcoat with a watch chain, collarless shirt with sleeve garters, wool trousers with braces, worn leather shoes with thick soft soles, a ring of brass keys at the belt, a pencil behind one ear. No text, no labels.
 
-Keep Rufus off screen in the first-person game; he is present in objects, handwriting, portraits and the one or two illustrations. This sheet is for consistency only.
+Keep Wilfred off screen in the first-person game; he is present in objects, handwriting, portraits and the one or two illustrations. This sheet is for consistency only.
 
-### 8.7 Rufus's handwriting (not an image)
+### 8.7 Wilfred's handwriting (not an image)
 
-Rufus's notes and the paper tags on finds are **text set in a handwriting font**, not generated. Pick one handwriting face with an open licence (SIL OFL; verify the licence for the chosen face) in a **1920s schoolroom cursive or copperplate hand** (a dip-pen or fountain-pen look; no ballpoint-style marker handwriting) and use it for every note, tag and margin scribble. Ink: dark brown-black on yellowed cream, a little uneven.
+Wilfred's notes and the paper tags on finds are **text set in a handwriting font**, not generated. Pick one handwriting face with an open licence (SIL OFL; verify the licence for the chosen face) in a **1920s schoolroom cursive or copperplate hand** (a dip-pen or fountain-pen look; no ballpoint-style marker handwriting) and use it for every note, tag and margin scribble. Notes to the player are signed "Ned"; official papers (the door notice, the plaque) use "Wilfred" **[confirm]**. Ink: dark brown-black on yellowed cream, a little uneven.
 
 ### 8.8 The letter and the notice (props)
 
@@ -212,7 +212,7 @@ The game draws the checklist wording and the ticks.
 
 > Illustration of a small wooden hatch built into a plaster wall: brass hinges, a brass keyhole plate, a short hemp rope pulley beside it, the little door closed and slightly warped with age, paint chipped bottle-green, dim lamplight. Muted gouache and ink, no text.
 
-**What makes a find look like a find (applies to all six):** a small paper tag tied on with string (the game prints "For you" or a short note on it in Rufus's handwriting) and a faint warm glint of lamplight on brass or glass. That is the only visual signal. **No magical glow or sparkles**, because these are ordinary tools that Rufus left for you. The in-game "find easy to spot" highlight is backlog L-012.
+**What makes a find look like a find (applies to all six):** a small paper tag tied on with string (the game prints "For you" or a short note on it in Wilfred's handwriting) and a faint warm glint of lamplight on brass or glass. That is the only visual signal. **No magical glow or sparkles**, because these are ordinary tools that Wilfred left for you. The in-game "find easy to spot" highlight is backlog L-012.
 
 ### 8.15 Items in the library: cover and spine surfaces (Channel A)
 
@@ -276,7 +276,7 @@ Keep [asset-provenance.csv](asset-provenance.csv) up to date: one row per image 
 
 ## 11. Decisions for Kolby
 
-1. **Rufus:** keep this design, or change anything (age, hair, moustache, cardigan and waistcoat, spectacles)? He is entirely invented; confirm before any portrait is used.
+1. **Wilfred:** keep this design, or change anything (age, hair, moustache, cardigan and waistcoat, spectacles)? He is entirely invented; confirm before any portrait is used.
 2. **Is the year (1947) ever printed in the game,** or does it just say "after the war"? Keeping it unprinted leaves room for a period detail to be slightly off.
 3. **Portrait medium:** period photograph (more grounded, riskier with AI faces) or ink-and-wash with a sepia tone (safer).
 4. **A war trace:** none, or one faded blackout strip on a window?
@@ -284,4 +284,4 @@ Keep [asset-provenance.csv](asset-provenance.csv) up to date: one row per image 
 6. **Do patrons get portraits,** or only notes? (Open since the concept draft: D-003.)
 7. **Ability names:** rename Sister Glow, Home Beacon and Gather Family to librarian-craft names before UI art is drawn.
 8. **Doc 13:** update the Mailroom's "1960s annex" and the other period wording in the concept to match.
-9. **Later wings:** the concept's wings 4 to 7 predate the Rufus story; confirm names before generating their mood boards.
+9. **Later wings:** the concept's wings 4 to 7 predate the Wilfred story; confirm names before generating their mood boards.

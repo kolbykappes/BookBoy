@@ -9,6 +9,13 @@ grouped by commit date, not by hour.
 
 ---
 
+### 2026-10-19
+
+*Story and art direction (docs only)*
+- Setting fixed as autumn 1947: an Edwardian building furnished with worn 1910 to 1930 things, nothing newer than 1930 ([13](13-concept-draft-inherited-library.md), [15](15-art-direction.md)).
+- New art direction and AI prompt kit with period rules, palette, prompts for key art, the librarian, the library items and the six finds, and a provenance log ([15-art-direction.md](15-art-direction.md), [asset-provenance.csv](asset-provenance.csv)).
+- The uncle is renamed from Rufus to Wilfred; the player calls him Ned.
+
 ### 2026-10-18
 
 *Lamplit build (branch `lamplit/day-1`, plan: [14-build-plan.md](14-build-plan.md))*
@@ -67,7 +74,7 @@ grouped by commit date, not by hour.
   mechanical ladder and a time and item budget ([13-concept-draft-inherited-library.md](13-concept-draft-inherited-library.md)).
 - Build plan for Lamplit v2: the hub (a hallway with a desk) and Rooms 1 to 3, steps S0 to S9 with stop lines, a reuse map and
   a test script ([14-build-plan.md](14-build-plan.md)); backlog items L-000 to L-009.
-- Story settled (Docs/13, "Story decisions v2"): Lamplit, the Lamp, Uncle Rufus has died and left the library in disarray
+- Story settled (Docs/13, "Story decisions v2"): Lamplit, the Lamp, Uncle Wilfred has died and left the library in disarray
   as a test and training for you.
 - Scope clarification recorded in [../CLAUDE.md](../CLAUDE.md) and [02-mvp-spec.md](02-mvp-spec.md): the non-goals describe the
   prototype; the real game must save. Backlog updated (new F-010 and D-001 to D-005, settings research folded into F-004, F-003
