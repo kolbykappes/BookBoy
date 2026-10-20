@@ -660,6 +660,112 @@ public static partial class LamplitBuilder
         return "book assets set up: mesh " + (BookMesh() != null) + ", materials Mat_BookCover and Mat_BookPages; " + styled;
     }
 
+    // ---------------------------------------------------------------- finds with real models (apron, shoes): tools/blender/make_finds.py
+
+    private const string FindModelDir = "Assets/_Project/Art/Models";
+    private const string FindTexDir = "Assets/_Project/Art/Textures/Finds";
+
+    /// <summary>A find's model: the mesh (normalised to a unit box, like the tomes), its materials in slot order, its real size in the book's axes (x thickness, y length, z width)
+    /// and the poses it rests in on the table and hangs or stands in at the desk.</summary>
+    public sealed class FindModel
+    {
+        public Mesh Mesh;
+        public Material[] Materials;
+        public Vector3 Size;
+        public Vector3 TableEuler;
+        public Vector3 HangEuler;
+    }
+
+    // id -> (file, scale from the modelled size, table pose, hang pose). The models lie flat (x up); see make_finds.py.
+    private static readonly Dictionary<string, (string file, float scale, Vector3 table, Vector3 hang)> FindModelTable = new Dictionary<string, (string, float, Vector3, Vector3)>
+    {
+        { "apron", ("Find_Apron", 0.85f, new Vector3(0f, 0f, 90f), new Vector3(0f, -90f, 0f)) },    // flat on the table with the face up; hung with the face toward the player
+        { "shoes", ("Find_Shoes", 0.92f, new Vector3(0f, 200f, 90f), new Vector3(0f, 115f, 90f)) },  // standing on their soles, toes toward the player at the desk
+    };
+
+    private static readonly string[] ApronMaterials = { "Canvas", "Pocket", "Leather", "Brass", "Tape", "Paper", "Patch" };
+    private static readonly string[] ShoeMaterials = { "Leather", "Felt", "Lining", "Brass", "Lace", "Paper", "LeatherDark" };
+
+    /// <summary>Imports the apron and shoe models and their textures and makes the Mat_Find_* materials. Missing files are skipped (those finds stay cubes).</summary>
+    public static string SetupFindAssets()
+    {
+        foreach (var kv in FindModelTable)
+        {
+            var model = AssetImporter.GetAtPath(FindModelDir + "/" + kv.Value.file + ".fbx") as ModelImporter;
+            if (model == null) continue;
+            model.globalScale = 1f;
+            model.useFileScale = true;
+            model.materialImportMode = ModelImporterMaterialImportMode.None;
+            model.importNormals = ModelImporterNormals.Import;
+            model.importTangents = ModelImporterTangents.CalculateMikk;
+            model.isReadable = true;   // the hover outline builds a smoothed-normal hull from it
+            model.addCollider = false;
+            model.meshCompression = ModelImporterMeshCompression.Off;
+            model.importBlendShapes = false;
+            model.importCameras = false;
+            model.importLights = false;
+            model.animationType = ModelImporterAnimationType.None;
+            model.SaveAndReimport();
+        }
+
+        foreach (string tex in new[] { "Canvas", "Leather", "Felt", "Linen", "Paper" })
+        {
+            var ti = AssetImporter.GetAtPath(FindTexDir + "/T_Find_" + tex + ".png") as TextureImporter;
+            if (ti == null) continue;
+            ti.textureType = TextureImporterType.Default;
+            ti.sRGBTexture = true;
+            ti.wrapMode = TextureWrapMode.Repeat;
+            ti.mipmapEnabled = true;
+            ti.anisoLevel = 8;
+            ti.textureCompression = TextureImporterCompression.CompressedHQ;
+            ti.SaveAndReimport();
+        }
+
+        Material Make(string name, string tex, Color tint, float smooth, float metallic = 0f)
+        {
+            var m = EnsureMat("Mat_Find_" + name, tint, smooth, metallic);
+            m.SetTexture("_BaseMap", string.IsNullOrEmpty(tex) ? null : AssetDatabase.LoadAssetAtPath<Texture2D>(FindTexDir + "/T_Find_" + tex + ".png"));
+            EditorUtility.SetDirty(m);
+            return m;
+        }
+
+        Make("Canvas", "Canvas", new Color(0.80f, 0.80f, 0.86f), 0.08f);
+        Make("Pocket", "Canvas", new Color(1.0f, 1.0f, 1.0f), 0.08f);
+        Make("Leather", "Leather", Color.white, 0.38f);
+        Make("LeatherDark", "Leather", new Color(0.50f, 0.46f, 0.44f), 0.34f);
+        Make("Lining", "Leather", new Color(0.18f, 0.16f, 0.15f), 0.2f);
+        Make("Felt", "Felt", Color.white, 0.03f);
+        Make("Tape", "Linen", new Color(0.86f, 0.80f, 0.68f), 0.05f);
+        Make("Lace", "Linen", new Color(0.92f, 0.86f, 0.72f), 0.05f);
+        Make("Patch", "Linen", new Color(0.78f, 0.55f, 0.26f), 0.05f);
+        Make("Paper", "Paper", Color.white, 0.04f);
+        Make("Brass", null, new Color(0.80f, 0.58f, 0.24f), 0.55f, 0.8f);
+        AssetDatabase.SaveAssets();
+        return "find assets set up";
+    }
+
+    /// <summary>The model of a find with a real model, or null (a cube proxy). Needs SetupFindAssets and tools/blender/find_dims.json.</summary>
+    public static FindModel LoadFindModel(string findId)
+    {
+        if (!FindModelTable.TryGetValue(findId, out var row)) return null;
+        string path = FindModelDir + "/" + row.file + ".fbx";
+        Mesh mesh = null;
+        foreach (var o in AssetDatabase.LoadAllAssetsAtPath(path)) if (o is Mesh m) mesh = m;
+        if (mesh == null) return null;
+
+        string json = System.IO.Path.Combine(Application.dataPath, "../tools/blender/find_dims.json");
+        if (!System.IO.File.Exists(json)) return null;
+        var match = System.Text.RegularExpressions.Regex.Match(System.IO.File.ReadAllText(json), "\"" + row.file + "\"\\s*:\\s*\\[\\s*([0-9.eE+-]+)\\s*,\\s*([0-9.eE+-]+)\\s*,\\s*([0-9.eE+-]+)");
+        if (!match.Success) return null;
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        var size = new Vector3(float.Parse(match.Groups[1].Value, ci), float.Parse(match.Groups[2].Value, ci), float.Parse(match.Groups[3].Value, ci)) * row.scale;
+
+        string[] names = findId == "apron" ? ApronMaterials : ShoeMaterials;
+        var mats = new Material[names.Length];
+        for (int i = 0; i < names.Length; i++) mats[i] = LoadMat("Mat_Find_" + names[i]);
+        return new FindModel { Mesh = mesh, Materials = mats, Size = size, TableEuler = row.table, HangEuler = row.hang };
+    }
+
     public const string StyledBookModelPath = "Assets/_Project/Art/Models/Book_TomeStyled.fbx";
     private const string CoverTexDir = "Assets/_Project/Art/Textures/Books/Covers";
 
@@ -738,7 +844,7 @@ public static partial class LamplitBuilder
 
     /// <summary>One sortable item: a Book (the tome mesh: a hardcover with a rounded spine and a page block) with a letter (the group's symbol) and,
     /// for numbered sets, a number on its spine. useBookMesh = false keeps a plain cube (the finds are not books).</summary>
-    public static Book Item(Transform parent, string name, BookDefinition def, Vector3 size, bool showNumber, bool useBookMesh = true)
+    public static Book Item(Transform parent, string name, BookDefinition def, Vector3 size, bool showNumber, bool useBookMesh = true, FindModel findModel = null)
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
@@ -752,7 +858,13 @@ public static partial class LamplitBuilder
             styledMesh = null;
         }
 
-        if (styledMesh != null)
+        if (findModel != null)
+        {
+            mesh = findModel.Mesh;
+            go.GetComponent<MeshFilter>().sharedMesh = findModel.Mesh;
+            go.GetComponent<MeshRenderer>().sharedMaterials = findModel.Materials;
+        }
+        else if (styledMesh != null)
         {
             mesh = styledMesh;
             go.GetComponent<MeshFilter>().sharedMesh = styledMesh;
@@ -775,6 +887,11 @@ public static partial class LamplitBuilder
         book.ApplyColor();
 
         // the spine has three plates (tools/blender/make_book_textures.py): icon on top, the set letter in the middle, the volume number at the bottom
+        if (findModel != null)
+        {
+            return book;   // a find with a real model has no spine labels
+        }
+
         if (styledMesh != null)
         {
             return book;   // the printed spine carries the icon, the title and the volume number; no pixel labels

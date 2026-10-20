@@ -44,4 +44,13 @@ public class BookDefinition : ScriptableObject
 
     [Tooltip("Set for a find (apron, shoes, ...): the id in CampaignCatalog. Finds are carried to the desk, never shelved.")]
     public string findId = "";
+
+    [Tooltip("A find with a real model: Euler angles of the pose it rests in on the find table (the model is built lying flat like a book: x up). Zero = no model.")]
+    public Vector3 tableEuler;
+
+    [Tooltip("A find with a real model: Euler angles of the pose it hangs or stands in at the desk and in the discovery dialog (its front toward +z, the player).")]
+    public Vector3 hangEuler;
+
+    [Tooltip("Show the discovery dialog (a turning 3D view, how it helped Uncle Archie, what it gives) the first time this find is picked up.")]
+    public bool discoveryDialog;
 }

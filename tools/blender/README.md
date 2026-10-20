@@ -28,3 +28,14 @@ blender -b --factory-startup --python-exit-code 3 -P tools/blender/make_cases.py
 - `make_wood_textures.py` writes a tileable procedural wood (rings, pores, fibres; 0.6 m per tile). Materials `Mat_CaseWood`, `Mat_CaseBack` and `Mat_CaseBrass` are created by `SetupCaseAssets()`.
 - Check: `unity command eval_file tools/verify_case_mesh.cs` (width, front toward -z, height under the ceiling, board tops at the shelf heights, three submeshes).
 - Axis note: as for the book, export `axis_forward='Z'`, `axis_up='Y'` and use Convert Units; the front (-Y in Blender) ends up toward Unity -z.
+
+## The finds: apron and shoes (2026-10-19)
+
+```
+blender -b --factory-startup --python-exit-code 3 -P tools/blender/make_finds.py -- C:/Code/BookBoy/Assets/_Project/Art/Models C:/Code/BookBoy/tools/blender/finds_preview
+python tools/blender/make_find_textures.py C:/Code/BookBoy/Assets/_Project/Art/Textures/Finds
+```
+
+- `make_finds.py` builds the apron (canvas twill, leather-bound patch pockets, mended patches, brass buttons, linen tapes, a paper tag on string) and the pair of mended leather shoes with felt soles (laces, eyelets, collar, tag) at real size, lying flat like a book (x thickness / up), normalises each to a unit box and writes `find_dims.json` (real sizes in Unity axes). 7 materials each, in slot order (apron: canvas, pocket, leather, brass, tape, paper, patch; shoes: leather, felt, lining, brass, lace, paper, dark leather). The script sorts the faces by material, because the importer builds submeshes in order of first use and the bevel scrambles the face order.
+- `make_find_textures.py` writes five tileable surfaces (canvas twill, leather, felt, linen, paper); the `Mat_Find_*` materials tint them.
+- After either script run `LamplitBuilder.SetupFindAssets()`, then `BuildHub()` and `BuildRoom1()`. Check: `tools/verify_find_meshes.cs`. Quick looks: `tools/blender/finds_preview/` (Workbench renders) and `tools/finds_preview/` (in-engine).

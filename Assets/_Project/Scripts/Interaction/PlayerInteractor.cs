@@ -198,7 +198,7 @@ public class PlayerInteractor : MonoBehaviour
         _litBook = bookToLight;
         if (_litBook != null)
         {
-            _litBook.SetFocused(true, Carry.IsFull);   // grey when the hands are full
+            _litBook.SetFocused(true, Carry.IsFull && !Collectible(_litBook));   // grey when the hands are full
         }
 
         ShelfSlot slotToLight = _focusedSlot;
@@ -219,7 +219,7 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        if (_focusedBook != null && Carry.IsFull)
+        if (_focusedBook != null && Carry.IsFull && !Collectible(_focusedBook))
         {
             crosshair.SetState(Crosshair.State.Blocked);
         }
@@ -310,7 +310,7 @@ public class PlayerInteractor : MonoBehaviour
         }
         else if (_focusedBook != null)
         {
-            SetPrompt(DisplayName(_focusedBook), Carry.IsFull
+            SetPrompt(DisplayName(_focusedBook), Collectible(_focusedBook) ? "Press (E) or click to take it" : Carry.IsFull
                 ? (Time.unscaledTime < _fullNoticeUntil
                     ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")  -  put a book down first"
                     : "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")")
@@ -407,7 +407,7 @@ public class PlayerInteractor : MonoBehaviour
         {
             Campaign?.InstallHeld(_focusedSpot, Carry);
         }
-        else if (_focusedBook != null && !Carry.IsFull)
+        else if (_focusedBook != null && (!Carry.IsFull || Collectible(_focusedBook)))
         {
             PickUp(_focusedBook);
         }
@@ -438,8 +438,19 @@ public class PlayerInteractor : MonoBehaviour
     /// <summary>True while the "hands full" notice is showing (tests and tools).</summary>
     public bool HandsFullNoticeShowing => Time.unscaledTime < _fullNoticeUntil;
 
+    /// <summary>A find with a real model (the apron, the shoes) is taken, not carried: it goes straight to its place at the desk and works at once.</summary>
+    private static bool Collectible(Book book)
+    {
+        return book != null && book.IsFind && book.definition != null && book.definition.discoveryDialog;
+    }
+
     public bool PickUp(Book book)
     {
+        if (Collectible(book) && Campaign != null)
+        {
+            return Campaign.CollectFind(book);
+        }
+
         bool picked = Carry.TryPickUp(book);
         if (picked)
         {

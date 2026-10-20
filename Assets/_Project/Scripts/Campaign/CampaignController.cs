@@ -267,7 +267,7 @@ public class CampaignController : MonoBehaviour
         Transform parent = spot.anchor != null ? spot.anchor : spot.transform;
         t.SetParent(parent, false);
         t.localPosition = Vector3.zero;
-        t.localRotation = Quaternion.identity;
+        t.localRotation = book.definition != null && book.definition.hangEuler != Vector3.zero ? Quaternion.Euler(book.definition.hangEuler) : Quaternion.identity;
         Vector3 ps = parent.lossyScale;   // the desk spots are built at world scale: keep the find its real size, not scaled again
         t.localScale = new Vector3(realSize.x / ps.x, realSize.y / ps.y, realSize.z / ps.z);
         Collider c = book.GetComponent<Collider>();
@@ -299,8 +299,33 @@ public class CampaignController : MonoBehaviour
         if (book != null && book.IsFind && State.MarkFound(book.definition.findId))
         {
             _progress?.RaiseChanged();
+            FindDiscovered?.Invoke(CampaignCatalog.FindById(book.definition.findId), book);
         }
     }
+
+    /// <summary>A find with a real model (apron, shoes) is not carried: the player takes it, it is put to use at once (installed at its desk spot, the boost applies) and the
+    /// discovery dialog tells the story. Returns false if it is already installed.</summary>
+    public bool CollectFind(Book book)
+    {
+        if (book == null || !book.IsFind)
+        {
+            return false;
+        }
+
+        string id = book.definition.findId;
+        bool first = State.MarkFound(id);
+        bool installed = InstallFind(id);
+        if (first)
+        {
+            _progress?.RaiseChanged();
+            FindDiscovered?.Invoke(CampaignCatalog.FindById(id), book);
+        }
+
+        return installed || first;
+    }
+
+    /// <summary>Raised the first time the player picks a find up (the discovery dialog listens).</summary>
+    public event System.Action<FindDef, Book> FindDiscovered;
 
     public Book FindBook(string findId)
     {
@@ -429,7 +454,14 @@ public class CampaignController : MonoBehaviour
 
         book.StopPhysicsTumble();
         book.transform.SetParent(null, true);
-        if (spot != null)
+        if (spot != null && book.definition != null && book.definition.tableEuler != Vector3.zero)
+        {
+            // a find with a real model rests in its table pose, its underside on the table
+            Quaternion rot = Quaternion.Euler(book.definition.tableEuler);
+            Vector3 world = rot * book.transform.localScale;
+            book.transform.SetPositionAndRotation(spot.position + Vector3.up * (Mathf.Abs(world.y) * 0.5f), rot);
+        }
+        else if (spot != null)
         {
             book.transform.SetPositionAndRotation(spot.position, spot.rotation);
         }
@@ -495,6 +527,15 @@ public class CampaignController : MonoBehaviour
 
         if (_interactor.Carry.Contains(book))
         {
+            return true;
+        }
+
+        if (book.definition != null && book.definition.discoveryDialog)
+        {
+            // a find with a real model is never carried: it goes straight to its place at the desk (no dialog from the admin menu)
+            State.MarkFound(findId);
+            InstallFind(findId);
+            _progress?.RaiseChanged();
             return true;
         }
 

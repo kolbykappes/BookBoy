@@ -133,7 +133,7 @@ public static partial class LamplitBuilder
             {
                 case "apron_hook":
                     Cube("Post", go.transform, new Vector3(0f, 0.3f, 0.12f), new Vector3(0.03f, 0.5f, 0.03f), brass, false);
-                    Cube("Hook", go.transform, new Vector3(0f, 0.52f, 0.06f), new Vector3(0.03f, 0.03f, 0.14f), brass, false);
+                    Cube("Hook", go.transform, new Vector3(0f, 0.52f, 0.11f), new Vector3(0.03f, 0.03f, 0.22f), brass, false);   // a peg long enough for the apron's neck loop to hang from
                     break;
                 case "shoe_rack":
                     Cube("Rack", go.transform, new Vector3(0f, 0.1f, 0f), new Vector3(0.3f, 0.04f, 0.3f), brass, false);
@@ -153,6 +153,10 @@ public static partial class LamplitBuilder
                     Cube("Padlock", go.transform, new Vector3(0f, 0.22f, 0.04f), new Vector3(0.06f, 0.08f, 0.03f), brass, false);
                     break;
             }
+
+            // where the installed find sits (the apron hangs from the peg, the shoes stand on the rack; see LamplitBuilder.Common.FindModelTable)
+            if (ids[i] == "apron_hook") anchor.localPosition = new Vector3(0f, 0.28f, 0.19f);
+            else if (ids[i] == "shoe_rack") anchor.localPosition = new Vector3(0f, 0.17f, 0f);
 
             Sign(spotRoot, "Label_" + ids[i], new Vector3(xs[i], 1.75f, 0.85f), Vector3.forward, new Vector2(0.44f, 0.28f), signs[i], new Color(0.84f, 0.70f, 0.40f), 60);
         }

@@ -139,6 +139,27 @@ public static partial class LamplitBuilder
         def.symbol = "";
         def.spineColor = color;
         EditorUtility.SetDirty(def);
+        var model = LoadFindModel(findId);
+        if (model != null)
+        {
+            // a real model (apron, shoes): built lying flat like a book, resting on the table in its table pose
+            def.spineColor = Color.white;
+            def.tableEuler = model.TableEuler;
+            def.hangEuler = model.HangEuler;
+            def.discoveryDialog = true;
+            EditorUtility.SetDirty(def);
+            Vector3 real = model.Size * WorldScale;
+            var modelBook = Item(parent, "Find_" + findId, def, real, false, false, model);
+            Quaternion rot = Quaternion.Euler(model.TableEuler);
+            Vector3 world = rot * real;
+            modelBook.transform.SetPositionAndRotation(hideSpot.position + Vector3.up * (Mathf.Abs(world.y) * 0.5f), rot);
+            return modelBook;
+        }
+
+        def.tableEuler = Vector3.zero;
+        def.hangEuler = Vector3.zero;
+        def.discoveryDialog = false;
+        EditorUtility.SetDirty(def);
         size *= WorldScale;
         var book = Item(parent, "Find_" + findId, def, size, false, false);
         book.transform.SetPositionAndRotation(hideSpot.position + Vector3.up * (size.y * 0.5f), Quaternion.Euler(0f, 180f, 0f));
@@ -161,6 +182,7 @@ public static partial class LamplitBuilder
         RequireLamplitScene();
         SetupBookAssets();
         SetupCaseAssets();
+        SetupFindAssets();
         var s = Spec(1);
         var root = BuildShell(s);
         var zone = root.GetComponent<RoomZone>();

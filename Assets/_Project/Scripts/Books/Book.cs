@@ -458,9 +458,15 @@ public class Book : MonoBehaviour
         }
 
         _propertyBlock ??= new MaterialPropertyBlock();
+        // A find with a real model (apron, shoes) has several materials of its own and takes no tint.
+        if (IsFind && bookRenderer.sharedMaterials.Length > 1)
+        {
+            return;
+        }
+
         // A styled tome has three materials (boards, pages, spine): the boards and the spine take the set's colour, and the spine also picks its volume cell
         // out of the eight-cell spine atlas.
-        if (bookRenderer.sharedMaterials.Length == 3)
+        if (bookRenderer.sharedMaterials.Length == 3 && definition != null && definition.coverStyle >= 0)
         {
             int volume = Mathf.Clamp(NumberKey, 1, 8);
             _propertyBlock.Clear();

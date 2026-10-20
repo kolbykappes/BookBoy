@@ -32,8 +32,8 @@ Check("scatter this room: items loose again, but it stays tidy", Do(2) && Loose(
 Check("reset this room: items loose and the room is no longer tidy (door 2 shuts)", Do(0) && Loose(cc.Room(1)) && !cc.State.IsRoomFinished(1) && !cc.State.IsDoorOpen(2));
 
 // ---- give / install finds ----
-Check("give the apron: it is in the hands and counted as found", Do(8) && carry.Contains(cc.FindBook("apron")) && cc.State.IsFound("apron"));
-Check("install the apron from the menu: capacity 6, hands empty", Do(13) && cc.State.IsInstalled("apron") && carry.Capacity == 6 && !carry.Contains(cc.FindBook("apron")));
+Check("give the apron: it goes straight to its hook (never in the hands), counted as found and installed", Do(8) && !carry.Contains(cc.FindBook("apron")) && cc.State.IsFound("apron") && cc.State.IsInstalled("apron") && carry.Capacity == 6);
+Check("install the apron from the menu when it is already there: still capacity 6, hands empty", cc.State.IsInstalled("apron") && carry.Capacity == 6 && !carry.Contains(cc.FindBook("apron")));
 Check("an installed find cannot be given again", !Do(8));
 Check("install the shoes: speed up", Do(14) && cc.State.IsInstalled("shoes"));
 Check("the install row says [installed] afterwards", ui.RowText(13).Contains("[installed]") && ui.RowText(14).Contains("[installed]") && !ui.RowText(15).Contains("[installed]"));

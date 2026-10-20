@@ -42,6 +42,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Real models for the apron and the shoes (Blender, procedural textures) on the find table and at the desk (apron on the hook, shoes on the rack). They are taken, not carried: taking one installs it at once, and the first time a parchment dialog with a turning 3D view tells how it helped Uncle Archie and what it gives.
 - The held stack now moves with the view (Librarian-style: low right corner at a level gaze or looking up, rising when looking down) and shrinks toward the eye near bookcases, so it is visible at every shelf height and never clips; Cinemachine near plane 0.1.
 - Held stack lowered and fanned so it visibly builds as books are picked up (newest on top, the wheel glides the order); hands-full reaction: grey reticle and grey hover outline, and a refused pick-up shakes the reticle and the stack and says so in the prompt.
 - Hover highlight reworked: a crisp warm-white outline (screen-pixel width, smoothed-normal hull, bloom glow, dark underlay) instead of the yellow glow with sparkles; the placement ghost is now a hologram (rim, rising band) inside a grade-coloured outline (T-013, research file 29).

@@ -28,6 +28,25 @@ namespace BookBoy.Tests
         }
 
         [Test]
+        public void EveryFindHasATitleAStoryAndAHint_InThePlayersVoice_WithNothingAfter1947()
+        {
+            string[] anachronisms = { "plastic", "zip", "nylon", "ballpoint", "radio", "television", "magic", "spell" };
+            foreach (FindDef f in CampaignCatalog.Finds)
+            {
+                Assert.IsNotEmpty(f.Title, f.Id + " needs a title");
+                Assert.IsTrue(f.Title.StartsWith("Uncle Archie's"), f.Id + " title: " + f.Title);
+                Assert.GreaterOrEqual(f.Story.Length, 80, f.Id + " story is too short");
+                Assert.LessOrEqual(f.Story.Length, 360, f.Id + " story is too long for the dialog");
+                Assert.IsNotEmpty(f.Hint, f.Id + " needs a hint");
+                Assert.IsNotEmpty(f.Effect, f.Id + " needs a benefit line");
+                foreach (string bad in anachronisms)
+                {
+                    Assert.IsFalse((f.Story + " " + f.Hint).ToLowerInvariant().Contains(bad), f.Id + " mentions " + bad);
+                }
+            }
+        }
+
+        [Test]
         public void TheSixDeskEffects_Apron_Shoes_Glasses_ShelfList_PullList_AndTheLockedDumbwaiter()
         {
             Assert.AreEqual(5, CampaignCatalog.Finds.Count);

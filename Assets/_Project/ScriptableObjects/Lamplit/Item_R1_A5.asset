@@ -27,3 +27,6 @@ MonoBehaviour:
   coverStyle: 0
   symbol: A
   findId: 
+  tableEuler: {x: 0, y: 0, z: 0}
+  hangEuler: {x: 0, y: 0, z: 0}
+  discoveryDialog: 0

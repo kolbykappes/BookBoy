@@ -95,6 +95,35 @@ public class GameUI : MonoBehaviour
     private CameraLookBridge _lookBridge;
     private StarterAssetsInputs _inputs;
 
+    /// <summary>True while a modal card (the find discovery dialog) has paused the game.</summary>
+    public bool ModalOpen { get; private set; }
+
+    /// <summary>Pauses the game for a modal card: the HUD is hidden, the player cannot move or interact, time stops. Menus cannot be opened meanwhile.</summary>
+    public void BeginModal()
+    {
+        if (ModalOpen)
+        {
+            return;
+        }
+
+        ModalOpen = true;
+        SetHudVisible(false);
+        SetGameplayActive(false);
+    }
+
+    /// <summary>Ends <see cref="BeginModal"/>: the HUD comes back and play resumes.</summary>
+    public void EndModal()
+    {
+        if (!ModalOpen)
+        {
+            return;
+        }
+
+        ModalOpen = false;
+        SetHudVisible(true);
+        SetGameplayActive(true);
+    }
+
     public bool MenuOpen => _menu != Menu.None;
     public bool UpgradesOpen => _menu == Menu.Upgrades;
     public bool FindsOpen => _menu == Menu.Finds;
@@ -145,6 +174,11 @@ public class GameUI : MonoBehaviour
         BuildHud(canvas);
         BuildMenu(canvas);
         BuildPointer(canvas);
+
+        if (GetComponent<FindDialog>() == null)
+        {
+            gameObject.AddComponent<FindDialog>();   // the discovery card for the apron and the shoes
+        }
 
         if (_progress != null)
         {
@@ -597,7 +631,8 @@ public class GameUI : MonoBehaviour
         index -= heads;
         if (index < finds)
         {
-            return "Give the " + CampaignCatalog.Finds[index].Name.ToLowerInvariant() + " (into your hands)";
+            string gid = CampaignCatalog.Finds[index].Id;
+            return "Give the " + CampaignCatalog.Finds[index].Name.ToLowerInvariant() + (gid == "apron" || gid == "shoes" ? " (straight to its place at the desk)" : " (into your hands)");
         }
 
         index -= finds;
@@ -860,7 +895,7 @@ public class GameUI : MonoBehaviour
         }
 
         Keyboard kb = Keyboard.current;
-        if (kb == null)
+        if (kb == null || ModalOpen)
         {
             return;
         }

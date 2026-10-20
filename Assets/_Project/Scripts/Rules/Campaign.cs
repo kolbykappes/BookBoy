@@ -6,8 +6,11 @@ namespace BookBoy.Rules
     /// <summary>A find hidden in a room that is carried to the desk and installed in its own spot, switching an ability or boost on.</summary>
     public sealed class FindDef
     {
-        public FindDef(string id, string name, string spotId, int room, string[] grants, string effect)
+        public FindDef(string id, string name, string spotId, int room, string[] grants, string effect, string title = "", string story = "", string hint = "")
         {
+            Title = string.IsNullOrEmpty(title) ? name : title;
+            Story = story ?? "";
+            Hint = hint ?? "";
             Id = id;
             Name = name;
             SpotId = spotId;
@@ -29,6 +32,15 @@ namespace BookBoy.Rules
         public string[] Grants { get; }
 
         public string Effect { get; }
+
+        /// <summary>The heading of the discovery dialog ("Uncle Archie's apron").</summary>
+        public string Title { get; }
+
+        /// <summary>A few lines in the player's voice: how the find helped Uncle Archie (warm and quiet, autumn 1947, no magic).</summary>
+        public string Story { get; }
+
+        /// <summary>What to do with it ("You tie it on. It will be waiting on its hook at the desk.").</summary>
+        public string Hint { get; }
     }
 
     public enum InstallResult
@@ -56,11 +68,26 @@ namespace BookBoy.Rules
 
         public static readonly IReadOnlyList<FindDef> Finds = new List<FindDef>
         {
-            new FindDef("apron", "Apron", "apron_hook", 1, new[] { "arms1", "arms2" }, "Carry 2 more books"),
-            new FindDef("shoes", "Soft-soled shoes", "shoe_rack", 1, new[] { "feet1" }, "Move 15% faster"),
-            new FindDef("glasses", "Reading glasses", "glasses_stand", 2, new[] { "glow" }, "Sister Glow (G): matching items glow"),
-            new FindDef("shelflist", "Shelf list", "shelf_list_board", 2, new[] { "beacon" }, "Home Beacon (B): the right shelf glows"),
-            new FindDef("pulllist", "Pull list", "clipboard", 3, new[] { "gather" }, "Gather Family (C): pulls matching items to you"),
+            new FindDef("apron", "Apron", "apron_hook", 1, new[] { "arms1", "arms2" }, "Carry 2 more books",
+                "Uncle Archie's apron",
+                "Heavy canvas, patched so many times there is more mending than apron. Thirty years of returns went through those pockets, and he never once made a second trip to the cart. He used to say a librarian who carries one book at a time is only walking.",
+                "You tie it on. It will be waiting on its hook at the desk."),
+            new FindDef("shoes", "Soft-soled shoes", "shoe_rack", 1, new[] { "feet1" }, "Move 15% faster",
+                "Uncle Archie's felt-soled shoes",
+                "He had them resoled every winter so the reading room never heard him coming, and the floorboards never once complained. A quiet step is a quick step when you know where everything lives. They are a size too big for me. They will do.",
+                "You lace them up. They will be waiting on the shoe rack at the desk."),
+            new FindDef("glasses", "Reading glasses", "glasses_stand", 2, new[] { "glow" }, "Sister Glow (G): matching items glow",
+                "Uncle Archie's reading glasses",
+                "Round wire spectacles with a little brass magnifier that folds down. He could pick one cloth spine out of a wall of them from across the room, and I never learned how.",
+                "Stand them on the glasses stand at the desk."),
+            new FindDef("shelflist", "Shelf list", "shelf_list_board", 2, new[] { "beacon" }, "Home Beacon (B): the right shelf glows",
+                "Uncle Archie's shelf list",
+                "A narrow oak tray of index cards in shelf order, held by a brass rod. Whatever you were holding, he could tell you where it lived without looking up.",
+                "Hang it on the shelf-list board at the desk."),
+            new FindDef("pulllist", "Pull list", "clipboard", 3, new[] { "gather" }, "Gather Family (C): pulls matching items to you",
+                "Uncle Archie's pull list",
+                "A long ruled slip on a thin board, with a pencil on a string. He wrote down what a reader needed and the whole family of books came off the shelves at once.",
+                "Clip it to the clipboard at the desk."),
         };
 
         public static FindDef FindById(string id)
