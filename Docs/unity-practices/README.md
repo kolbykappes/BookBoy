@@ -39,6 +39,7 @@ and several items need approval under the CLAUDE.md guardrails (`ProjectSettings
 | 25 | [25-steam-release-path-for-a-small-unity-game.md](25-steam-release-path-for-a-small-unity-game.md) | $100/app, 30-day wait, Coming Soon >= 14 days, June Next Fest, AI disclosure, Runtime Fee cancelled, Steamworks.NET behind an interface, genre price $4.99-$5.99 |
 | 26 | [26-ai-assisted-book-models-and-materials.md](26-ai-assisted-book-models-and-materials.md) | Generate the mesh in C#, not with AI; CC0/procedural covers first; keep spine letters game-drawn; Steam disclosure; books already use MaterialPropertyBlock (outside SRP Batcher); conflicts with backlog D-005 |
 | 27 | [27-adult-scale-cozy-rooms-and-readable-items.md](27-adult-scale-cozy-rooms-and-readable-items.md) | 1.6x + 1.15 m eye made ceiling 2.6x eye height; readability = screen fraction (16-23%), not world size; proposed 1.0x numbers (eye 1.65, ceiling 2.6, FOV 65v, door 1.1x2.2) |
+| 29 | [29-hover-outline-and-placement-ghost.md](29-hover-outline-and-placement-ghost.md) | Inverted hull with smoothed normals and clip-space pixel width (no renderer feature); depth pull so neighbours do not hide it; Librarian look: crisp white line for hover, edge-lit hologram ghost |
 
 ## Where the research contradicts what the project does or what was said earlier
 

@@ -532,27 +532,43 @@ public static partial class LamplitBuilder
         return "wrote " + path;
     }
 
-    /// <summary>The transparent unlit material the placement ghost is tinted from (Mat_SlotGhost). Created or updated in place.</summary>
+    /// <summary>The ghost's see-through body (Mat_SlotGhost, shader BookBoy/BookGhost: fresnel rim and a rising light band). Created or updated in place.</summary>
     public static Material EnsureGhostMaterial()
     {
-        const string path = MatDir + "/Mat_SlotGhost.mat";
+        return EnsureShaderMaterial("Mat_SlotGhost", "BookBoy/BookGhost", m =>
+        {
+            m.SetColor("_Color", new Color(0.25f, 1f, 0.35f, 1f));
+            m.SetFloat("_Fill", 0.16f);
+            m.SetFloat("_Rim", 1.1f);
+            m.SetFloat("_Band", 0.25f);
+        });
+    }
+
+    /// <summary>The ghost's crisp outline (Mat_SlotGhostOutline, shader BookBoy/BookOutline: an inverted hull in the grade colour).</summary>
+    public static Material EnsureGhostOutlineMaterial()
+    {
+        return EnsureShaderMaterial("Mat_SlotGhostOutline", "BookBoy/BookOutline", m =>
+        {
+            m.SetColor("_Color", new Color(0.25f, 1f, 0.35f, 1f));
+            m.SetFloat("_WidthPx", 2f);
+            m.SetFloat("_DepthPull", 0.0f);   // the ghost stands in an empty slot: nothing to pull in front of
+        });
+    }
+
+    private static Material EnsureShaderMaterial(string name, string shaderName, System.Action<Material> setup)
+    {
+        string path = MatDir + "/" + name + ".mat";
+        var shader = Shader.Find(shaderName);
+        if (shader == null) throw new System.InvalidOperationException("Missing shader " + shaderName);
         var m = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (m == null)
         {
-            m = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            m = new Material(shader);
             AssetDatabase.CreateAsset(m, path);
         }
 
-        m.SetFloat("_Surface", 1f);                                  // transparent
-        m.SetFloat("_Blend", 0f);                                    // alpha blending
-        m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        m.SetFloat("_ZWrite", 0f);
-        m.SetFloat("_Cull", 2f);
-        m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        m.SetOverrideTag("RenderType", "Transparent");
-        m.renderQueue = 3000;
-        m.SetColor("_BaseColor", new Color(0.25f, 1f, 0.35f, 0.4f));
+        m.shader = shader;   // in place: the asset keeps its GUID
+        setup(m);
         EditorUtility.SetDirty(m);
         return m;
     }
@@ -563,6 +579,7 @@ public static partial class LamplitBuilder
         var ghost = player.GetComponent<SlotGhost>();
         if (ghost == null) ghost = player.AddComponent<SlotGhost>();
         ghost.template = EnsureGhostMaterial();
+        ghost.outlineTemplate = EnsureGhostOutlineMaterial();
         EditorUtility.SetDirty(ghost);
     }
 
@@ -607,7 +624,7 @@ public static partial class LamplitBuilder
         model.materialImportMode = ModelImporterMaterialImportMode.None;
         model.importNormals = ModelImporterNormals.Import;
         model.importTangents = ModelImporterTangents.CalculateMikk;
-        model.isReadable = false;
+        model.isReadable = true;   // BookOutline.HullMesh builds a smoothed-normal copy at runtime (about 400 vertices)
         model.addCollider = false;
         model.meshCompression = ModelImporterMeshCompression.Off;
         model.importBlendShapes = false;
@@ -660,7 +677,7 @@ public static partial class LamplitBuilder
         model.materialImportMode = ModelImporterMaterialImportMode.None;
         model.importNormals = ModelImporterNormals.Import;
         model.importTangents = ModelImporterTangents.CalculateMikk;
-        model.isReadable = false;
+        model.isReadable = true;   // see above
         model.addCollider = false;
         model.meshCompression = ModelImporterMeshCompression.Off;
         model.importBlendShapes = false;

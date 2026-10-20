@@ -50,6 +50,8 @@ Check("the thin highlight bar is off while the ghost shows", slot1.highlight != 
 var slotWrongSize = rows4[2].slots[1]; Aim(slotWrongSize);
 Check("a set of 8 aimed at a 4-slot row: the ghost is yellow", ghost.IsShown && ghost.GradeIndex == 1, ghost.GradeIndex.ToString());
 Check("the ghost holds every submesh of the book (A1 is a printed book: boards, pages and spine)", ghost.GhostTransform.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == held.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length && held.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == 3);
+var lineT = ghost.GhostTransform.Find("Outline");
+Check("the ghost has an outline hull (smoothed-normal mesh, the outline shader) around its hologram body (the ghost shader)", lineT != null && lineT.GetComponent<UnityEngine.MeshFilter>().sharedMesh != null && lineT.GetComponent<UnityEngine.MeshFilter>().sharedMesh.name.EndsWith("_Hull") && lineT.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial.shader.name == "BookBoy/BookOutline" && ghost.GhostTransform.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial.shader.name == "BookBoy/BookGhost");
 Aim(slot1); pi.PlaceCurrent(slot1);
 var other = B('C', 1); pi.PickUp(other); var slotSameShelf = rows8[3].slots[6]; Aim(slotSameShelf);
 Check("after set A claims a shelf, a different set aimed at it: the ghost is yellow", ghost.IsShown && ghost.GradeIndex == 1, ghost.GradeIndex.ToString());
@@ -84,5 +86,21 @@ var hull = group[0].transform.Find("GlowInner");
 Check("the glow hull covers both submeshes (the page block glows too)", hull != null && hull.GetComponent<UnityEngine.MeshRenderer>().sharedMaterials.Length == 2);
 foreach (var bk in group) bk.Outline.StopAll();
 Check("when the glows end every light goes back to the pool (disabled)", Count("GlowLight", true) == 0, Count("GlowLight", true).ToString());
+
+// ---- the hover outline: a thin warm-white line, no light, no sparkles, welded normals ----
+ClearAll();
+var hv = B('F', 1); hv.Outline.StopAll(); hv.SetFocused(true); lateT.Invoke(hv.Outline, null);
+var inner = hv.transform.Find("GlowInner"); var halo = hv.transform.Find("GlowHalo");
+Check("hovering a book shows the two outline hulls", inner != null && halo != null && inner.GetComponent<UnityEngine.MeshRenderer>().enabled && halo.GetComponent<UnityEngine.MeshRenderer>().enabled);
+Check("the hover colour is neutral warm white, not yellow", Book.FocusColor.b > 0.8f && Book.FocusColor.r - Book.FocusColor.b < 0.15f, Book.FocusColor.ToString());
+Check("hovering takes no light from the pool", Count("GlowLight", true) == 0, Count("GlowLight", true).ToString());
+var sparksField = typeof(BookOutline).GetField("_sparks", flags);
+Check("hovering emits no sparks (the book holds no particle system)", sparksField.GetValue(hv.Outline) == null);
+var hm = inner.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var hv3 = hm.vertices; var hn = hm.normals; bool welded = true;
+var seen = new System.Collections.Generic.Dictionary<UnityEngine.Vector3Int, UnityEngine.Vector3>();
+for (int i = 0; i < hv3.Length; i++) { var k = new UnityEngine.Vector3Int(UnityEngine.Mathf.RoundToInt(hv3[i].x * 10000f), UnityEngine.Mathf.RoundToInt(hv3[i].y * 10000f), UnityEngine.Mathf.RoundToInt(hv3[i].z * 10000f)); if (seen.TryGetValue(k, out var n0)) { if ((n0 - hn[i]).magnitude > 1e-3f) welded = false; } else seen[k] = hn[i]; }
+Check("the hull mesh has one normal per position (no gaps at the box edges)", welded && hm.name.EndsWith("_Hull"));
+hv.SetFocused(false); lateT.Invoke(hv.Outline, null);
+Check("moving the crosshair away turns the outline off", !inner.GetComponent<UnityEngine.MeshRenderer>().enabled);
 sb.Append(fails == 0 ? "ALL PASSED" : fails + " FAILED");
 return sb.ToString();

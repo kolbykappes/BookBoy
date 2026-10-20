@@ -32,6 +32,10 @@ stand.
 
 **Settled**
 - **Title: Lamplit.** The library is known locally as **"the Lamp"**.
+- **Setting (Kolby, 2026-10-19): autumn 1947.** An Edwardian town library built about 1905, run on worn 1910 to 1930 fittings
+  (gaslight and early electric, oak and mahogany, typewriters and card catalogues, brown paper and string). Nothing from the
+  1950s or later; the wars are never shown, only felt as thrift and patience. Full period rules and the art direction are in
+  [15-art-direction.md](15-art-direction.md).
 - You worked there **from age nine to fourteen**, helping light the reading-room lamps, shelving the returns, and so on.
 - **Uncle Rufus**, head librarian for over thirty years, wanted to retire, but nobody was trained to take over
   and nobody knew his systems. He didn't think you would be interested. He wrote you a letter (it arrives about
@@ -59,7 +63,8 @@ stand.
 ## The concept in brief (proposal)
 
 You inherit an old library that has been reorganized by every generation, so each **wing** has its own look and
-its own ordering system (a medieval-style hall, a Victorian reading room, a 1960s annex, and so on). Your
+its own ordering system (an Edwardian reading room, a 1910s periodicals annex, a 1920s map room, and so on, all inside one
+1947 building and nothing newer than 1930; see the Setting decision above). Your
 missing relative left notes, and a recurring **mark** (a bookplate) appears in every wing. Restoring a wing
 means learning its system, which opens the next one and reveals more of what happened. The finale is
 **reopening day**, and the final catalog reveals where your relative went.
@@ -109,7 +114,7 @@ and let Days 4 to 7 (restore, decipher, reconcile, compose) carry most of the di
 | Day | Wing and look | New layer (what you decide) | Lesson and tool | Mystery beat | Items | Sort min |
 |---|---|---|---|---|---|---|
 | 1 | Reading Room: warm oak, green lamps | **Group**: put like with like | Shelf-reading: cataloguer's eye | The relative has been missing three weeks; a letter; the bookplate in the first book | ~100 | ~20 |
-| 2 | Periodicals Annex: 1960s teal, steel | **Different types, different homes**: books on shelves, magazines in boxes, loose papers in trays | Dating: read dates at a glance; the book truck | Postmarks show the relative kept writing after vanishing | ~110 | ~22 |
+| 2 | Mailroom / Periodicals Annex: bottle-green paint, oak pigeonholes, a brass parcel scale | **Different types, different homes**: books on shelves, magazines in boxes, loose papers in trays | Dating: read dates at a glance; the book truck | Postmarks show the relative kept writing after vanishing | ~110 | ~22 |
 | 3 | Map Room: cool blues, flat files | **Order**: volumes, dates and scales in sequence | Finding aids: an index and the rolling ladder | A second correspondent appears; a region is marked on a map | ~120 | ~25 |
 | 4 | Conservation Room: stone, candlelight | **Restore**: clean and mend before shelving | The kit and a UV lamp | UV reveals faded ink: "the catalog is wrong on purpose"; the bookplate is the founder's | ~100 | ~30 |
 | 5 | Herbarium: greenhouse light | **Identify and decipher**: unlabeled specimens and labels in an old script, using a key card you build up | Provenance: the accession register | Records show the relative was collecting pages of one lost volume | ~130 | ~32 |
@@ -176,7 +181,8 @@ wanting to buy the library, with an "open house" on day eight (narrative stakes 
 ## Art and writing budget notes
 
 - Objects are mostly books, scrolls and paper; use shaders for fog, dust and colour return.
-- Era variety through palette, lighting and a few modular shelf pieces, not new props everywhere.
+- Variety between wings through palette, lighting and a few modular shelf pieces, not new props everywhere. The era is fixed
+  (1947, nothing newer than 1930), so wings differ by what they were built for and when they were fitted out, not by decade.
 - Free sources worth checking per item: public-domain museum images (CC0) and CC0 3D packs (Kenney,
   Quaternius, Poly Haven). Pick one style first to avoid an asset-flip look.
 - Human-written text and commissioned portraits only.

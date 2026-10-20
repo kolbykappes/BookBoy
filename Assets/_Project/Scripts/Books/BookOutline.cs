@@ -1,17 +1,25 @@
 using UnityEngine;
 
 /// <summary>
-/// The glow around a book: a bright thin outline plus a wider, fainter halo (two slightly enlarged back-face copies of
-/// the book's mesh) and drifting sparkles. The book's own color never changes. Three independent layers, strongest wins:
-/// a steady highlight (what the crosshair is on), a timed pulse (sister glow), and a short flash (placement feedback).
-/// Everything it creates at runtime is hidden and not saved.
+/// The outline around a book: a crisp line plus a wider halo (two inverted hulls: the book's mesh drawn again, back faces only, pushed out along smoothed normals
+/// in clip space, so the width is in screen pixels; see docs/unity-practices/29). The book's own color never changes. Three independent layers, strongest wins:
+/// a steady highlight (what the crosshair is on: a thin warm-white line over a dark underlay, no sparkles, no light), a timed pulse (sister glow: coloured, with
+/// sparkles and a light), and a short flash (placement feedback). Everything it creates at runtime is hidden and not saved.
 /// </summary>
 public class BookOutline : MonoBehaviour
 {
     private static readonly int ColorId = Shader.PropertyToID("_Color");
+    private static readonly int WidthId = Shader.PropertyToID("_WidthPx");
+    private static readonly int PullId = Shader.PropertyToID("_DepthPull");
 
-    private const float InnerWidth = 0.007f;
-    private const float HaloWidth = 0.014f;
+    // line widths in pixels at 1080p (the shader's unit; scaled with the screen height in ApplyHull)
+    private const float SteadyCorePx = 3f;
+    private const float SteadyUnderlayPx = 8f;
+    private const float InnerPx = 3.5f;
+    private const float HaloPx = 9f;
+
+    /// <summary>The steady line is brighter than 1 so the project's bloom softens it into a glow.</summary>
+    private const float SteadyHdr = 3f;
 
     private enum Layer
     {
@@ -137,13 +145,74 @@ public class BookOutline : MonoBehaviour
     {
         var go = new GameObject(hullName) { hideFlags = HideFlags.HideAndDontSave };
         go.transform.SetParent(transform, false);
-        go.AddComponent<MeshFilter>().sharedMesh = _bookMesh.sharedMesh;
+        go.AddComponent<MeshFilter>().sharedMesh = HullMesh(_bookMesh.sharedMesh);
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterials = Repeat(_assets.outlineMaterial, _bookMesh.sharedMesh.subMeshCount);   // one entry per submesh, so the page block glows too
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         renderer.enabled = false;
         return renderer;
+    }
+
+    private static readonly System.Collections.Generic.Dictionary<Mesh, Mesh> Hulls = new System.Collections.Generic.Dictionary<Mesh, Mesh>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetHulls()
+    {
+        foreach (Mesh m in Hulls.Values)
+        {
+            if (m != null)
+            {
+                Destroy(m);
+            }
+        }
+
+        Hulls.Clear();
+    }
+
+    /// <summary>A copy of <paramref name="source"/> whose normals are smoothed across the hard edges (the normals of vertices at the same place are averaged), for the outline
+    /// shader: the book's own normals are split at every box edge, and extruding along them would open gaps at the corners. Built once per mesh and cached; the mesh must
+    /// be readable (the book models are), otherwise the source itself is returned.</summary>
+    public static Mesh HullMesh(Mesh source)
+    {
+        if (source == null || !source.isReadable)
+        {
+            return source;
+        }
+
+        if (Hulls.TryGetValue(source, out Mesh cached) && cached != null)
+        {
+            return cached;
+        }
+
+        Vector3[] vertices = source.vertices;
+        Vector3[] normals = source.normals;
+        var sums = new System.Collections.Generic.Dictionary<Vector3Int, Vector3>();
+        Vector3Int Key(Vector3 p) => new Vector3Int(Mathf.RoundToInt(p.x * 10000f), Mathf.RoundToInt(p.y * 10000f), Mathf.RoundToInt(p.z * 10000f));
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            Vector3Int k = Key(vertices[i]);
+            sums[k] = sums.TryGetValue(k, out Vector3 s) ? s + normals[i] : normals[i];
+        }
+
+        var smooth = new Vector3[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            smooth[i] = sums[Key(vertices[i])].normalized;
+        }
+
+        var hull = new Mesh { name = source.name + "_Hull", hideFlags = HideFlags.HideAndDontSave };
+        hull.vertices = vertices;
+        hull.normals = smooth;
+        hull.subMeshCount = source.subMeshCount;
+        for (int s = 0; s < source.subMeshCount; s++)
+        {
+            hull.SetTriangles(source.GetTriangles(s), s);
+        }
+
+        hull.bounds = source.bounds;
+        Hulls[source] = hull;
+        return hull;
     }
 
     private void ConfigureSparks(ParticleSystem ps)
@@ -302,6 +371,11 @@ public class BookOutline : MonoBehaviour
 
         bool visible = layer != Layer.None && alpha > 0.01f;
         bool strong = visible && layer == Layer.Pulse;   // sister glow: much bigger and brighter than the other layers
+        if (layer == Layer.Steady)
+        {
+            alpha = 0.88f + 0.12f * Mathf.Sin(now * 3f);   // a slow breath
+        }
+
         _inner.enabled = visible;
         _halo.enabled = visible;
         _xray.enabled = strong;
@@ -332,11 +406,32 @@ public class BookOutline : MonoBehaviour
             return;
         }
 
+        if (layer == Layer.Steady)
+        {
+            // the aimed book: a thin warm-white line (bloom turns the HDR value into a soft glow) over a dark underlay so it reads on pale floor tiles as well as on dark wood
+            ApplyHull(_halo, SteadyUnderlayPx, new Color(0.05f, 0.035f, 0.02f), alpha * 0.55f, 0);
+            ApplyHull(_inner, SteadyCorePx, new Color(color.r * SteadyHdr, color.g * SteadyHdr, color.b * SteadyHdr), alpha, 1);
+            _lastLayer = layer;
+            if (_sparks != null)
+            {
+                if (_sparks.isEmitting)
+                {
+                    _sparks.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                }
+                else if (_sparks.particleCount == 0)
+                {
+                    ReleaseSparks();
+                }
+            }
+
+            return;
+        }
+
         AcquireSparks();
 
-        float boost = strong ? 3.4f : 1f;
-        ApplyHull(_inner, InnerWidth * boost, color, alpha);
-        ApplyHull(_halo, HaloWidth * boost, color, alpha * (strong ? 0.5f : 0.22f));
+        float boost = strong ? 2.2f : 1f;
+        ApplyHull(_inner, InnerPx * boost, color, alpha, 1);
+        ApplyHull(_halo, HaloPx * boost, color, alpha * (strong ? 0.5f : 0.22f), 0);
 
         if (strong)
         {
@@ -375,16 +470,13 @@ public class BookOutline : MonoBehaviour
         emission.rateOverTime = strong ? 80f : 16f;
     }
 
-    private void ApplyHull(MeshRenderer hull, float width, Color color, float alpha)
+    private void ApplyHull(MeshRenderer hull, float widthPx, Color color, float alpha, int sortingOrder)
     {
-        Vector3 size = transform.lossyScale;
-        hull.transform.localScale = new Vector3(
-            1f + 2f * width / Mathf.Max(0.001f, size.x),
-            1f + 2f * width / Mathf.Max(0.001f, size.y),
-            1f);   // no growth in depth: otherwise the shell shows as a slab trailing behind the book
-
+        hull.sortingOrder = sortingOrder;   // the underlay (0) is drawn before the line (1)
         hull.GetPropertyBlock(_block);
         _block.SetColor(ColorId, new Color(color.r, color.g, color.b, alpha));
+        _block.SetFloat(WidthId, widthPx * Mathf.Max(1f, Screen.height / 1080f));
+        _block.SetFloat(PullId, 0f);   // a depth pull would bring the hull's back faces in front of the book and paint it over (docs/unity-practices/29)
         hull.SetPropertyBlock(_block);
     }
 

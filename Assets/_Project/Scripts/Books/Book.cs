@@ -52,7 +52,7 @@ public class Book : MonoBehaviour
     [HideInInspector]
     public bool hasPhysicsDrop;
 
-    public static readonly Color FocusColor = new Color(1f, 0.93f, 0.55f);
+    public static readonly Color FocusColor = new Color(1f, 0.97f, 0.9f);   // the hover outline: warm white (a hover is not a grade, so no yellow)
 
     private static PhysicsMaterial _tossMaterial;
 

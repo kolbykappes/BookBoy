@@ -51,6 +51,23 @@ overwrite old ones — so trends are visible over time.
 
 See [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md) for patch notes, review pushback and newly found games.
 
+## 2026-10-19
+
+| Game | Score bucket | Total reviews | % positive | Δ reviews since last | Δ % since last |
+|---|---|---:|---:|---:|---:|
+| Whisper of the House | Overwhelmingly Positive | 5,894 | 96.9% | new, first tracked (released Aug 27, 2025) | — |
+| Witch Cabin Cleanup | Very Positive | 273 | 98% | +77 | 0 |
+| Brick by Brick: Tidy Up the Small Town! | Very Positive | 237 | 89% | new, first tracked (released Oct 15) | — |
+| Folded Fables: Tidy Up The Dragon Hoard | Very Positive | 126 | 98% | +64 | 0 |
+| Gallery Organizer | Positive | 19 | 95% | new, first tracked (released Oct 14) | — |
+| SCROLLS: Tidy up the Library of Olympus! | No reviews (unreleased, Nov 1) | 0 | — | new, first tracked | — |
+| The Cozy Board Game Shop: Tidy Up | No reviews (unreleased, Nov 12) | 0 | — | new, first tracked | — |
+| ARCHIVIST: Tidy Up & Sort | No reviews (unreleased, Dec 17) | 0 | — | new, first tracked | — |
+| Tidy Up Her Toys | No reviews (unreleased, no date) | 0 | — | new, first tracked | — |
+
+Whisper of the House is a story-driven tidy game, not a shelf-sorter; see [20-whisper-of-the-house.md](20-whisper-of-the-house.md).
+(Counts from the Steam `appreviews` API, all languages.)
+
 <!--
 Template for the next check-in — copy this block, fill in the date, append below:
 

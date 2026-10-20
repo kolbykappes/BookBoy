@@ -381,6 +381,7 @@ Next after those: T-014 (pile throws), T-013 (one pooled highlighter), T-011 (UI
   Bake the colour into vertex colours or use shared per-colour materials, and check the "Enable GPU Instancing" checkbox state. Measure with the T-006 baseline (batches, SetPass) before and after. About 340 items is probably not a real draw-call problem, so this is hygiene and a prerequisite for a pooled highlighter, not an emergency.
 
 ### T-013 One pooled highlighter  **Done 2026-10-19 for the pooled light and sparks and the page-block hull (see build status); the outline-renderer-feature variant still needs approval (renderer/layers)**
+- 2026-10-19: the hover look was reworked (thin warm-white pixel-width outline; hologram ghost). Open: shelved books between touching neighbours show almost no outline (a hull cannot show through a nearer neighbour); if that is not enough, a Render Objects feature (needs approval) or lifting the aimed book.
 - File 16: per-book hulls, a light and a particle system are built at runtime and never pooled; `MaterialPropertyBlock` on the x-ray hull also breaks the SRP Batcher. Replace with one shared highlighter that follows the aimed or pulsing book. Picking itself is already right (nearest ray hit equals the visible surface); call `Physics.SyncTransforms()` after piles change.
 
 ### T-014 Pile throws and per-body physics  **P2, Todo, no approval if per body (project-wide changes need approval)**

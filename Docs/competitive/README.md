@@ -40,7 +40,7 @@ here. Percent-positive tracks closely between the two either way.
 | 13 | [Wand & Order: Tidy up the magic shop!](13-wand-and-order.md) | ~Sep 18, 2026 | Not yet released | 3 zones, scope TBD | Second magic-shop entrant after Shelves and Sorcery; co-op. |
 | 14 | [DinoBones: Tidy Up the Museum](14-dinobones-tidy-up-the-museum.md) | ~Sep 22, 2026 | Not yet released | 2,500+ bones / 6+ skeletons | Assembly-based rather than pure shelving — closer to a fitting/matching puzzle. |
 
-### Added in the 2026-10-17 refresh (book / library / magic neighbors)
+### Added in the 2026-10-17 refresh (book / library / magic neighbors), plus #20 to #24 (2026-10-19)
 
 | # | Game | Released | Reviews (2026-10-17) | Notes |
 |---|---|---|---|---|
@@ -48,6 +48,11 @@ here. Percent-positive tracks closely between the two either way.
 | 17 | [Still Sorting](17-still-sorting.md) | Sep 23, 2026 | Positive — 22 (100%) | 2D retro bookshop sorter, 4,344 books in A–Z rows, bookends, a date-sorted row; no upgrades. Closest to a real ordering rule. |
 | 18 | [Sort of Magic](18-sort-of-magic.md) | Oct 8, 2026 | Mixed — 70 (45.7%) | Cat in a magic school, 4,500 items, 1–4 co-op. Low score is a launch-quality failure (saves, missing items, indistinguishable books); patched Oct 14. |
 | 19 | [Magic Mess](19-magic-mess.md) | Aug 24, 2026 | Mixed — 36 (63.9%) | Wizard's tower, 3,040 items, one map. XP per item and passive item-sense praised; 1→5 carry limit and nagging dragon criticized; one patch ever. |
+| 20 | [Whisper of the House](20-whisper-of-the-house.md) | Aug 27, 2025 | Overwhelmingly Positive — 5,894 (96.9%) | Not a shelf-sorter: isometric pixel-art tidy/decorate game with a town mystery, $14.99, ~7–10 h story, 150K copies in 3 months. **The nearest proven story-driven tidy game for Lamplit.** Top complaint: story fizzles with no marked ending; placement carries no meaning. |
+| 21 | [SCROLLS: Tidy up the Library of Olympus!](21-scrolls-library-of-olympus.md) | Nov 1, 2026 (unreleased) | None yet | 3,048 scrolls, 400 collections, 24 categories; emblem plus Roman numeral ordering; photoreal hall; owl companion; up to 4-player co-op. Six abilities (Sort, Shelf Guide, Insight, Auto-Shelve, Assemble, Teleport); a "Restoration Ledger" progress panel. Announced Oct 14. |
+| 22 | [ARCHIVIST: Tidy Up & Sort](22-archivist-tidy-up-and-sort.md) | Dec 17, 2026 (unreleased) | None yet (demo live) | Solo dev, ex-*Cozy Archivist Simulator*. Office and archive rooms; sort by date, number or category per level; **Campaign Mode structured as working days** (find requested files, fix coworkers' mistakes); Progress and "Order" tracked separately. |
+| 23 | [The Cozy Board Game Shop: Tidy Up](23-cozy-board-game-shop.md) | Nov 12, 2026 (unreleased) | None yet | **Inherited shop with a handwritten letter from Arthur** (the nearest frame to Lamplit in the wave). 318 games x 12 copies, 15 categories, 2 floors, 7 skills, 12 languages with audio, parody covers. |
+| 24 | [Tidy Up Her Toys](24-tidy-up-her-toys.md) | No date (unreleased) | None yet | Ghost girl Alice in a haunted mansion; **hunt toys out of physics heaps, then shelve** 6,000 toys on 100 shelves of 60; ghost-slot preview; companion walks you to the shelf. Store tags (Horror, Lovecraftian) clash with the "cozy-spooky" copy. |
 
 (The refresh write-up is [15-refresh-2026-10-17.md](15-refresh-2026-10-17.md).)
 
