@@ -30,8 +30,13 @@ for (int o = 0; o < carry.Count; o++)
     if (y >= lastY) descending = false; lastY = y;
 }
 Check("the current book is on top and the others hang below it in order", descending);
-float gap = top.transform.position.y - carry.Items[(carry.CurrentIndex + 1) % carry.Count].transform.position.y;
-Check("the books touch (spacing is one book thickness)", UnityEngine.Mathf.Abs(gap - top.transform.localScale.x * 1.04f) < 0.003f, gap.ToString());
+var below = carry.Items[(carry.CurrentIndex + 1) % carry.Count];
+float gap = top.transform.position.y - below.transform.position.y;
+Check("the books sit one thickness apart vertically (no overlap)", gap >= top.transform.localScale.x * 1.0f - 0.003f && gap <= top.transform.localScale.x * 1.06f, gap.ToString());
+var fan = top.transform.position - below.transform.position;
+Check("the stack is fanned: each lower book is also shifted to the player's left and toward the player, so its edge shows", UnityEngine.Vector3.Dot(fan, pl.transform.right) > 0.02f && UnityEngine.Vector3.Dot(fan, pl.transform.forward) > 0.03f, fan.ToString());
+Check("the newest pick-up is the current book and on top", carry.Current == B("B1") && top == B("B1"));
+Check("the stack's anchor is lower than the old 1.36 m (looking down at the floor it no longer covers the middle of the view)", carry.carryPoint.localPosition.y < 1.2f, carry.carryPoint.localPosition.y.ToString());
 
 // the view: a 16:9 camera at the eye, level and looking down
 var camGo = new UnityEngine.GameObject("TmpCam"); var cam = camGo.AddComponent<UnityEngine.Camera>(); cam.fieldOfView = 58.7f; cam.aspect = 16f / 9f; cam.nearClipPlane = 0.05f;
@@ -39,10 +44,15 @@ bool InView(Book b) { var r = b.GetComponent<UnityEngine.Renderer>().bounds; int
 Vector3 Center(Book b) { var v = cam.WorldToViewportPoint(b.GetComponent<UnityEngine.Renderer>().bounds.center); return v; }
 var eye = pl.transform.position + V(0f, 1.65f, 0f);
 camGo.transform.position = eye; camGo.transform.rotation = UnityEngine.Quaternion.Euler(0f, 270f, 0f);
-Check("at a level gaze the top book already peeks in at the lower right", InView(top) && Center(top).x > 0.55f && Center(top).y < 0.25f, Center(top).ToString());
+Check("at a level gaze the stack stays out of the way (below the view)", !InView(top));
+camGo.transform.rotation = UnityEngine.Quaternion.Euler(28f, 270f, 0f);
+Check("tilted down 28 degrees the top book peeks in at the lower right", InView(top) && Center(top).x > 0.55f && Center(top).y < 0.35f, Center(top).ToString());
 camGo.transform.rotation = UnityEngine.Quaternion.Euler(40f, 270f, 0f);
 var cvp = Center(top);
 Check("looking down 40 degrees the stack is in the right half of the view", InView(top) && cvp.x > 0.55f && cvp.y > 0.1f && cvp.y < 0.9f, cvp.ToString());
+camGo.transform.rotation = UnityEngine.Quaternion.Euler(40f, 270f, 0f);
+float sep = 9f; for (int k = 1; k < carry.Count; k++) { var bk = carry.Items[(carry.CurrentIndex + k) % carry.Count]; var prev = carry.Items[(carry.CurrentIndex + k - 1) % carry.Count]; sep = UnityEngine.Mathf.Min(sep, UnityEngine.Mathf.Abs(Center(bk).y - Center(prev).y) + UnityEngine.Mathf.Abs(Center(bk).x - Center(prev).x)); }
+Check("looking down 40 degrees every book in the stack sits visibly apart from the one above it", sep > 0.03f, sep.ToString());
 camGo.transform.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f);
 Check("looking away (turned round) the stack is behind the camera", !InView(top));
 UnityEngine.Object.DestroyImmediate(camGo);
@@ -55,6 +65,19 @@ float yTop = carry.Current.transform.position.y; bool allBelow = true;
 foreach (var b in carry.Items) if (b != carry.Current && b.transform.position.y >= yTop) allBelow = false;
 Check("after cycling the new current book is the highest", allBelow);
 
+var cur2 = carry.Current; carry.Cycle(-1); carry.SnapStack(); var back = carry.Current; carry.Cycle(+1); carry.SnapStack();
+Check("the wheel's two directions walk the held books both ways and come back", back != cur2 && carry.Current == cur2);
+// hands full: the reticle, the nudge and the notice
+
+Check("with the hands at capacity the carry list reports full", carry.IsFull, carry.Count + "/" + carry.Capacity);
+var xhair = pi.crosshair; pi.NotifyHandsFull();
+Check("a refused pickup nudges the stack, punches the reticle and raises the notice", carry.IsNudging && xhair != null && xhair.IsRejecting && pi.HandsFullNoticeShowing);
+xhair.SetState(Crosshair.State.Idle); xhair.SetState(Crosshair.State.Blocked);
+var dotCol = xhair.dot.color;
+Check("the blocked reticle is grey (no colour) when the hands are full", System.Math.Abs(dotCol.r - dotCol.g) < 0.02f && System.Math.Abs(dotCol.g - dotCol.b) < 0.02f && dotCol.r < 0.8f, dotCol.ToString());
+var hv0 = B("F1"); hv0.Outline.StopAll(); hv0.SetFocused(true, true); typeof(BookOutline).GetMethod("LateUpdate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(hv0.Outline, null);
+Check("the hover outline of a book that cannot be picked up is grey", System.Math.Abs(Book.UnavailableColor.r - Book.UnavailableColor.b) < 0.02f);
+hv0.SetFocused(false);
 // against a bookcase the stack is pulled back so it does not poke through
 var shelfRow = zone.shelves[0]; var caseT = shelfRow.transform;
 var front = caseT.position - caseT.forward * 0.0f;

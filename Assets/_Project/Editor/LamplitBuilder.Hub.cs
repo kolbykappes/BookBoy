@@ -196,7 +196,7 @@ public static partial class LamplitBuilder
     public const float HandLightRange = 2.8f;
     public static readonly Vector3 HandLightPosition = new Vector3(0f, 0.25f, -0.25f);
     /// <summary>Where the middle of the top held book sits, in the player root's space: right, up and forward of the feet (the eye is at 1.65 m).</summary>
-    public static readonly Vector3 StackOffset = new Vector3(0.40f, 1.36f, 0.50f);
+    public static readonly Vector3 StackOffset = new Vector3(0.40f, 1.10f, 0.52f);
     public const float CarryScale = 1.0f;   // held tomes at full size (Librarian's carried book fills 30 to 35 percent of the screen width)   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>

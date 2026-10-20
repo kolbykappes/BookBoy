@@ -126,14 +126,17 @@ public class Book : MonoBehaviour
 
     /// <summary>Outlines the book while the crosshair is on it so the player can see what is targeted. The book's own color
     /// never changes.</summary>
-    public void SetFocused(bool focused)
+    public void SetFocused(bool focused, bool unavailable = false)
     {
         BookOutline outline = Outline;
         if (outline != null)
         {
-            outline.SetSteady(focused, FocusColor);
+            outline.SetSteady(focused, unavailable ? UnavailableColor : FocusColor);
         }
     }
+
+    /// <summary>The hover outline when the book cannot be picked up (the hands are full): grey.</summary>
+    public static readonly Color UnavailableColor = new Color(0.55f, 0.55f, 0.55f);
 
     /// <summary>Current grade, recomputed from the live shelves: claims move when books are added or removed.</summary>
     public PlacementResult Grade()

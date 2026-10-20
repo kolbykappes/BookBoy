@@ -34,6 +34,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Held stack lowered and fanned so it visibly builds as books are picked up (newest on top, the wheel glides the order); hands-full reaction: grey reticle and grey hover outline, and a refused pick-up shakes the reticle and the stack and says so in the prompt.
 - Hover highlight reworked: a crisp warm-white outline (screen-pixel width, smoothed-normal hull, bloom glow, dark underlay) instead of the yellow glow with sparkles; the placement ghost is now a hologram (rim, rising band) inside a grade-coloured outline (T-013, research file 29).
 - Six printed cover and spine designs (LAMPS, CATALOGUE, LETTERS, ATLAS, MENDING, VAULT; tintable, high resolution, eight volume cells per spine) on a styled tome mesh with a separate spine submesh; Room 1 sets A to F use them. The held books are now a Librarian-style flat stack at the lower right that rises into view when looking down and pulls back near bookcases (T-004, T-010).
 - Placement ghost (a translucent copy of the held book in the aimed slot, tinted by how it would grade), brass claim plates showing each shelf's set (icon and letter), and a pooled glow whose hull covers the page block (L-022, L-023, T-013).

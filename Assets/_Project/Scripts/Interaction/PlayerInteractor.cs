@@ -198,7 +198,7 @@ public class PlayerInteractor : MonoBehaviour
         _litBook = bookToLight;
         if (_litBook != null)
         {
-            _litBook.SetFocused(true);
+            _litBook.SetFocused(true, Carry.IsFull);   // grey when the hands are full
         }
 
         ShelfSlot slotToLight = _focusedSlot;
@@ -311,7 +311,9 @@ public class PlayerInteractor : MonoBehaviour
         else if (_focusedBook != null)
         {
             SetPrompt(DisplayName(_focusedBook), Carry.IsFull
-                ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")"
+                ? (Time.unscaledTime < _fullNoticeUntil
+                    ? "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")  -  put a book down first"
+                    : "Hands full (" + Carry.Count + "/" + Carry.Capacity + ")")
                 : "Press (E) or click to pick up");
         }
         else if (_focusedSlot != null && Carry.Current != null)
@@ -409,11 +411,32 @@ public class PlayerInteractor : MonoBehaviour
         {
             PickUp(_focusedBook);
         }
+        else if (_focusedBook != null && Carry.IsFull)
+        {
+            NotifyHandsFull();
+        }
         else if (_focusedSlot != null && !_focusedSlot.occupied && Carry.Current != null)
         {
             PlaceCurrent(_focusedSlot);
         }
     }
+
+    private float _fullNoticeUntil;
+
+    /// <summary>The pickup was refused because the hands are full: the grey crosshair punches and shakes, the stack shakes, and the prompt says so for a moment.</summary>
+    public void NotifyHandsFull()
+    {
+        _fullNoticeUntil = Time.unscaledTime + 1.8f;
+        if (crosshair != null)
+        {
+            crosshair.Reject();
+        }
+
+        Carry.Nudge();
+    }
+
+    /// <summary>True while the "hands full" notice is showing (tests and tools).</summary>
+    public bool HandsFullNoticeShowing => Time.unscaledTime < _fullNoticeUntil;
 
     public bool PickUp(Book book)
     {

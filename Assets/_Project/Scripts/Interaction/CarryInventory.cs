@@ -184,12 +184,37 @@ public class CarryInventory : MonoBehaviour
         return Mathf.Clamp(farEdge - (nearest - 0.04f), 0f, local.z + stackHalfLength);
     }
 
-    /// <summary>The Librarian-style stack: the books lie flat, their spines toward the player's left, the current book on top and the others hanging below
-    /// it. The anchor (carryPoint) is a child of the player root, so it turns with the player but not with the camera pitch: the stack sits out of the
-    /// bottom of the view at a level gaze and rises into it when the player looks down.</summary>
+    /// <summary>A short shake of the stack: "your hands are full" (the pickup was refused).</summary>
+    public void Nudge()
+    {
+        _nudgeStart = Time.unscaledTime;
+    }
+
+    /// <summary>True while the nudge shake is still playing (tests and tools).</summary>
+    public bool IsNudging => Time.unscaledTime < _nudgeStart + NudgeSeconds;
+
+    private const float NudgeSeconds = 0.35f;
+    private float _nudgeStart = -10f;
+
+    /// <summary>Where the book at stack place <paramref name="order"/> (0 = the top, the current book) of <paramref name="count"/> books sits, in the anchor's space.
+    /// The stack is FANNED: each lower book is a little lower, to the player's left and toward the player, so from above every book shows a strip of its cover and its
+    /// spine and the player sees the stack build as books are picked up. The offsets shrink when many books are held so the whole stack stays near the corner.</summary>
+    public static Vector3 StackPlace(int order, int count, float thickness)
+    {
+        int span = Mathf.Max(1, count - 1);
+        float drop = Mathf.Min(thickness * 1.04f, 0.45f / span);      // total drop at most 0.45 m
+        float left = Mathf.Min(0.030f, 0.12f / span);                  // total shift left at most 0.12 m
+        float back = Mathf.Min(0.055f, 0.22f / span);                  // total shift toward the player at most 0.22 m
+        return new Vector3(-left * order, -drop * order, -back * order);
+    }
+
+    /// <summary>The Librarian-style stack: the books lie flat, their spines toward the player's left, the current book on top (the newest pick-up, or the one the wheel
+    /// brought up) and the others fanned below it. The anchor (carryPoint) is a child of the player root, so it turns with the player but not with the camera pitch.</summary>
     private void ArrangeStack(float blend)
     {
         int n = _list.Count;
+        float since = Time.unscaledTime - _nudgeStart;
+        float shake = since < NudgeSeconds ? Mathf.Sin(since * 60f) * 0.025f * (1f - since / NudgeSeconds) : 0f;
         for (int i = 0; i < n; i++)
         {
             Book book = _list.Items[i];
@@ -203,8 +228,8 @@ public class CarryInventory : MonoBehaviour
             Vector3 real = _originalScale.TryGetValue(book, out Vector3 s) ? s : t.localScale / carryScale;
             Vector3 scale = real * carryScale;
             float sign = order % 2 == 0 ? 1f : -1f;
-            Vector3 targetPos = new Vector3(0.012f * sign * Mathf.Min(order, 3), -order * scale.x * 1.04f, -_pull);
-            Quaternion targetRot = Quaternion.Euler(0f, 3.5f * sign * Mathf.Min(order, 3), 0f) * Quaternion.LookRotation(Vector3.right, Vector3.forward);
+            Vector3 targetPos = StackPlace(order, n, scale.x) + new Vector3(shake, 0f, -_pull);
+            Quaternion targetRot = Quaternion.Euler(0f, 2.5f * sign * Mathf.Min(order, 3), 0f) * Quaternion.LookRotation(Vector3.right, Vector3.forward);
             t.localPosition = Vector3.Lerp(t.localPosition, targetPos, blend);
             t.localRotation = Quaternion.Slerp(t.localRotation, targetRot, blend);
             t.localScale = Vector3.Lerp(t.localScale, scale, blend);
