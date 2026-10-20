@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_C8
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_c8
-  displayName: Book C
+  displayName: Letters of the Founder, vol. 8
   category: 0
   series: 0
   volume: 8
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 8
   room: 1
   iconIndex: 2
+  ordered: 1
+  title: Letters of the Founder
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 2
   symbol: C
   findId: 

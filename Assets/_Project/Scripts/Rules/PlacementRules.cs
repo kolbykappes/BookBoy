@@ -35,6 +35,13 @@ namespace BookBoy.Rules
             return containerFamily == AnyFamily || containerFamily == itemFamily;
         }
 
+        /// <summary>How an item is graded: ORDERED if its container demands order (Room 3) or the item is a volume of a series (volume N in slot N, #1 leftmost); otherwise GROUP
+        /// (a standalone book: any slot of the right shelf is fine).</summary>
+        public static PlacementMode ModeFor(bool containerOrdered, bool itemInSeries)
+        {
+            return containerOrdered || itemInSeries ? PlacementMode.Ordered : PlacementMode.Group;
+        }
+
         /// <summary>True if a set of <paramref name="setSize"/> items belongs on a shelf with <paramref name="shelfSlots"/> slots: a set of 8
         /// on a row of 8, a set of 4 on a row of 4. A set size or shelf size of 0 or less means "not specified", which always fits.</summary>
         public static bool SetFitsShelf(int setSize, int shelfSlots)

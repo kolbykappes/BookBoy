@@ -27,12 +27,12 @@ Check("1. only Room 1's door is open", cc.State.IsDoorOpen(1) && !cc.State.IsDoo
 // 2. Room 1: group rule
 var z1 = cc.Room(1); cc.JumpTo(1);
 var r8 = new System.Collections.Generic.List<Shelf>(); foreach (var sh in z1.shelves) if (sh.slots.Length == 8) r8.Add(sh);   // Room 1: sets of 8 (A, C, E, ...) belong on the 8-slot rows
-Check("2. Room 1: the first book claims an empty row; another set grades yellow, a matching one in any slot green", Put(Item("R1_A1"), r8[0].slots[2]) == R && Put(Item("R1_C1"), r8[0].slots[0]) == Y && Put(Item("R1_A2"), r8[0].slots[4]) == R);
+Check("2. Room 1: the first book claims an empty row; another set grades yellow, a matching series volume in its own slot green", Put(Item("R1_A1"), r8[0].slots[0]) == R && Put(Item("R1_C1"), r8[0].slots[3]) == Y && Put(Item("R1_A2"), r8[0].slots[1]) == R);
 for (int n = 1; n <= 8; n++) { if (Item("R1_A" + n).currentSlot != null) Item("R1_A" + n).currentSlot.Release(); }
 if (Item("R1_C1").currentSlot != null) Item("R1_C1").currentSlot.Release();
-for (int n = 1; n <= 8; n++) Put(Item("R1_E" + n), r8[3].slots[(n * 3) % 8]);
+for (int n = 1; n <= 8; n++) Put(Item("R1_E" + n), r8[3].slots[n - 1]);
 cc.Recompute();
-Check("3. eight matching books on an 8-slot row: it counts as finished", z1.CountFinishedShelves() == 1 && z1.CountCorrect() == 8);
+Check("3. eight volumes in order on an 8-slot row: it counts as finished", z1.CountFinishedShelves() == 1 && z1.CountCorrect() == 8);
 
 // 4. the finds of Room 1
 Bring("apron", "apron_hook"); Bring("shoes", "shoe_rack");

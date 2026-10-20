@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_H4
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_h4
-  displayName: Book H
+  displayName: Soups from the Larder
   category: 0
   series: 0
   volume: 4
@@ -24,7 +24,13 @@ MonoBehaviour:
   number: 4
   room: 1
   iconIndex: 7
-  coverStyle: -1
+  ordered: 0
+  title: Soups from the Larder
+  coverCell: 3
+  coverCols: 2
+  coverRows: 2
+  spineCells: 4
+  coverStyle: 7
   symbol: H
   findId: 
   tableEuler: {x: 0, y: 0, z: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_E1
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_e1
-  displayName: Book E
+  displayName: The Art of Mending, vol. 1
   category: 0
   series: 0
   volume: 1
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 1
   room: 1
   iconIndex: 4
+  ordered: 1
+  title: The Art of Mending
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 4
   symbol: E
   findId: 

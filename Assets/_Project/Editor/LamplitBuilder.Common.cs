@@ -770,7 +770,21 @@ public static partial class LamplitBuilder
     private const string CoverTexDir = "Assets/_Project/Art/Textures/Books/Covers";
 
     /// <summary>The six test series of printed covers and spines (tools/covers/make_covers.py). Index = BookDefinition.coverStyle.</summary>
-    public static readonly string[] CoverKeys = { "lamps", "catalogue", "letters", "atlas", "mending", "vault" };
+    public static readonly string[] CoverKeys = { "lamps", "catalogue", "letters", "atlas", "mending", "vault", "garden", "cookery" };
+
+    /// <summary>Titles of the six printed SERIES (index = coverStyle 0 to 5; tools/covers/make_covers.py SERIES).</summary>
+    public static readonly string[] SeriesTitles =
+    {
+        "The Lamplighter's Handbook", "The Lamplit Catalogue", "Letters of the Founder", "Atlas of the Marsh Coast", "The Art of Mending", "Shelfmarks of the Vault",
+    };
+
+    /// <summary>The standalone books (not in a series) of the two demo groups, in cover-atlas order (tools/covers/standalone_books.json).</summary>
+    public static readonly string[] GardenTitles =
+    {
+        "Roses and Their Care", "Beekeeping for the Orchard", "The Orchard Year", "The Hedgerow Book", "The Allotment Handbook", "The Herb Garden", "Soil and Compost", "A Gardener's Calendar",
+    };
+
+    public static readonly string[] CookeryTitles = { "Jams and Preserves", "The Home Baker", "Plain Puddings", "Soups from the Larder" };
 
     /// <summary>Imports the styled tome (boards, pages, spine submeshes) and its six series of cover and spine textures, and makes Mat_Cover_* and Mat_Spine_*.
     /// Missing files are skipped (the styled books then fall back to the plain tome).</summary>

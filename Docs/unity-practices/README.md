@@ -40,6 +40,8 @@ and several items need approval under the CLAUDE.md guardrails (`ProjectSettings
 | 26 | [26-ai-assisted-book-models-and-materials.md](26-ai-assisted-book-models-and-materials.md) | Generate the mesh in C#, not with AI; CC0/procedural covers first; keep spine letters game-drawn; Steam disclosure; books already use MaterialPropertyBlock (outside SRP Batcher); conflicts with backlog D-005 |
 | 27 | [27-adult-scale-cozy-rooms-and-readable-items.md](27-adult-scale-cozy-rooms-and-readable-items.md) | 1.6x + 1.15 m eye made ceiling 2.6x eye height; readability = screen fraction (16-23%), not world size; proposed 1.0x numbers (eye 1.65, ceiling 2.6, FOV 65v, door 1.1x2.2) |
 | 29 | [29-hover-outline-and-placement-ghost.md](29-hover-outline-and-placement-ghost.md) | Inverted hull with smoothed normals and clip-space pixel width (no renderer feature); depth pull so neighbours do not hide it; Librarian look: crisp white line for hover, edge-lit hologram ghost |
+| 30 | [30-sprint-fov-kick.md](30-sprint-fov-kick.md) | Sprint already works (Shift, 4 to 6 m/s); a smoothed FOV kick that follows the real speed (+6 vertical, a guess), with a strength setting; Cinemachine has no built-in smoothing |
+| 31 | [31-score-feedback-motes-and-shelf-celebration.md](31-score-feedback-motes-and-shelf-celebration.md) | Motes fly to the ITEMS and SHELVES counters, a gold sweep and book wave on a finished shelf (after Witch Cabin), series vs standalone books |
 
 ## Where the research contradicts what the project does or what was said earlier
 

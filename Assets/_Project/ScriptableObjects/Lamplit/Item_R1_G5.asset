@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_G5
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_g5
-  displayName: Book G
+  displayName: The Allotment Handbook
   category: 0
   series: 0
   volume: 5
@@ -24,7 +24,13 @@ MonoBehaviour:
   number: 5
   room: 1
   iconIndex: 6
-  coverStyle: -1
+  ordered: 0
+  title: The Allotment Handbook
+  coverCell: 4
+  coverCols: 2
+  coverRows: 4
+  spineCells: 8
+  coverStyle: 6
   symbol: G
   findId: 
   tableEuler: {x: 0, y: 0, z: 0}

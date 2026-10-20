@@ -231,9 +231,18 @@ public static partial class LamplitBuilder
                 var def = Definition("Item_R1_" + letter + n);
                 def.setSize = setSize;
                 def.iconIndex = g % PixelDigit.IconCount;
-                def.coverStyle = g < CoverKeys.Length ? g : -1;   // sets A to F carry the printed test covers; the rest keep the pixel-label tome
+                // sets A to F are printed SERIES (numbered: volume N belongs in slot N); G is eight STANDALONE gardening books and H four standalone cookery books (any slot of
+                // their shelf is right); the other sets keep the pixel-label tome and are numbered series too
+                def.coverStyle = g < CoverKeys.Length ? g : -1;
+                bool standalone = g == 6 || g == 7;
+                def.ordered = !standalone;
+                def.coverCell = standalone ? n - 1 : -1;
+                def.coverCols = standalone ? 2 : 1;
+                def.coverRows = standalone ? (g == 6 ? 4 : 2) : 1;
+                def.spineCells = standalone ? setSize : 8;
+                def.title = g < SeriesTitles.Length ? SeriesTitles[g] : g == 6 ? GardenTitles[n - 1] : g == 7 ? CookeryTitles[n - 1] : "Book " + letter;
                 def.bookId = "r1_" + char.ToLowerInvariant(letter) + n;
-                def.displayName = "Book " + letter;
+                def.displayName = standalone || g >= SeriesTitles.Length ? (g >= 8 ? "Book " + letter : def.title) : def.title + ", vol. " + n;
                 def.family = 0;
                 def.group = g;
                 def.number = n;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_F4
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_f4
-  displayName: Book F
+  displayName: Shelfmarks of the Vault, vol. 4
   category: 0
   series: 0
   volume: 4
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 4
   room: 1
   iconIndex: 5
+  ordered: 1
+  title: Shelfmarks of the Vault
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 5
   symbol: F
   findId: 

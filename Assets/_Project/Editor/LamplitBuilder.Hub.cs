@@ -254,6 +254,11 @@ public static partial class LamplitBuilder
 
         EnsureSlotGhost(player);
 
+        var sprintFov = player.GetComponent<SprintFov>() ?? player.AddComponent<SprintFov>();   // a wider view while sprinting (Shift)
+        sprintFov.maxKickDegrees = 6f;
+        sprintFov.strength = 1f;
+        EditorUtility.SetDirty(sprintFov);
+
         var carry = player.GetComponent<CarryInventory>();
         carry.carryScale = CarryScale;
         // The held books are a Librarian-style stack of flat books at the lower right. Its anchor is a child of the player root (it turns with the player but not

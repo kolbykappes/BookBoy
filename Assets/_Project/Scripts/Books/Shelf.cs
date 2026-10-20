@@ -11,6 +11,31 @@ public class Shelf : MonoBehaviour
 {
     public Bookcase bookcase;
 
+    /// <summary>True once the finished-shelf celebration has played for the current state of the shelf; cleared when any book leaves it.</summary>
+    [System.NonSerialized] public bool celebrated;
+
+    /// <summary>Every slot holds a book that is correctly shelved (green): the row is finished.</summary>
+    public bool IsComplete
+    {
+        get
+        {
+            if (slots == null || slots.Length == 0)
+            {
+                return false;
+            }
+
+            foreach (ShelfSlot slot in slots)
+            {
+                if (slot == null || slot.occupant == null || !slot.occupant.IsCorrectlyShelved)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     [Tooltip("Slots in order, index 0 = volume 1. Each is only slightly wider than a book.")]
     public ShelfSlot[] slots;
 

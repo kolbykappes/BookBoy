@@ -104,5 +104,27 @@ namespace BookBoy.Tests
             Assert.IsFalse(PlacementRules.IsCleanupComplete(100, 99));
             Assert.IsTrue(PlacementRules.IsCleanupComplete(100, 100));
         }
+
+        [Test]
+        public void ASeriesVolumeIsAlwaysOrdered_AStandaloneBookOnlyWhereTheContainerDemandsOrder()
+        {
+            Assert.AreEqual(PlacementMode.Ordered, PlacementRules.ModeFor(false, true), "a series volume: volume N in slot N");
+            Assert.AreEqual(PlacementMode.Group, PlacementRules.ModeFor(false, false), "a standalone book: any slot of its shelf");
+            Assert.AreEqual(PlacementMode.Ordered, PlacementRules.ModeFor(true, false), "an ordered container (Room 3) orders everything");
+            Assert.AreEqual(PlacementMode.Ordered, PlacementRules.ModeFor(true, true));
+        }
+
+        [Test]
+        public void ASeriesVolume_NeedsItsOwnSlot_AStandaloneBookDoesNot()
+        {
+            var series = PlacementRules.ModeFor(false, true);
+            Assert.AreEqual(PlacementResult.Correct, PlacementRules.EvaluateCampaign(series, true, true, 1, 0, true), "volume 1 leftmost");
+            Assert.AreEqual(PlacementResult.RightBookcaseWrongSpot, PlacementRules.EvaluateCampaign(series, true, true, 1, 3, true), "volume 1 in slot 4");
+            Assert.AreEqual(PlacementResult.Correct, PlacementRules.EvaluateCampaign(series, true, true, 8, 7, true), "volume 8 rightmost");
+            var standalone = PlacementRules.ModeFor(false, false);
+            Assert.AreEqual(PlacementResult.Correct, PlacementRules.EvaluateCampaign(standalone, true, true, 3, 6, true), "a standalone book in any slot");
+            Assert.AreEqual(PlacementResult.RightBookcaseWrongSpot, PlacementRules.EvaluateCampaign(standalone, true, false, 3, 6, true), "but another group owns the shelf");
+            Assert.AreEqual(PlacementResult.WrongBookcase, PlacementRules.EvaluateCampaign(standalone, false, true, 3, 6, true));
+        }
     }
 }

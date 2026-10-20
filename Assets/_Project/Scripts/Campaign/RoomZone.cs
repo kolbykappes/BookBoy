@@ -293,7 +293,15 @@ public class RoomZone : MonoBehaviour
 
             b.StopPhysicsTumble();
             b.transform.SetParent(null, true);
-            homeSlots[i].Accept(b, b.transform.localScale);
+            Book.QuietPlacement = true;   // the admin command tidies the whole room at once: no per-book effects
+            try
+            {
+                homeSlots[i].Accept(b, b.transform.localScale);
+            }
+            finally
+            {
+                Book.QuietPlacement = false;
+            }
         }
     }
 }

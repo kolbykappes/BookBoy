@@ -1,6 +1,7 @@
 """Generates the tintable book covers and spines (test set of six series) as high-resolution textures.
 
 Run (system Python with Pillow and numpy):  python tools/covers/make_covers.py <output folder> [preview folder]
+Also writes the two STANDALONE groups (Gardening, Cookery: a different title on every book) and tools/covers/standalone_books.json.
 
 For each of six series (topics from the game design: the reading-room lamps, the catalogue, the founder's letters, the map room, conservation and the
 vaults) it writes
@@ -170,7 +171,44 @@ def key(k, cx, cy, r):
     k.rect(cx - r * 0.22, cy - r * 0.02, cx + r * 0.22, cy + r * 0.06)                          # the collar
 
 
-MOTIFS = dict(lantern=lantern, drawer=drawer, envelope=envelope, compass=compass, spool=spool, key=key)
+def leaf(k, cx, cy, r):
+    """A sprig: a curved stem with five leaves and a small bud."""
+    lw = max(3, r * 0.05)
+    stem = [(cx - r * 0.10, cy + r * 0.95), (cx - r * 0.02, cy + r * 0.40), (cx + r * 0.06, cy - r * 0.10), (cx + r * 0.02, cy - r * 0.55), (cx + r * 0.10, cy - r * 0.92)]
+    k.line(stem, lw * 1.4)
+    for (t, side, size) in ((0.78, -1, 0.42), (0.58, 1, 0.46), (0.38, -1, 0.44), (0.20, 1, 0.38), (0.06, -1, 0.30)):
+        # a leaf is a pointed oval hung from the stem
+        x = cx + r * (0.10 * (1 - t) - 0.10 * t) + side * r * 0.04
+        y = cy + r * (0.95 - 1.9 * t)
+        ang = math.radians(-35 * side)
+        pts = []
+        for i in range(21):
+            u = i / 20.0
+            w = math.sin(math.pi * u) * r * size * 0.30
+            pts.append((u * r * size, w))
+        top = [(x + side * (px * math.cos(ang) - py * math.sin(ang)), y - (px * math.sin(ang) + py * math.cos(ang))) for (px, py) in pts]
+        bot = [(x + side * (px * math.cos(ang) + py * math.sin(ang)), y - (px * math.sin(ang) - py * math.cos(ang))) for (px, py) in pts]
+        k.poly(top + list(reversed(bot)))
+    k.ellipse(cx + r * 0.10, cy - r * 0.95, r * 0.07, r * 0.10)
+
+
+def pot(k, cx, cy, r):
+    """A cooking pot with a lid, two handles and three curls of steam."""
+    lw = max(3, r * 0.05)
+    k.poly([(cx - r * 0.62, cy - r * 0.10), (cx + r * 0.62, cy - r * 0.10), (cx + r * 0.52, cy + r * 0.62), (cx - r * 0.52, cy + r * 0.62)])           # the body
+    k.poly([(cx - r * 0.70, cy - r * 0.26), (cx + r * 0.70, cy - r * 0.26), (cx + r * 0.66, cy - r * 0.10), (cx - r * 0.66, cy - r * 0.10)])           # the lid
+    k.ellipse(cx, cy - r * 0.34, r * 0.07, r * 0.07)                                                                                                # the knob
+    k.line([(cx - r * 0.62, cy + r * 0.05), (cx - r * 0.86, cy + r * 0.10), (cx - r * 0.86, cy + r * 0.24), (cx - r * 0.60, cy + r * 0.24)], lw * 1.6)  # the handles
+    k.line([(cx + r * 0.62, cy + r * 0.05), (cx + r * 0.86, cy + r * 0.10), (cx + r * 0.86, cy + r * 0.24), (cx + r * 0.60, cy + r * 0.24)], lw * 1.6)
+    for dx in (-0.28, 0.0, 0.28):
+        pts = []
+        for i in range(13):
+            t = i / 12.0
+            pts.append((cx + r * (dx + 0.08 * math.sin(t * 6.0)), cy - r * (0.45 + 0.50 * t)))
+        k.line(pts, lw)                                                                                                                              # steam
+
+
+MOTIFS = dict(lantern=lantern, drawer=drawer, envelope=envelope, compass=compass, spool=spool, key=key, leaf=leaf, pot=pot)
 
 
 # ------------------------------------------------------------------ the cloth
@@ -285,6 +323,82 @@ def spine_texture(series, volumes=8):
     return base * (1.0 - INK * ink)
 
 
+# ------------------------------------------------------------------ standalone books (not in a series): a different title on every spine and cover
+# (spine title, cover lines, subtitle, full title). Written to standalone_books.json for the Unity builder.
+STANDALONE = [
+    dict(key="garden", group="Gardening", motif="leaf", cols=2, books=[
+        ("ROSES", ("ROSES AND", "THEIR CARE"), "a gardener's guide", "Roses and Their Care"),
+        ("BEEKEEPING", ("BEEKEEPING", "FOR THE ORCHARD"), "hives and honey", "Beekeeping for the Orchard"),
+        ("THE ORCHARD", ("THE ORCHARD", "YEAR"), "a year among the trees", "The Orchard Year"),
+        ("HEDGEROW", ("THE HEDGEROW", "BOOK"), "hedges and wild fruit", "The Hedgerow Book"),
+        ("ALLOTMENT", ("THE ALLOTMENT", "HANDBOOK"), "dig for the table", "The Allotment Handbook"),
+        ("HERB GARDEN", ("THE HERB", "GARDEN"), "for kitchen and sickroom", "The Herb Garden"),
+        ("COMPOST", ("SOIL AND", "COMPOST"), "feeding the ground", "Soil and Compost"),
+        ("CALENDAR", ("A GARDENER'S", "CALENDAR"), "month by month", "A Gardener's Calendar"),
+    ]),
+    dict(key="cookery", group="Cookery", motif="pot", cols=2, books=[
+        ("PRESERVES", ("JAMS AND", "PRESERVES"), "for the larder shelf", "Jams and Preserves"),
+        ("HOME BAKER", ("THE HOME", "BAKER"), "bread and the home oven", "The Home Baker"),
+        ("PUDDINGS", ("PLAIN", "PUDDINGS"), "and plenty of them", "Plain Puddings"),
+        ("SOUPS", ("SOUPS FROM", "THE LARDER"), "thrifty and warming", "Soups from the Larder"),
+    ]),
+]
+
+
+def standalone_spine_cell(group, book):
+    """A spine with no number: the group's emblem at the top, the title down the spine, a small ornament at the foot."""
+    w, h = 384, 1024
+    k = Ink(w, h)
+    cx = w / 2
+    k.rect(0, 0, w, 36)
+    k.rect(0, h - 36, w, h)
+    k.rect(0, 54, w, 60)
+    k.rect(0, h - 60, w, h - 54)
+    k.frame(62, 84, w - 62, 262, 7)
+    MOTIFS[group["motif"]](k, cx, 173, 78)
+    k.rect(40, 282, w - 40, 290)
+    k.rect(40, 300, w - 40, 304)
+    title = book[0]
+    zone = 610
+    size = fit_size(title, FONT_TITLE, zone, 150, 0.08)
+    tmp = Ink(1000, 280)
+    tmp.text((500, 140), title, FONT_TITLE, size, spacing=size * 0.08, stroke=2.0)
+    tm = Image.fromarray((tmp.mask() * 255).astype(np.uint8)).rotate(-90, expand=True)
+    tarr = np.asarray(tm, dtype=np.float32) / 255.0
+    th, tw = tarr.shape
+    ink_t = np.zeros((h, w), dtype=np.float32)
+    y0 = int((320 + zone / 2) - th / 2)
+    x0 = int(cx - tw / 2)
+    ys0, ys1 = max(0, y0), min(h, y0 + th)
+    ink_t[ys0:ys1, x0:x0 + tw] = tarr[ys0 - y0:ys1 - y0, :]
+    k.rect(40, 948, w - 40, 952)
+    k.rect(40, 962, w - 40, 970)
+    for dx in (-26, 0, 26):                                  # a little row of lozenges instead of a volume number
+        k.poly([(cx + dx, 982), (cx + dx + 9, 992), (cx + dx, 1002), (cx + dx - 9, 992)])
+    return np.maximum(k.mask(), ink_t)
+
+
+def standalone_textures(group):
+    books = group["books"]
+    cols = group["cols"]
+    rows = (len(books) + cols - 1) // cols
+    cover = np.zeros((rows * 800, cols * 1024), dtype=np.float32)
+    for i, book in enumerate(books):
+        series = dict(title=book[1], sub=book[2], motif=group["motif"])
+        back_ink, back_wear = board(series, False)
+        front_ink, front_wear = board(series, True)
+        ink = np.concatenate([back_ink, front_ink], axis=1)
+        wear = np.concatenate([back_wear, front_wear], axis=1)
+        base = cloth(2048, 1600)
+        pair = base * (1.0 - INK * ink) - wear * base
+        small = np.asarray(Image.fromarray((np.clip(pair, 0, 1) * 255).astype(np.uint8)).resize((1024, 800), Image.LANCZOS), dtype=np.float32) / 255.0
+        r, c = divmod(i, cols)
+        cover[r * 800:(r + 1) * 800, c * 1024:(c + 1) * 1024] = small
+    cells = [standalone_spine_cell(group, b) for b in books]
+    spine = cloth(384 * len(books), 1024) * (1.0 - INK * np.concatenate(cells, axis=1))
+    return cover, spine, rows
+
+
 # ------------------------------------------------------------------ run
 os.makedirs(OUT, exist_ok=True)
 if PREVIEW:
@@ -295,4 +409,14 @@ for s in SERIES:
     save(os.path.join(OUT, "T_Cover_" + s["key"] + ".png"), cov)
     save(os.path.join(OUT, "T_Spine_" + s["key"] + ".png"), spi)
     print("wrote", s["key"], cov.shape, spi.shape)
+import json
+meta = []
+for g in STANDALONE:
+    cov, spi, rows = standalone_textures(g)
+    save(os.path.join(OUT, "T_Cover_" + g["key"] + ".png"), cov)
+    save(os.path.join(OUT, "T_Spine_" + g["key"] + ".png"), spi)
+    print("wrote", g["key"], cov.shape, spi.shape)
+    meta.append(dict(key=g["key"], group=g["group"], cols=g["cols"], rows=rows, spineCells=len(g["books"]), books=[dict(spine=b[0], title=b[3]) for b in g["books"]]))
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "standalone_books.json"), "w", encoding="utf-8") as f:
+    json.dump(meta, f, indent=2)
 print("COVERS done")

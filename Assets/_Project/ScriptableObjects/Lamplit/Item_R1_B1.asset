@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_B1
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_b1
-  displayName: Book B
+  displayName: The Lamplit Catalogue, vol. 1
   category: 0
   series: 0
   volume: 1
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 1
   room: 1
   iconIndex: 1
+  ordered: 1
+  title: The Lamplit Catalogue
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 1
   symbol: B
   findId: 

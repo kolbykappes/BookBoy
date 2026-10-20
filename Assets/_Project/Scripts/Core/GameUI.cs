@@ -69,6 +69,12 @@ public class GameUI : MonoBehaviour
     private CursorLock _cursor;
     private Font _font;
     private Text _stats;
+    private RectTransform _statsPanel;
+    private Image _statFlash;
+    private float _punchStart = -10f;
+    private int _punchLine;
+    private Color _punchColor;
+    private float _punchStrength;
     private Text _carryText;
     private RectTransform _carryPanel;
     private readonly List<GameObject> _hudPanels = new List<GameObject>();
@@ -124,6 +130,57 @@ public class GameUI : MonoBehaviour
         SetGameplayActive(true);
     }
 
+    /// <summary>The canvas scale factor (screen pixels per canvas unit).</summary>
+    public float CanvasScale => _canvas != null && _canvas.scaleFactor > 0f ? _canvas.scaleFactor : 1f;
+
+    /// <summary>The middle of one line of the stats block (0 = the first line, 1 = items, 2 = shelves), in canvas units from the bottom-left of the screen: where the score
+    /// motes fly to. False if the HUD has not built that line.</summary>
+    public bool TryGetStatTarget(int line, out Vector2 canvasPosition)
+    {
+        canvasPosition = Vector2.zero;
+        if (!TryGetStatLineCentre(line, out float fromTop) || _canvas == null)
+        {
+            return false;
+        }
+
+        float canvasHeight = ((RectTransform)_canvas.transform).rect.height;
+        canvasPosition = new Vector2(_statsPanel.anchoredPosition.x + 18f + 190f, canvasHeight + _statsPanel.anchoredPosition.y - fromTop);
+        return true;
+    }
+
+    /// <summary>Distance from the top of the stats panel to the middle of a text line, in canvas units.</summary>
+    private bool TryGetStatLineCentre(int line, out float fromTop)
+    {
+        fromTop = 0f;
+        if (_stats == null || _statsPanel == null)
+        {
+            return false;
+        }
+
+        var lines = _stats.cachedTextGenerator.lines;
+        if (lines == null || line < 0 || line >= lines.Count)
+        {
+            return false;
+        }
+
+        float blockHeight = lines[0].topY + lines[0].height;   // topY counts up from the bottom of the text block
+        float ppu = Mathf.Max(0.01f, _stats.pixelsPerUnit);
+        fromTop = 12f + (blockHeight - (lines[line].topY + lines[line].height * 0.5f)) / ppu;
+        return true;
+    }
+
+    /// <summary>The counter on <paramref name="line"/> was just raised: the stats panel pops and a gold bar lights behind that line for a moment.</summary>
+    public void PunchStat(int line, Color color, float strength = 1f)
+    {
+        _punchStart = Time.unscaledTime;
+        _punchLine = line;
+        _punchColor = color;
+        _punchStrength = strength;
+    }
+
+    /// <summary>How strongly the stats panel is popped right now, 0 to 1 (tests).</summary>
+    public float StatPunch => Mathf.Clamp01(1f - (Time.unscaledTime - _punchStart) / 0.5f);
+
     public bool MenuOpen => _menu != Menu.None;
     public bool UpgradesOpen => _menu == Menu.Upgrades;
     public bool FindsOpen => _menu == Menu.Finds;
@@ -174,6 +231,11 @@ public class GameUI : MonoBehaviour
         BuildHud(canvas);
         BuildMenu(canvas);
         BuildPointer(canvas);
+
+        if (GetComponent<ScoreFx>() == null)
+        {
+            gameObject.AddComponent<ScoreFx>();   // motes flying to the counters, and the finished-shelf celebration
+        }
 
         if (GetComponent<FindDialog>() == null)
         {
@@ -264,6 +326,10 @@ public class GameUI : MonoBehaviour
     private void BuildHud(Transform canvas)
     {
         RectTransform stats = MakePanel("GameUI_Stats", canvas, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(24f, -24f), new Vector2(440f, 176f), PanelColor);
+        _statsPanel = stats;
+        // a gold bar behind one line of the stats, lit for a moment when that counter goes up (ScoreFx)
+        RectTransform flash = MakePanel("StatFlash", stats, new Vector2(0f, 1f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(440f, 40f), new Color(1f, 0.82f, 0.35f, 0f));
+        _statFlash = flash.GetComponent<Image>();
         _stats = MakeText("Text", stats, 34, TextAnchor.UpperLeft, new Vector2(18f, 12f));
         _hudPanels.Add(stats.gameObject);
 
@@ -503,6 +569,39 @@ public class GameUI : MonoBehaviour
 
         _abilityPanel.gameObject.SetActive(shown > 0 && !MenuOpen);
         _abilityPanel.sizeDelta = new Vector2(AbilityRowWidth + 24f, 10f + shown * (AbilityRowHeight + 6f) + 4f);
+    }
+
+    private void AnimateStatPunch()
+    {
+        if (_statsPanel == null || _statFlash == null)
+        {
+            return;
+        }
+
+        float u = (Time.unscaledTime - _punchStart) / 0.5f;
+        if (u >= 1f || u < 0f)
+        {
+            if (_statsPanel.localScale != Vector3.one)
+            {
+                _statsPanel.localScale = Vector3.one;
+            }
+
+            if (_statFlash.color.a > 0f)
+            {
+                _statFlash.color = new Color(_punchColor.r, _punchColor.g, _punchColor.b, 0f);
+            }
+
+            return;
+        }
+
+        float bump = Mathf.Sin(Mathf.Min(1f, u * 1.6f) * Mathf.PI) * (1f - u * 0.4f);
+        _statsPanel.localScale = Vector3.one * (1f + 0.055f * _punchStrength * bump);
+        if (TryGetStatLineCentre(_punchLine, out float fromTop))
+        {
+            _statFlash.rectTransform.anchoredPosition = new Vector2(0f, -fromTop);
+        }
+
+        _statFlash.color = new Color(_punchColor.r, _punchColor.g, _punchColor.b, 0.5f * (1f - u) * Mathf.Min(1f, _punchStrength));
     }
 
     public void Toast(string message, float seconds = 2.6f)
@@ -885,6 +984,7 @@ public class GameUI : MonoBehaviour
     {
         RefreshStats();
         RefreshAbilities();
+        AnimateStatPunch();
 
         if (_toast != null)
         {

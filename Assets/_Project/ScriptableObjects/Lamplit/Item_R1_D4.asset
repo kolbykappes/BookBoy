@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_D4
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_d4
-  displayName: Book D
+  displayName: Atlas of the Marsh Coast, vol. 4
   category: 0
   series: 0
   volume: 4
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 4
   room: 1
   iconIndex: 3
+  ordered: 1
+  title: Atlas of the Marsh Coast
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 3
   symbol: D
   findId: 

@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 1
   room: 0
   iconIndex: -1
+  ordered: 0
+  title: 
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: -1
   symbol: 
   findId: apron

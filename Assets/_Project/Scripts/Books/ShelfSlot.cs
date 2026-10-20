@@ -75,5 +75,9 @@ public class ShelfSlot : MonoBehaviour
         }
 
         occupant = null;
+        if (shelf != null)
+        {
+            shelf.celebrated = false;   // a broken row can be celebrated again when it is finished again
+        }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_G8
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_g8
-  displayName: Book G
+  displayName: A Gardener's Calendar
   category: 0
   series: 0
   volume: 8
@@ -24,7 +24,13 @@ MonoBehaviour:
   number: 8
   room: 1
   iconIndex: 6
-  coverStyle: -1
+  ordered: 0
+  title: A Gardener's Calendar
+  coverCell: 7
+  coverCols: 2
+  coverRows: 4
+  spineCells: 8
+  coverStyle: 6
   symbol: G
   findId: 
   tableEuler: {x: 0, y: 0, z: 0}

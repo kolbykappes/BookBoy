@@ -36,6 +36,23 @@ public class BookDefinition : ScriptableObject
     [Tooltip("Set icon (0 to 7: disc, triangle, diamond, square, star, heart, moon, cross) shown at the top of the spine, a second cue next to the letter. -1 = none.")]
     public int iconIndex = -1;
 
+    [Tooltip("A book in a SERIES: numbered, and volume N belongs in slot N of its shelf (#1 leftmost). False = a standalone book: any slot of its subject's shelf is right.")]
+    public bool ordered;
+
+    [Tooltip("The book's own title (a standalone book) or its series title (a series). Used for the aim readout and the carried list.")]
+    public string title = "";
+
+    [Tooltip("A standalone book on a printed cover: which cell of the cover atlas (2 columns, filled row by row) and the spine atlas this book is. -1 = a series volume, whose spine cell is its number.")]
+    public int coverCell = -1;
+
+    [Tooltip("Columns and rows of the cover atlas (a series has 1 x 1: its texture is the back and front boards of the series).")]
+    public int coverCols = 1;
+
+    public int coverRows = 1;
+
+    [Tooltip("How many cells the spine atlas has (8 for a series of 8, 4 for a standalone set of 4).")]
+    public int spineCells = 8;
+
     [Tooltip("Printed cover and spine style (0 to 5: the six test series in tools/covers/make_covers.py). -1 = the plain tome with the pixel labels. Needs the styled tome mesh (three submeshes); the number on the spine is picked from the set's volume.")]
     public int coverStyle = -1;
 

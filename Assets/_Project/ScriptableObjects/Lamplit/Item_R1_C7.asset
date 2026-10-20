@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_C7
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_c7
-  displayName: Book C
+  displayName: Letters of the Founder, vol. 7
   category: 0
   series: 0
   volume: 7
@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 7
   room: 1
   iconIndex: 2
+  ordered: 1
+  title: Letters of the Founder
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: 2
   symbol: C
   findId: 

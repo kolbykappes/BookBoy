@@ -24,6 +24,12 @@ MonoBehaviour:
   number: 4
   room: 1
   iconIndex: 0
+  ordered: 1
+  title: Book I
+  coverCell: -1
+  coverCols: 1
+  coverRows: 1
+  spineCells: 8
   coverStyle: -1
   symbol: I
   findId: 

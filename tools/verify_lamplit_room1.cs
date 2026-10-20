@@ -43,37 +43,52 @@ float board = LamplitBuilder.BoardThickness, inch = 0.0254f;
 Check("every row has at least 1 in of headroom above the tallest (15 in) book", LamplitBuilder.ShelfSpacing - board - LamplitBuilder.BookMaxHeight >= inch - 0.0005f && LamplitBuilder.ContainerHeight - board - (LamplitBuilder.BaseHeight + 3f * LamplitBuilder.ShelfSpacing) - LamplitBuilder.BookMaxHeight >= inch - 0.0005f,
     (LamplitBuilder.ShelfSpacing - board - LamplitBuilder.BookMaxHeight).ToString("F3") + " m between rows, " + (LamplitBuilder.ContainerHeight - board - (LamplitBuilder.BaseHeight + 3f * LamplitBuilder.ShelfSpacing) - LamplitBuilder.BookMaxHeight).ToString("F3") + " m on top");
 
-// ---- Group grading: the first set claims the row, any slot is fine ----
+// ---- series (numbered: volume N in slot N, #1 leftmost) and standalone books (any slot) ----
 ClearAll();
-Check("first book of an 8-set on an empty 8-row, middle slot: green", Put(B('A', 1), rows8[0].slots[2]) == R);
-Check("the same set in any other slot is green (order does not matter)", Put(B('A', 2), rows8[0].slots[0]) == R && Put(B('A', 3), rows8[0].slots[7]) == R);
-Check("a different set on that row: yellow", Put(B('C', 1), rows8[0].slots[1]) == Y);
-Check("that other 8-set on an empty 8-row claims it: green", Put(B('C', 1), rows8[1].slots[3]) == R);
-Check("a book already shelved is regraded live (set A books still green)", B('A', 1).Grade() == R && B('A', 2).Grade() == R);
-Check("the same set on a second 8-row: yellow (the earlier row owns the set)", Put(B('A', 4), rows8[2].slots[0]) == Y);
+Check("series A (printed 'The Lamplighter's Handbook'): vol. 1 in slot 1 of an empty 8-row is green", Put(B('A', 1), rows8[0].slots[0]) == R);
+Check("the same volume in the wrong slot is yellow (right row, wrong place)", Put(B('A', 2), rows8[0].slots[5]) == Y);
+Check("volume 2 moved into slot 2 and volume 3 into slot 3 are green", Put(B('A', 2), rows8[0].slots[1]) == R && Put(B('A', 3), rows8[0].slots[2]) == R);
+Check("a series volume in slot 8 when it is volume 3 is yellow", Put(B('A', 4), rows8[0].slots[7]) == Y);
+Check("a different set on that row: yellow", Put(B('C', 1), rows8[0].slots[6]) == Y);
+Check("that other 8-set on an empty 8-row claims it, vol. 1 in slot 1: green", Put(B('C', 1), rows8[1].slots[0]) == R);
+Check("a book already shelved is regraded live (set A volumes 1 to 3 still green)", B('A', 1).Grade() == R && B('A', 2).Grade() == R && B('A', 3).Grade() == R);
+Check("the same series on a second 8-row: yellow (the earlier row owns the series)", Put(B('A', 5), rows8[2].slots[4]) == Y);
+ClearAll();
+Check("the GARDENING books are standalone (not in a series): the definition says so", !B('G', 1).definition.ordered && B('G', 1).definition.title == "Roses and Their Care" && B('A', 1).definition.ordered);
+Check("a standalone gardening book in ANY slot of an empty 8-row is green", Put(B('G', 3), rows8[0].slots[5]) == R && Put(B('G', 1), rows8[0].slots[0]) == R && Put(B('G', 8), rows8[0].slots[2]) == R);
+Check("the COOKERY books (4 standalone) in any slot of a 4-row are green", Put(B('H', 2), rows4[0].slots[3]) == R && Put(B('H', 4), rows4[0].slots[0]) == R);
+Check("a series volume on the gardening row is yellow (another set owns it)", Put(B('A', 1), rows8[0].slots[1]) == Y);
 
 // ---- set size must match the row ----
 ClearAll();
 Check("a set of 4 on an empty 8-row: yellow (this row is for sets of 8)", Put(B('B', 1), rows8[0].slots[0]) == Y);
 Check("a set of 8 on an empty 4-row: yellow (this row is for sets of 4)", Put(B('A', 1), rows4[0].slots[0]) == Y);
-Check("a set of 4 on an empty 4-row: green", Put(B('B', 1), rows4[1].slots[1]) == R);
-Check("a set of 8 on an empty 8-row: green", Put(B('A', 1), rows8[0].slots[4]) == R);
+ClearAll();
+Check("a set of 4 on an empty 4-row, vol. 2 in slot 2: green", Put(B('B', 2), rows4[1].slots[1]) == R);
+ClearAll();
+Check("a set of 8 on an empty 8-row, vol. 5 in slot 5: green", Put(B('A', 5), rows8[0].slots[4]) == R);
 
 // removing the earliest book moves the claim
 ClearAll();
-Put(B('C', 1), rows8[3].slots[0]); Put(B('E', 1), rows8[3].slots[1]);
-Check("two sets on one row: the earlier book's set is green, the later one yellow", B('C', 1).Grade() == R && B('E', 1).Grade() == Y);
+Put(B('C', 1), rows8[3].slots[0]); Put(B('E', 2), rows8[3].slots[1]);
+Check("two sets on one row: the earlier book's set is green, the later one yellow", B('C', 1).Grade() == R && B('E', 2).Grade() == Y);
 B('C', 1).currentSlot.Release();
-Check("remove the earliest and the claim passes to the next book", B('E', 1).Grade() == R);
+Check("remove the earliest and the claim passes to the next book", B('E', 2).Grade() == R);
 
 // ---- finishing a row ----
 ClearAll();
-for (int n = 1; n <= 8; n++) Put(B('G', n), rows8[4].slots[8 - n]);   // reverse order: any order is fine
-Check("eight of one 8-set on an 8-row (any order) is a finished row", zone.CountFinishedShelves() == 1 && zone.CountCorrect() == 8, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
+for (int n = 1; n <= 8; n++) Put(B('G', n), rows8[4].slots[8 - n]);   // standalone books, reverse order: any order is fine
+Check("eight standalone books on an 8-row (any order) is a finished row", zone.CountFinishedShelves() == 1 && zone.CountCorrect() == 8, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
 for (int n = 1; n <= 4; n++) Put(B('H', n), rows4[1].slots[4 - n]);
-Check("four of one 4-set on a 4-row is a finished row", zone.CountFinishedShelves() == 2 && zone.CountCorrect() == 12, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
+Check("four standalone books on a 4-row is a finished row", zone.CountFinishedShelves() == 2 && zone.CountCorrect() == 12, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
 Put(B('I', 1), rows8[5].slots[0]);
 Check("a half-filled row is not finished", zone.CountFinishedShelves() == 2);
+ClearAll();
+for (int n = 1; n <= 8; n++) Put(B('A', n), rows8[0].slots[8 - n]);
+Check("a SERIES in reverse order is NOT a finished row (volume 1 must be leftmost)", zone.CountFinishedShelves() == 0 && zone.CountCorrect() <= 1, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
+ClearAll();
+for (int n = 1; n <= 8; n++) Put(B('A', n), rows8[0].slots[n - 1]);
+Check("a SERIES in order (1 leftmost to 8) is a finished row", zone.CountFinishedShelves() == 1 && zone.CountCorrect() == 8, zone.CountFinishedShelves() + " finished, " + zone.CountCorrect() + " correct");
 
 // ---- the finds are in the room ----
 Check("the apron and the shoes are hidden in this room, on the table", zone.finds.Length == 2 && zone.finds[0].IsFind && zone.finds[1].IsFind && zone.Contains(zone.finds[0].transform.position) && zone.finds[0].definition.findId == "apron" && zone.finds[1].definition.findId == "shoes");

@@ -34,6 +34,25 @@ public class CampaignController : MonoBehaviour
 
     public int RoomCount => rooms != null ? rooms.Length : 0;
 
+    private void OnEnable()
+    {
+        Book.Placed += OnBookPlaced;
+    }
+
+    private void OnDisable()
+    {
+        Book.Placed -= OnBookPlaced;
+    }
+
+    /// <summary>Recount at once when a book is placed, so the counters are already up when the score mote arrives (the timer only polls every 0.25 s).</summary>
+    private void OnBookPlaced(Book book, PlacementResult result)
+    {
+        if (_correct != null)
+        {
+            Recompute();
+        }
+    }
+
     private void Start()
     {
         _progress = FindFirstObjectByType<GameProgress>();

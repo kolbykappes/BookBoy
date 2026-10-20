@@ -1,0 +1,68 @@
+[
+  {
+    "key": "garden",
+    "group": "Gardening",
+    "cols": 2,
+    "rows": 4,
+    "spineCells": 8,
+    "books": [
+      {
+        "spine": "ROSES",
+        "title": "Roses and Their Care"
+      },
+      {
+        "spine": "BEEKEEPING",
+        "title": "Beekeeping for the Orchard"
+      },
+      {
+        "spine": "THE ORCHARD",
+        "title": "The Orchard Year"
+      },
+      {
+        "spine": "HEDGEROW",
+        "title": "The Hedgerow Book"
+      },
+      {
+        "spine": "ALLOTMENT",
+        "title": "The Allotment Handbook"
+      },
+      {
+        "spine": "HERB GARDEN",
+        "title": "The Herb Garden"
+      },
+      {
+        "spine": "COMPOST",
+        "title": "Soil and Compost"
+      },
+      {
+        "spine": "CALENDAR",
+        "title": "A Gardener's Calendar"
+      }
+    ]
+  },
+  {
+    "key": "cookery",
+    "group": "Cookery",
+    "cols": 2,
+    "rows": 2,
+    "spineCells": 4,
+    "books": [
+      {
+        "spine": "PRESERVES",
+        "title": "Jams and Preserves"
+      },
+      {
+        "spine": "HOME BAKER",
+        "title": "The Home Baker"
+      },
+      {
+        "spine": "PUDDINGS",
+        "title": "Plain Puddings"
+      },
+      {
+        "spine": "SOUPS",
+        "title": "Soups from the Larder"
+      }
+    ]
+  }
+]

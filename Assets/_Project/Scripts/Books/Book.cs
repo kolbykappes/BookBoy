@@ -259,7 +259,7 @@ public class Book : MonoBehaviour
         }
 
         bool groupOk = PlacementRules.ClaimHolds(mine, values, times, GroupKey);
-        PlacementMode mode = bookcase.rules == ContainerRules.Ordered ? PlacementMode.Ordered : PlacementMode.Group;
+        PlacementMode mode = PlacementRules.ModeFor(bookcase.rules == ContainerRules.Ordered, definition.ordered);
         bool setFits = PlacementRules.SetFitsShelf(definition.setSize, shelf.slots != null ? shelf.slots.Length : 0);
         return PlacementRules.EvaluateCampaign(mode, familyOk, groupOk, NumberKey, slotIndex, setFits);
     }
@@ -280,6 +280,23 @@ public class Book : MonoBehaviour
         {
             outline.Flash(ColorFor(result), result == PlacementResult.Correct);
         }
+        if (!QuietPlacement)
+        {
+            Placed?.Invoke(this, result);
+        }
+    }
+
+    /// <summary>Raised after a book is placed on a shelf (with its grade): the score effects listen to it.</summary>
+    public static event System.Action<Book, PlacementResult> Placed;
+
+    /// <summary>True while a whole room is being tidied or piled by an admin command: no per-book effects.</summary>
+    public static bool QuietPlacement;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        Placed = null;
+        QuietPlacement = false;
     }
 
     /// <summary>The physics material every dropped book uses (low bounce, high friction).</summary>
@@ -468,12 +485,21 @@ public class Book : MonoBehaviour
         // out of the eight-cell spine atlas.
         if (bookRenderer.sharedMaterials.Length == 3 && definition != null && definition.coverStyle >= 0)
         {
-            int volume = Mathf.Clamp(NumberKey, 1, 8);
+            // which picture of the atlases this book is: a series volume uses cell number-1 of its spine atlas; a standalone book uses its own cell of both atlases
+            int cells = Mathf.Max(1, definition.spineCells);
+            int cell = definition.coverCell >= 0 ? definition.coverCell : Mathf.Clamp(NumberKey, 1, cells) - 1;
             _propertyBlock.Clear();
             _propertyBlock.SetColor(BaseColorId, color);
             _propertyBlock.SetColor(ColorId, color);
+            if (definition.coverCell >= 0 && (definition.coverCols > 1 || definition.coverRows > 1))
+            {
+                int cols = Mathf.Max(1, definition.coverCols), rows = Mathf.Max(1, definition.coverRows);
+                float u = (cell % cols) / (float)cols, v = 1f - (cell / cols + 1) / (float)rows;   // the atlas is filled from the top row down
+                _propertyBlock.SetVector(BaseMapStId, new Vector4(1f / cols, 1f / rows, u, v));
+            }
+
             bookRenderer.SetPropertyBlock(_propertyBlock, 0);
-            _propertyBlock.SetVector(BaseMapStId, new Vector4(1f / 8f, 1f, (volume - 1) / 8f, 0f));
+            _propertyBlock.SetVector(BaseMapStId, new Vector4(1f / cells, 1f, cell / (float)cells, 0f));
             bookRenderer.SetPropertyBlock(_propertyBlock, 2);
             return;
         }

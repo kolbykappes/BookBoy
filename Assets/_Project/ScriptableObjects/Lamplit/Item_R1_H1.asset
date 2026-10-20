@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_R1_H1
   m_EditorClassIdentifier: Assembly-CSharp::BookDefinition
   bookId: r1_h1
-  displayName: Book H
+  displayName: Jams and Preserves
   category: 0
   series: 0
   volume: 1
@@ -24,7 +24,13 @@ MonoBehaviour:
   number: 1
   room: 1
   iconIndex: 7
-  coverStyle: -1
+  ordered: 0
+  title: Jams and Preserves
+  coverCell: 0
+  coverCols: 2
+  coverRows: 2
+  spineCells: 4
+  coverStyle: 7
   symbol: H
   findId: 
   tableEuler: {x: 0, y: 0, z: 0}

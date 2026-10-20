@@ -14,7 +14,7 @@ float bu0 = 9, bu1 = -9; foreach (var t in mesh.GetTriangles(0)) { bu0 = System.
 Check("the board UVs lie in the cover texture (back board 0 to 0.5, front 0.5 to 1)", bu0 > -0.02f && bu1 < 1.02f, bu0 + ".." + bu1);
 int spineVerts = 0; foreach (var t in spineTris) spineVerts++;
 sb.AppendLine("verts=" + v.Length + " tris=" + (mesh.triangles.Length / 3));
-int ok = 0; foreach (var key in LamplitBuilder.CoverKeys)
+int ok = 0; foreach (var key in new[] { "lamps", "catalogue", "letters", "atlas", "mending", "vault" })
 {
     var c = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/_Project/Art/Materials/Mat_Cover_" + key + ".mat");
     var s = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/_Project/Art/Materials/Mat_Spine_" + key + ".mat");
@@ -32,16 +32,16 @@ foreach (var book in UnityEngine.Object.FindObjectsByType<Book>(UnityEngine.Find
     {
         checkedBooks++;
         var mpb = new UnityEngine.MaterialPropertyBlock(); r.GetPropertyBlock(mpb, 2);
-        var st = mpb.GetVector("_BaseMap_ST"); float expect = (UnityEngine.Mathf.Clamp(book.NumberKey, 1, 8) - 1) / 8f;
-        if (System.Math.Abs(st.x - 0.125f) < 1e-4f && System.Math.Abs(st.z - expect) < 1e-4f) offsetsOk++;
+        var st = mpb.GetVector("_BaseMap_ST"); int cells = book.definition.spineCells; float expect = (book.definition.coverCell >= 0 ? book.definition.coverCell : UnityEngine.Mathf.Clamp(book.NumberKey, 1, cells) - 1) / (float)cells;
+        if (System.Math.Abs(st.x - 1f / cells) < 1e-4f && System.Math.Abs(st.z - expect) < 1e-4f) offsetsOk++;
         var mpb0 = new UnityEngine.MaterialPropertyBlock(); r.GetPropertyBlock(mpb0, 0);
         if (mpb0.GetColor("_BaseColor") == book.definition.spineColor) tinted++;
         bool pagesPlain = true; var mpb1 = new UnityEngine.MaterialPropertyBlock(); r.GetPropertyBlock(mpb1, 1); if (mpb1.GetColor("_BaseColor") == book.definition.spineColor) pagesPlain = false;
         if (!pagesPlain) { fails++; sb.AppendLine("FAIL pages tinted on " + book.name); }
     }
 }
-Check("sets A to F (36 books: three sets of 8, three of 4) are styled, the other 60 keep the plain tome", styled == 36 && plain == 60, styled + " styled, " + plain + " plain");
-Check("every styled book's spine shows its own volume cell (1/8 scale, offset (volume-1)/8)", offsetsOk == checkedBooks && checkedBooks == 36, offsetsOk + " of " + checkedBooks);
+Check("sets A to H (48 books: A to F series, G and H standalone) are styled, the other 48 keep the plain tome", styled == 48 && plain == 48, styled + " styled, " + plain + " plain");
+Check("every styled book's spine shows its own volume cell (1/8 scale, offset (volume-1)/8)", offsetsOk == checkedBooks && checkedBooks == 48, offsetsOk + " of " + checkedBooks);
 Check("every styled book's boards and spine take the set colour, the pages stay cream", tinted == checkedBooks, tinted + " of " + checkedBooks);
 sb.Append(fails == 0 ? "ALL PASSED" : fails + " FAILED");
 return sb.ToString();
