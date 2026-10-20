@@ -195,8 +195,10 @@ public static partial class LamplitBuilder
     public const float HandLightIntensity = 0.6f;
     public const float HandLightRange = 2.8f;
     public static readonly Vector3 HandLightPosition = new Vector3(0f, 0.25f, -0.25f);
-    /// <summary>Where the middle of the top held book sits, in the player root's space: right, up and forward of the feet (the eye is at 1.65 m).</summary>
-    public static readonly Vector3 StackOffset = new Vector3(0.40f, 1.10f, 0.52f);
+    /// <summary>Where the middle of the top held book sits relative to the eye, in the view's space (right, up, forward). CarryInventory keeps the stack there, following the view.</summary>
+    public static readonly Vector3 StackEyeOffset = new Vector3(0.40f, -0.27f, 0.52f);
+    /// <summary>The stack anchor's starting place in the player root's space; CarryInventory moves it every frame to follow the view.</summary>
+    public static readonly Vector3 StackOffset = new Vector3(0.40f, 1.38f, 0.52f);
     public const float CarryScale = 1.0f;   // held tomes at full size (Librarian's carried book fills 30 to 35 percent of the screen width)   // items are 1.6x life size now, so held ones are drawn smaller than the 0.9 used with life-size books
 
     /// <summary>Applies the camera field of view, eye height, walking speed, reach and held-book size to the player rig of the open scene.</summary>
@@ -207,6 +209,9 @@ public static partial class LamplitBuilder
         var vcam = GameObject.Find("PlayerFollowCamera").GetComponent<Unity.Cinemachine.CinemachineCamera>();
         var lens = vcam.Lens;
         lens.FieldOfView = FieldOfView;
+        // The held stack sits about half a metre in front of the eye and shrinks toward it near shelves, so the near plane (0.2 m from the Starter Assets prefab) would
+        // cut it. 0.1 m is the first step docs/unity-practices/04 recommends; the scene's Cinemachine camera takes it, not the prefab or any project setting.
+        lens.NearClipPlane = 0.1f;
         vcam.Lens = lens;
         EditorUtility.SetDirty(vcam);
 
@@ -260,6 +265,10 @@ public static partial class LamplitBuilder
         stack.localRotation = Quaternion.identity;
         stack.localScale = Vector3.one;
         carry.carryPoint = stack;
+        carry.eyeOffset = StackEyeOffset;   // serialized values do not follow a changed default, so the builder sets them
+        carry.pitchFollow = 0.7f;
+        carry.pitchFollowUp = 0.95f;
+        carry.minStackScale = 0.4f;
         EditorUtility.SetDirty(carry);
 
         MarkDirty();

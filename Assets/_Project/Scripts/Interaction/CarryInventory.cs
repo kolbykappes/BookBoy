@@ -17,7 +17,23 @@ public class CarryInventory : MonoBehaviour
     [Tooltip("Half the length of the stack's footprint along the player's forward (half a book's height).")]
     public float stackHalfLength = 0.19f;
 
-    private float _pull;
+    [Header("Held stack (Librarian-style: it moves with the view)")]
+    [Tooltip("Where the middle of the top book sits relative to the eye, in the view's space (right, up, forward). At a level gaze only the near corner of the stack is in frame.")]
+    public Vector3 eyeOffset = new Vector3(0.40f, -0.27f, 0.52f);
+
+    [Tooltip("How much of the camera's pitch the stack follows: 1 = fixed in the view like a weapon model, 0 = fixed in the room. Librarian's stack stays low at the right when looking level or up and rises into the right third when looking down, which a value around 0.7 gives.")]
+    [Range(0f, 1f)]
+    public float pitchFollow = 0.7f;
+
+    [Tooltip("The same when looking UP (higher: the stack stays in the corner while the player reads the upper shelves).")]
+    [Range(0f, 1f)]
+    public float pitchFollowUp = 0.95f;
+
+    [Tooltip("The smallest the stack shrinks toward the eye to stop it poking through a bookcase or wall (Epic's 'first person scale': position and size scale together, so the picture stays the same).")]
+    [Range(0.2f, 1f)]
+    public float minStackScale = 0.4f;
+
+    private float _fit = 1f;   // 1 = full size; smaller when something is close in front
 
     private readonly CarryList<Book> _list = new CarryList<Book>(UpgradeCatalog.BaseCarryCapacity);
     private readonly Dictionary<Book, Vector3> _originalScale = new Dictionary<Book, Vector3>();
@@ -133,7 +149,8 @@ public class CarryInventory : MonoBehaviour
     /// <summary>Puts every carried book at its place in the stack at once (tests and tools; in play the books glide there).</summary>
     public void SnapStack()
     {
-        _pull = ComputePull();
+        _fit = ComputeFit();
+        PlaceAnchor();
         ArrangeStack(1f);
     }
 
@@ -145,26 +162,69 @@ public class CarryInventory : MonoBehaviour
         }
 
         float blend = 1f - Mathf.Exp(-16f * Time.unscaledDeltaTime);
-        _pull = Mathf.Lerp(_pull, ComputePull(), 1f - Mathf.Exp(-10f * Time.unscaledDeltaTime));
+        _fit = Mathf.Lerp(_fit, ComputeFit(), 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
+        PlaceAnchor();
         ArrangeStack(blend);
     }
 
-    /// <summary>How far the stack is pulled back toward the body so it does not poke through a bookcase or wall in front of the player (0 = fully out).</summary>
-    private float ComputePull()
+    private Camera ViewCamera
     {
-        Transform anchor = carryPoint;
-        if (anchor == null || anchor.parent == null)
+        get
         {
-            return 0f;
+            var pi = GetComponent<PlayerInteractor>();
+            return pi != null && pi.interactionCamera != null ? pi.interactionCamera : Camera.main;
+        }
+    }
+
+    /// <summary>The camera's downward pitch in degrees (positive = looking down) and the stack's rotation in the player's space: the player root turns with the yaw,
+    /// the stack follows <see cref="pitchFollow"/> of the pitch.</summary>
+    private Quaternion FollowRotation(Camera cam)
+    {
+        float pitch = cam.transform.eulerAngles.x;
+        if (pitch > 180f)
+        {
+            pitch -= 360f;
         }
 
-        // a ray from the body, level with the stack and in line with it, along the player's forward: the stack's far edge must stop short of the first obstacle
-        Transform body = anchor.parent;
-        Vector3 local = anchor.localPosition;
-        Vector3 origin = body.TransformPoint(new Vector3(local.x, local.y, 0f));
-        var hits = Physics.RaycastAll(origin, body.forward, 1.5f, ~0, QueryTriggerInteraction.Ignore);
+        return Quaternion.Euler(pitch * (pitch < 0f ? pitchFollowUp : pitchFollow), 0f, 0f);
+    }
+
+    /// <summary>Puts the anchor where the stack belongs for the current view: the eye plus <see cref="eyeOffset"/> (scaled by the fit), turned by part of the camera pitch.
+    /// The anchor stays a child of the player root, so it turns with the player's yaw.</summary>
+    private void PlaceAnchor()
+    {
+        Camera cam = ViewCamera;
+        if (carryPoint == null || carryPoint.parent == null || cam == null)
+        {
+            return;
+        }
+
+        Transform body = carryPoint.parent;
+        Quaternion follow = FollowRotation(cam);
+        carryPoint.localPosition = body.InverseTransformPoint(cam.transform.position) + follow * (eyeOffset * _fit);
+        carryPoint.localRotation = follow;
+    }
+
+    /// <summary>How much the stack has to shrink toward the eye (1 = not at all) so its far edge stops short of the first bookcase or wall along the view. Scaling position and
+    /// size together keeps the picture the same on screen (docs/unity-practices/04: Epic's first-person scale), so the stack never leaves the view near a shelf.</summary>
+    private float ComputeFit()
+    {
+        Camera cam = ViewCamera;
+        if (carryPoint == null || carryPoint.parent == null || cam == null)
+        {
+            return 1f;
+        }
+
+        Transform body = carryPoint.parent;
+        Quaternion follow = FollowRotation(cam);
+        Quaternion rot = body.rotation * follow;
+        // A box the size of the stack's cross-section, cast forward from the eye plane: a thin ray would slip into the open bay of a bookcase and miss its side panels and
+        // shelf boards, which stand in front of a stack held at the right.
+        Vector3 center = cam.transform.position + rot * new Vector3(eyeOffset.x, eyeOffset.y - 0.10f, 0f);
+        float reach = eyeOffset.z + stackHalfLength;   // how far in front of the eye the stack's far edge is at full size
+        var hits = Physics.BoxCastAll(center, new Vector3(0.15f, 0.18f, 0.01f), rot * Vector3.forward, rot, reach + 0.3f, ~0, QueryTriggerInteraction.Ignore);
         float nearest = float.MaxValue;
-        Transform root = anchor.root;
+        Transform root = carryPoint.root;
         foreach (RaycastHit h in hits)
         {
             if (h.collider.transform.IsChildOf(root))
@@ -177,11 +237,10 @@ public class CarryInventory : MonoBehaviour
 
         if (nearest == float.MaxValue)
         {
-            return 0f;
+            return 1f;
         }
 
-        float farEdge = local.z + stackHalfLength;
-        return Mathf.Clamp(farEdge - (nearest - 0.04f), 0f, local.z + stackHalfLength);
+        return Mathf.Clamp((nearest - 0.08f) / reach, minStackScale, 1f);   // 8 cm of margin: the pitched stack is not square to the obstacle
     }
 
     /// <summary>A short shake of the stack: "your hands are full" (the pickup was refused).</summary>
@@ -226,9 +285,9 @@ public class CarryInventory : MonoBehaviour
             int order = (_list.CurrentIndex - i + n) % n;   // 0 = current book, on top; then the books picked up before it, newest first (the stack as it was built)
             Transform t = book.transform;
             Vector3 real = _originalScale.TryGetValue(book, out Vector3 s) ? s : t.localScale / carryScale;
-            Vector3 scale = real * carryScale;
+            Vector3 scale = real * carryScale * _fit;
             float sign = order % 2 == 0 ? 1f : -1f;
-            Vector3 targetPos = StackPlace(order, n, scale.x) + new Vector3(shake, 0f, -_pull);
+            Vector3 targetPos = StackPlace(order, n, real.x * carryScale) * _fit + new Vector3(shake * _fit, 0f, 0f);   // the places shrink with the books
             Quaternion targetRot = Quaternion.Euler(0f, 2.5f * sign * Mathf.Min(order, 3), 0f) * Quaternion.LookRotation(Vector3.right, Vector3.forward);
             t.localPosition = Vector3.Lerp(t.localPosition, targetPos, blend);
             t.localRotation = Quaternion.Slerp(t.localRotation, targetRot, blend);

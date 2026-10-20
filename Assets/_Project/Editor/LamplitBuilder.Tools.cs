@@ -5,14 +5,14 @@ using UnityEngine.Rendering.Universal;
 public static partial class LamplitBuilder
 {
     /// <summary>Renders the scene from a point of view into a PNG (Edit Mode or Play Mode). Used to eyeball what was built.</summary>
-    public static string Shot(string path, Vector3 position, Vector3 lookAt, float fov = 75f, int width = 1600, int height = 800)
+    public static string Shot(string path, Vector3 position, Vector3 lookAt, float fov = 75f, int width = 1600, int height = 800, float near = 0.05f)
     {
         var go = new GameObject("TMP_ShotCam");
         try
         {
             var cam = go.AddComponent<Camera>();
             cam.fieldOfView = fov;
-            cam.nearClipPlane = 0.05f;
+            cam.nearClipPlane = near;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.035f, 0.03f, 0.055f);
             cam.transform.position = position;
