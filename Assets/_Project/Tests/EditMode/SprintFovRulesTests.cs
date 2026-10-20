@@ -42,5 +42,16 @@ namespace BookBoy.Tests
             Assert.AreEqual(0f, SprintFovRules.Kick(6f, 6f, 6f, 6f, 1f), 1e-5f);
             Assert.AreEqual(0f, SprintFovRules.Kick(6f, 4f, 6f, 0f, 1f), 1e-5f);
         }
+
+        [Test]
+        public void ZoomedFov_NarrowsByTheMagnification_AndNeverWidens()
+        {
+            Assert.AreEqual(58.7f, SprintFovRules.ZoomedFov(58.7f, 1f), 1e-4f);
+            Assert.AreEqual(58.7f, SprintFovRules.ZoomedFov(58.7f, 0.5f), 1e-4f, "a zoom below 1 is no zoom");
+            float twice = SprintFovRules.ZoomedFov(58.7f, 2f);
+            Assert.Less(twice, 58.7f);
+            Assert.AreEqual(0.5f, (float)System.Math.Tan(twice * 0.5f * System.Math.PI / 180.0) / (float)System.Math.Tan(58.7f * 0.5f * System.Math.PI / 180.0), 1e-3f, "2x shows half the width");
+            Assert.Less(SprintFovRules.ZoomedFov(58.7f, 2.5f), twice);
+        }
     }
 }

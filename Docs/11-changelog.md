@@ -42,6 +42,7 @@ grouped by commit date, not by hour.
 - Storybook scale for Lamplit: FOV 75, eye 1.15 m, and a world 1.6x life size (containers, items, finds, desk; hub and rooms resized to hold them), after a
   comparison with Witch Cabin Cleanup showed our books were too small and the view too distant; builder now removes orphaned items on rebuild
   (`LamplitBuilder.WorldScale`, `ApplyPlayerScale`).
+- Hold Z to zoom in (2.5x), smooth in and out, look speed scaled so aiming stays steady; stacks with the sprint FOV kick.
 - Sprint FOV kick (a wider view that eases in with speed, comfort strength setting). Two kinds of books: numbered series (volume N in slot N, #1 leftmost) and standalone books (any slot), with demo sets (six printed series; standalone Gardening and Cookery). A finished shelf now plays a book wave, a gold sweeping sheet and rising motes, and a gold hexagon flies to the SHELVES counter; every correct placement sends a mote to the ITEMS counter, which pops.
 - Real models for the apron and the shoes (Blender, procedural textures) on the find table and at the desk (apron on the hook, shoes on the rack). They are taken, not carried: taking one installs it at once, and the first time a parchment dialog with a turning 3D view tells how it helped Uncle Archie and what it gives.
 - The held stack now moves with the view (Librarian-style: low right corner at a level gaze or looking up, rising when looking down) and shrinks toward the eye near bookcases, so it is visible at every shelf height and never clips; Cinemachine near plane 0.1.

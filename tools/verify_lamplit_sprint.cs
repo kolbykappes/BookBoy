@@ -36,5 +36,27 @@ sf.strength = 1f; for (int i = 0; i < 120; i++) sf.Tick(0f, 0.016f);
 sf.SetBaseFov(70f); for (int i = 0; i < 90; i++) sf.Tick(fpc.SprintSpeed, 0.016f);
 Check("a new base FOV (the FOV slider) is respected: 70 + 6", System.Math.Abs(vcam.Lens.FieldOfView - 76f) < 0.05f, vcam.Lens.FieldOfView.ToString());
 sf.SetBaseFov(baseFov); for (int i = 0; i < 120; i++) sf.Tick(0f, 0.016f);
+// ---- the Z zoom ----
+for (int i = 0; i < 120; i++) sf.Tick(0f, 0.016f);
+float fov0 = vcam.Lens.FieldOfView; float rot0 = fpc.RotationSpeed;
+Check("before the zoom the lens is at the base FOV and no zoom", System.Math.Abs(fov0 - baseFov) < 0.02f && sf.ZoomAmount < 0.001f);
+sf.SetZoomHeld(true); sf.Tick(0f, 0.016f);
+float fovFirst = vcam.Lens.FieldOfView;
+Check("holding Z: the first frame has moved a little (it eases, it does not snap)", fovFirst < fov0 - 0.05f && fovFirst > fov0 * 0.8f, fovFirst.ToString());
+float prev = fovFirst; bool monotone = true;
+for (int i = 0; i < 60; i++) { sf.Tick(0f, 0.016f); float f = vcam.Lens.FieldOfView; if (f > prev + 1e-4f) monotone = false; prev = f; }
+float expected = BookBoy.Rules.SprintFovRules.ZoomedFov(baseFov, sf.zoomFactor);
+Check("it narrows smoothly (never back up) to the zoom factor: 2.5x", monotone && System.Math.Abs(vcam.Lens.FieldOfView - expected) < 0.1f, vcam.Lens.FieldOfView + " vs " + expected);
+Check("the view is about 24 degrees vertical when fully zoomed", vcam.Lens.FieldOfView > 20f && vcam.Lens.FieldOfView < 28f, vcam.Lens.FieldOfView.ToString());
+Check("look speed is scaled down with the zoom so aiming stays precise", fpc.RotationSpeed < rot0 * 0.6f && fpc.RotationSpeed > rot0 * 0.3f, fpc.RotationSpeed + " vs " + rot0);
+sf.SetZoomHeld(false); sf.Tick(0f, 0.016f);
+Check("releasing Z: the first frame widens a little (smooth out)", vcam.Lens.FieldOfView > expected && vcam.Lens.FieldOfView < baseFov - 5f, vcam.Lens.FieldOfView.ToString());
+prev = vcam.Lens.FieldOfView; monotone = true;
+for (int i = 0; i < 90; i++) { sf.Tick(0f, 0.016f); float f = vcam.Lens.FieldOfView; if (f < prev - 1e-4f) monotone = false; prev = f; }
+Check("it widens smoothly back to the base FOV and the look speed returns", monotone && System.Math.Abs(vcam.Lens.FieldOfView - baseFov) < 0.05f && System.Math.Abs(fpc.RotationSpeed - rot0) < 0.01f, vcam.Lens.FieldOfView + " / " + fpc.RotationSpeed);
+sf.SetZoomHeld(true); for (int i = 0; i < 90; i++) sf.Tick(fpc.SprintSpeed, 0.016f);
+Check("zoom and sprint together: the zoom is applied to the sprint-widened view", vcam.Lens.FieldOfView < BookBoy.Rules.SprintFovRules.ZoomedFov(baseFov, sf.zoomFactor) + 5f && vcam.Lens.FieldOfView > BookBoy.Rules.SprintFovRules.ZoomedFov(baseFov, sf.zoomFactor), vcam.Lens.FieldOfView.ToString());
+sf.SetZoomHeld(false); for (int i = 0; i < 150; i++) sf.Tick(0f, 0.016f);
+Check("and everything is back to normal afterwards", System.Math.Abs(vcam.Lens.FieldOfView - baseFov) < 0.05f);
 sb.Append(fails == 0 ? "ALL PASSED" : fails + " FAILED");
 return sb.ToString();

@@ -155340,6 +155340,9 @@ MonoBehaviour:
   maxKickDegrees: 6
   strength: 1
   smoothTime: 0.16
+  zoomFactor: 2.5
+  zoomSmoothTime: 0.14
+  scaleLookWithZoom: 1
 --- !u!1 &2052228007
 GameObject:
   m_ObjectHideFlags: 0
